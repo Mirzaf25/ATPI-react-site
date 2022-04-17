@@ -20,7 +20,7 @@ var routes = [
   },
   {
     path: "/customer",
-    name: "Customers",
+    name: "Members",
     icon: "ni ni-single-02 text-red",
     component: Customers,
     layout: "/admin",
