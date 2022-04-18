@@ -80,7 +80,14 @@ class Logos extends React.Component {
     for (let key in params) {
       queryUrl.searchParams.set(key, params[key]);
     }
+
     const res = await fetch(queryUrl);
+
+
+    if(res.status != 200){
+      alert(res.statusText);
+    }
+
     const data = await res.json();
     this.setState({ logos: data });
   };

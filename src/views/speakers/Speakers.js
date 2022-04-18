@@ -76,6 +76,12 @@ class Speakers extends React.Component {
       queryUrl.searchParams.set(key, params[key]);
     }
     const res = await fetch(queryUrl);
+
+    if(res.status != 200){
+      alert(res.statusText);
+    }
+
+
     const data = await res.json();
     this.setState({ speakers: data });
   };
