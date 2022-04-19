@@ -1,7 +1,7 @@
 import OnlyHeader from "components/Headers/OnlyHeader";
 import React from "react";
 import { DataGrid } from "@material-ui/data-grid";
-
+import Moment from 'moment';
 // reactstrap components
 import {
   Badge,
@@ -102,7 +102,7 @@ class Clubs extends React.Component {
         owner_name: item.owner_name,
         member_count: item.member_count,
         seats: item.seats,
-        created_date: item.created_date,
+        created_date: Moment(item.created_date).format('DD-MM-YYYY'),//item.created_date,
       };
     });
 

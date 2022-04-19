@@ -2,7 +2,7 @@ import OnlyHeader from "components/Headers/OnlyHeader";
 import React from "react";
 import { DataGrid } from "@material-ui/data-grid";
 import { FormControlLabel, IconButton } from "@material-ui/core";
-
+import Moment from 'moment';
 // reactstrap components
 import {
   Badge,
@@ -202,7 +202,7 @@ class Memberships extends React.Component {
         customer_name: item.customer_name,
         status: item.status,
         recurring: item.recurring_amount,
-        created: item.created_date,
+        created: Moment(item.created_date).format('DD-MM-YYYY'),//  item.created_date,
       };
     });
 

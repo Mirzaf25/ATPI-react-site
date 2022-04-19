@@ -24,6 +24,10 @@ import {
   UncontrolledTooltip,
   Navbar,
   NavLink,
+  Modal,
+  ModalFooter,
+  ModalBody,
+  ModalHeader,
 } from "reactstrap";
 
 //MUI
@@ -57,6 +61,8 @@ class Logos extends React.Component {
     super(props);
     this.state = {
       logos: [],
+      allErrors : '',
+      toggle : false,
     };
   }
 
@@ -70,6 +76,10 @@ class Logos extends React.Component {
   }
 
   componentDidUpdate() {}
+
+  toggleModal = () => {
+    this.setState({toggle: !this.state.toggle});
+  }
 
   fetchLogos = async (url) => {
     const queryUrl = new URL(url);
@@ -85,17 +95,35 @@ class Logos extends React.Component {
 
 
     if(res.status != 200){
-      alert(res.statusText);
+      this.setState({toggle: true});
+      this.setState({allErrors: this.state.allErrors+' '+res.statusText });
+    //  alert(res.statusText);
     }
 
     const data = await res.json();
     this.setState({ logos: data });
   };
-
+  
   render() {
+    
     return (
       <>
         <OnlyHeader />
+        
+        <Modal isOpen={this.state.toggle} toggle={this.toggleModal} >
+            <ModalHeader>
+                Errors
+            </ModalHeader>
+            
+              <ModalBody>
+                {this.state.allErrors}
+              </ModalBody>            
+              
+            <ModalFooter>
+              <Button color="primary" onClick={this.toggleModal} >Dismiss</Button>
+            </ModalFooter>
+      </Modal>
+
         <Container className="mt--8" fluid>
           <Row>
             <div className="col">

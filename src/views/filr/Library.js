@@ -135,7 +135,7 @@ class Library extends React.Component {
                   <DataGrid
                     loading={this.state.libraries.length === 0}
                     components={{
-                      LoadingOverlay: LinearProgress,
+                      //LoadingOverlay: LinearProgress,
                     }}
                     autoHeight
                     rows={rows}

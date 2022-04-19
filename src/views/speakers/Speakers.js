@@ -1,6 +1,6 @@
 import OnlyHeader from "components/Headers/OnlyHeader";
 import React from "react";
-
+import Moment from 'moment';
 // reactstrap components
 import {
   Badge,
@@ -24,6 +24,10 @@ import {
   UncontrolledTooltip,
   Navbar,
   NavLink,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
 } from "reactstrap";
 
 //MUI
@@ -53,6 +57,8 @@ class Speakers extends React.Component {
     super(props);
     this.state = {
       speakers: [],
+      allErrors : '',
+      toggle : false,
     };
   }
 
@@ -66,6 +72,10 @@ class Speakers extends React.Component {
   }
 
   componentDidUpdate() {}
+  
+  toggleModal = () => {
+    this.setState({toggle: !this.state.toggle});
+  }
 
   fetchSpeakers = async (url) => {
     const queryUrl = new URL(url);
@@ -78,7 +88,9 @@ class Speakers extends React.Component {
     const res = await fetch(queryUrl);
 
     if(res.status != 200){
-      alert(res.statusText);
+      this.setState({toggle: true});
+      this.setState({allErrors: this.state.allErrors+' '+res.statusText });
+    //  alert(res.statusText);
     }
 
 
@@ -142,14 +154,29 @@ class Speakers extends React.Component {
               avatar: item?.acf?.profile_picture?.url,
               designation: item?.acf?.designation,
               status: item.status,
-              date: item.date,
+              date: Moment(item.date).format('DD-MM-YYYY'),//item.date,
             };
           })
         : [];
 
     return (
       <>
-        <OnlyHeader />
+
+      <Modal isOpen={this.state.toggle} toggle={this.toggleModal} >
+              <ModalHeader>
+                  Errors
+              </ModalHeader>
+              
+                <ModalBody>
+                  {this.state.allErrors}
+                </ModalBody>            
+                
+              <ModalFooter>
+                <Button color="primary" onClick={this.toggleModal} >Dismiss</Button>
+              </ModalFooter>
+        </Modal>
+
+        <OnlyHeader />  
         <Container className="mt--8" fluid>
           <Row>
             <div className="col">
@@ -161,7 +188,7 @@ class Speakers extends React.Component {
                   <DataGrid
                     loading={this.state.speakers.length === 0}
                     components={{
-                      LoadingOverlay: LinearProgress,
+//                      LoadingOverlay: LinearProgress,
                     }}
                     autoHeight
                     rows={rows}

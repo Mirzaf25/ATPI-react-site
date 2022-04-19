@@ -1,7 +1,7 @@
 import OnlyHeader from "components/Headers/OnlyHeader";
 import React from "react";
 import { DataGrid } from '@material-ui/data-grid';
-
+import Moment from 'moment';
 // reactstrap components
 import {
   Badge,
@@ -127,31 +127,20 @@ class Customers extends React.Component {
           );
         },
       },
+    ];
 
-        ];
-
- /* const rows = this.state.customers.map((item,key)=>{
+const rows = this.state.customers.map((item,key)=>{
     return {
             user_id:item.id,
             membership_id:item.membership_name,
             name:item.customer_name,
             subscription:item.subscription,
-            date:item.date,
+            date:Moment(item.date).format('DD-MM-YYYY'),//item.date,
             gateway:item.gateway
           }
 
       });
-   */   
-     const rows = [{
-        id:'1234!@#',
-        user_id:'id-01',
-        number : '123',
-        membership_id:'mid-01',
-        name:'name',
-        subscription:'Yes',
-        date:'22/22/22',
-        gateway:'Made for development'
-      }];
+
 
     return (
       <>
@@ -325,8 +314,8 @@ class Customers extends React.Component {
                 <CardHeader className="border-0">
                   <h3 className="mb-0">Customers</h3>
                 </CardHeader>
-               <DataGrid  autoHeight rows={rows} columns={columns} pagination/>
-    
+               <DataGrid loading={this.state.customers.length === 0}
+                 autoHeight rows={rows} columns={columns} pagination/>
               </Card>
             </div>
           </Row>

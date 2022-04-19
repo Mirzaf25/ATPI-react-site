@@ -1,7 +1,7 @@
 import OnlyHeader from "components/Headers/OnlyHeader";
 import React from "react";
 import { DataGrid } from "@material-ui/data-grid";
-
+import Moment from 'moment';
 // reactstrap components
 import {
   Badge,
@@ -117,6 +117,8 @@ class Memberships extends React.Component {
     console.log(this.state.payments);
 
     const rows = this.state.payments.map((item, key) => {
+
+      
       return {
         id: item.id,
         name: item.membership_name,
@@ -124,7 +126,7 @@ class Memberships extends React.Component {
         status: item.status,
         amount: item.amount,
         subscription: item.subscription,
-        created: item.date,
+        created: Moment(item.date).format('DD-MM-YYYY'),
       };
     });
 

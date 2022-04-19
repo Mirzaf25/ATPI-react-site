@@ -218,6 +218,7 @@ class Filr extends React.Component {
       },
     ];
     const rows = [];
+    console.log('this.state.files ==>> ',this.state.files);
     return (
       <>
         <OnlyHeader />
