@@ -3,6 +3,7 @@ const initialState = {
   base_url: "/wp-json/rcp/v1/",
   auth_url: "/wp-json/jwt-auth/v1/", // for testing purposes only.
   route: "",
+  base_wp_url: "/wp-json/wp/v2/",
   proxy_domain: "http://localhost:8010/proxy",
   domain: "https://atpi-dev14.grafton.digital", // for testing purposes only.
 };
