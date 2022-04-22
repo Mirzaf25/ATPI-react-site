@@ -33,24 +33,9 @@ import {
 //MUI
 import { DataGrid } from "@material-ui/data-grid";
 
-import fileIcons from "../../variables/file-icons";
-
 import { connect } from "react-redux";
 import { setUserLoginDetails } from "features/user/userSlice";
-import {
-  Grid,
-  List,
-  ListItem,
-  ListItemIcon,
-  Drawer,
-  IconButton,
-  Button,
-  Link,
-  LinearProgress,
-  Breadcrumbs,
-  Avatar,
-} from "@material-ui/core";
-import ListItemButton from "@material-ui/core/Button";
+import { LinearProgress, Avatar, Button } from "@material-ui/core";
 
 class Speakers extends React.Component {
   constructor(props) {
@@ -81,6 +66,7 @@ class Speakers extends React.Component {
     const queryUrl = new URL(url);
     const params = {
       per_page: 100,
+      acf_format: "standard",
     };
     for (let key in params) {
       queryUrl.searchParams.set(key, params[key]);
@@ -181,8 +167,14 @@ class Speakers extends React.Component {
           <Row>
             <div className="col">
               <Card className="shadow">
-                <CardHeader className="border-0">
-                  <h3 className="mb-0">Filr speakers</h3>
+                <CardHeader className="border-0 d-flex justify-content-between pl-3 pr-3">
+                  <h3 className="mb-0">Speakers</h3>
+                  <Button
+                    variant="contained"
+                    onClick={() => this.props.history.push("speakers/create")}
+                  >
+                    Create
+                  </Button>
                 </CardHeader>
                 <CardBody>
                   <DataGrid

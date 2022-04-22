@@ -4,23 +4,10 @@ import { DataGrid } from '@material-ui/data-grid';
 import Moment from 'moment';
 // reactstrap components
 import {
-  Badge,
   Card,
   CardHeader,
-  CardFooter,
-  DropdownMenu,
-  DropdownItem,
-  UncontrolledDropdown,
-  DropdownToggle,
-  Media,
-  Pagination,
-  PaginationItem,
-  PaginationLink,
-  Progress,
-  Table,
   Container,
   Row,
-  UncontrolledTooltip,
   Button,
   Modal,
   ModalHeader,
@@ -29,11 +16,8 @@ import {
   Label,
   Col,
   Input,
-  CardBody,
   Form,
-  FormFeedback,
   FormGroup,
-
 } from "reactstrap";
 
 import { connect } from "react-redux";
@@ -47,7 +31,7 @@ class Customers extends React.Component {
       customers:[],
       page: 1,
       number: 5,
-      toggle : false,
+      toggle: false,
     };
   }
 
@@ -95,20 +79,32 @@ class Customers extends React.Component {
     this.setState({ customers: data });
   };
 
-
   toggleModal = () => {
-    this.setState({toggle : !this.state.toggle})
-  }
+    this.setState({ toggle: !this.state.toggle });
+  };
 
   render() {
+    if (this.state.customers.length === 0 && this.props.user.token !== null)
+      this.fetchCustomers(
+        this.props.rcp_url.proxy_domain +
+          this.props.rcp_url.base_url +
+          "customers",
+        this.props.user.token
+      );
+    if (this.state.customers.length === 0 && this.props.user.token !== null)
+      this.fetchCustomers(
+        this.props.rcp_url.proxy_domain +
+          this.props.rcp_url.base_url +
+          "customers",
+        this.props.user.token
+      );
 
     const columns = [
-      { field: 'user_id', headerName: 'User Id', width: 180 },
-      { field: 'number', headerName: 'Number', width: 180 },
-      { field: 'membership_id', headerName: 'Membership Id', width: 180 },
-      { field: 'subscription', headerName: 'Subscription', width: 180 },
-      { field: 'date', headerName: 'Date', width: 180 },
-      { field: 'gateway', headerName: 'Gateway', width: 180 },
+      { field: "id", headerName: "ID", width: 90 },
+      { field: "user_id", headerName: "User ID", width: 180 },
+      { field: "name", headerName: "Name", width: 180 },
+      { field: "membership_id", headerName: "Membership Id", width: 180 },
+      { field: "date", headerName: "Date", width: 180 },
       {
         field: "actions",
         type: "actions",
@@ -116,196 +112,174 @@ class Customers extends React.Component {
         width: 100,
         cellClassName: "actions",
         renderCell: (params) => {
-          console.log(params.row.id);
           return (
             <div
               className="d-flex justify-content-between align-items-center"
               style={{ cursor: "pointer" }}
             >
-              <MatEdit index={params.row.id} handleClick={this.toggleModal}/>
+              <MatEdit index={params.row.id} handleClick={this.toggleModal} />
             </div>
           );
         },
       },
     ];
 
-const rows = this.state.customers.map((item,key)=>{
-    return {
-            user_id:item.id,
-            membership_id:item.membership_name,
-            name:item.customer_name,
-            subscription:item.subscription,
-            date:Moment(item.date).format('DD-MM-YYYY'),//item.date,
-            gateway:item.gateway
-          }
-
-      });
-
+    const rows = this.state.customers.map((item, key) => {
+      return {
+        id: item.id,
+        user_id: item.user_id,
+        membership_id:
+          item.memberships.length === 0 ? "No Memberhsip" : item.memberships[0],
+        name: item.name,
+        date: Moment(item.date_registered).format('DD-MM-YYYY') ,
+      };
+    });
 
     return (
       <>
-        <Modal isOpen={this.state.toggle} toggle={this.toggleModal}  > 
-            <ModalHeader>
-                Edit Customer
-            </ModalHeader>
-            <ModalBody>
+        <Modal isOpen={this.state.toggle} toggle={this.toggleModal}>
+          <ModalHeader>Edit Customer</ModalHeader>
+          <ModalBody>
+            <Form onSubmit={() => {}}>
+              <FormGroup row>
+                <Label sm={4} for="user_id">
+                  User Id
+                </Label>
+                <Col md={6}>
+                  <Input name="user_id" type="text" />
+                </Col>
+              </FormGroup>
+              <FormGroup row>
+                <Label sm={4} for="membership_id">
+                  Membership Id
+                </Label>
+                <Col md={6}>
+                  <Input required name="membership_id" type="text" />
+                </Col>
+              </FormGroup>
+              <FormGroup row>
+                <Label sm={4} for="number">
+                  Number
+                </Label>
+                <Col md={6}>
+                  <Input required name="number" type="text" />
+                </Col>
+              </FormGroup>
+              <FormGroup row>
+                <Label sm={4} for="subscription">
+                  Subscription
+                </Label>
+                <Col md={6}>
+                  <Input required name="subscription" type="text" />
+                </Col>
+              </FormGroup>
+              <FormGroup row>
+                <Label sm={4} for="date">
+                  Date
+                </Label>
+                <Col md={6}>
+                  <Input required name="date" type="text" />
+                </Col>
+              </FormGroup>
+              <FormGroup row>
+                <Label sm={4} for="gateway">
+                  Gateway
+                </Label>
+                <Col md={6}>
+                  <Input required name="gateway" type="text" />
+                </Col>
+              </FormGroup>
 
-            <Form onSubmit={()=>{}}>
-                    <FormGroup row>
-                      <Label sm={4} for="user_id">
-                        User Id
-                      </Label>
-                      <Col md={6}>
-                        <Input name="user_id" type="text" />
-                      </Col>
-                    </FormGroup>
-                    <FormGroup row>
-                      <Label sm={4} for="membership_id">
-                      Membership Id
-                      </Label>
-                      <Col md={6}>
-                        <Input required name="membership_id" type="text" />
-                      </Col>
-                    </FormGroup>
-                    <FormGroup row>
-                      <Label sm={4} for="number">
-                        Number
-                      </Label>
-                      <Col md={6}>
-                        <Input required name="number" type="text" />
-                      </Col>
-                    </FormGroup>
-                    <FormGroup row>
-                      <Label sm={4} for="subscription">
-                      Subscription
-                      </Label>
-                      <Col md={6}>
-                        <Input required name="subscription" type="text" />
-                      </Col>
-                    </FormGroup>
-                    <FormGroup row>
-                      <Label sm={4} for="date">
-                        Date
-                      </Label>
-                      <Col md={6}>
-                        <Input required name="date" type="text" />
-                      </Col>
-                    </FormGroup>
-                    <FormGroup row>
-                      <Label sm={4} for="gateway">
-                        Gateway
-                      </Label>
-                      <Col md={6}>
-                        <Input required name="gateway" type="text" />
-                      </Col>
-                    </FormGroup>
+              <FormGroup row>
+                <Label sm={4} for="workplace">
+                  Work Place
+                </Label>
+                <Col md={6}>
+                  <Input required name="workplace" type="text" />
+                </Col>
+              </FormGroup>
 
+              <FormGroup row>
+                <Label sm={4} for="reference_club">
+                  Reference Club
+                </Label>
+                <Col md={6}>
+                  <Input required name="reference_club" type="text" />
+                </Col>
+              </FormGroup>
 
+              <FormGroup row>
+                <Label sm={4} for="adress_one">
+                  Adress One
+                </Label>
+                <Col md={6}>
+                  <Input required name="adress_one" type="text" />
+                </Col>
+              </FormGroup>
 
-                    <FormGroup row>
-                      <Label sm={4} for="workplace">
-                        Work Place
-                      </Label>
-                      <Col md={6}>
-                        <Input required name="workplace" type="text" />
-                      </Col>
-                    </FormGroup>                  
-                    
-                    <FormGroup row>
-                      <Label sm={4} for="reference_club">
-                        Reference Club
-                      </Label>
-                      <Col md={6}>
-                        <Input required name="reference_club" type="text" />
-                      </Col>
-                    </FormGroup>
-                  
-                  <FormGroup row>
-                      <Label sm={4} for="adress_one">
-                      Adress One
-                      </Label>
-                      <Col md={6}>
-                        <Input required name="adress_one" type="text" />
-                      </Col>
-                    </FormGroup>
-                  
-                  <FormGroup row>
-                      <Label sm={4} for="adress_two">
-                        Adress Two
-                      </Label>
-                      <Col md={6}>
-                        <Input required name="adress_two" type="text" />
-                      </Col>
-                    </FormGroup>
-                  
-                  <FormGroup row>
-                      <Label sm={4} for="town">
-                        Town
-                      </Label>
-                      <Col md={6}>
-                        <Input required name="town" type="text" />
-                      </Col>
-                    </FormGroup>
-                  
-                  <FormGroup row>
-                      <Label sm={4} for="county">
-                        County
-                      </Label>
-                      <Col md={6}>
-                        <Input required name="county" type="text" />
-                      </Col>
-                    </FormGroup>
-                  
-                  <FormGroup row>
-                      <Label sm={4} for="eircode">
-                        Eircode
-                      </Label>
-                      <Col md={6}>
-                        <Input required name="eircode" type="text" />
-                      </Col>
-                    </FormGroup>
-                  
-                  <FormGroup row>
-                      <Label sm={4} for="country">
-                        Country
-                      </Label>
-                      <Col md={6}>
-                        <Input required name="country" type="text" />
-                      </Col>
-                    </FormGroup>
-                  
-                  <FormGroup row>
-                      <Label sm={4} for="phone">
-                        Phone
-                      </Label>
-                      <Col md={6}>
-                        <Input required name="phone" type="text" />
-                      </Col>
-                    </FormGroup>
+              <FormGroup row>
+                <Label sm={4} for="adress_two">
+                  Adress Two
+                </Label>
+                <Col md={6}>
+                  <Input required name="adress_two" type="text" />
+                </Col>
+              </FormGroup>
 
-            {/*
-                    <FormGroup check row>
-                      <Col
-                        sm={{
-                          size: 10,
-                        }}
-                      >
-                        <Button>Submit</Button>
-                      </Col>
-                    </FormGroup>
-           */}
+              <FormGroup row>
+                <Label sm={4} for="town">
+                  Town
+                </Label>
+                <Col md={6}>
+                  <Input required name="town" type="text" />
+                </Col>
+              </FormGroup>
 
-                  </Form>
+              <FormGroup row>
+                <Label sm={4} for="county">
+                  County
+                </Label>
+                <Col md={6}>
+                  <Input required name="county" type="text" />
+                </Col>
+              </FormGroup>
 
+              <FormGroup row>
+                <Label sm={4} for="eircode">
+                  Eircode
+                </Label>
+                <Col md={6}>
+                  <Input required name="eircode" type="text" />
+                </Col>
+              </FormGroup>
 
+              <FormGroup row>
+                <Label sm={4} for="country">
+                  Country
+                </Label>
+                <Col md={6}>
+                  <Input required name="country" type="text" />
+                </Col>
+              </FormGroup>
 
-            </ModalBody>
-            <ModalFooter>
-            <Button onClick={()=>{}}>Submit</Button>
-            <Button color="secondary" onClick={this.toggleModal}>Cancel</Button>
+              <FormGroup row>
+                <Label sm={4} for="phone">
+                  Phone
+                </Label>
+                <Col md={6}>
+                  <Input required name="phone" type="text" />
+                </Col>
+              </FormGroup>
+            </Form>
+          </ModalBody>
+          <ModalFooter>
+            <Button onClick={() => {}}>Submit</Button>
+            <Button color="secondary" onClick={this.toggleModal}>
+              Cancel
+            </Button>
           </ModalFooter>
         </Modal>
- 
+
         <OnlyHeader />
         <Container className="mt--8" fluid>
           <Row>

@@ -50,8 +50,8 @@ class AddIndividualMembership extends React.Component {
       country: "",
       region: "",
       error_message: [],
-      progress :0,
-      totalProgress : 5,
+      progress: 0,
+      totalProgress: 5,
     };
     this.handleChange = this.handleChange.bind(this);
   }
@@ -126,12 +126,12 @@ class AddIndividualMembership extends React.Component {
     this.setState({ region: val });
   }
 
-  updateProgress(val){
-    this.setState({progress : this.state.progress+val});
+  updateProgress(val) {
+    this.setState({ progress: this.state.progress + val });
   }
 
-  resetProgress(){
-    this.setState({progress : 0});
+  resetProgress() {
+    this.setState({ progress: 0 });
   }
   /**
    * Handle Payment
@@ -146,54 +146,44 @@ class AddIndividualMembership extends React.Component {
     }
     const cardElement = elements.getElement("card");
     try {
-      
       /* UPDATE PROGRESS */
-      console.log('1');
+      console.log("1");
       this.updateProgress(1);
 
       const membership = this.props.levels.levels.find(
         (el) => el.id === parseInt(event.target.membership_level.value)
       );
-      
       /* UPDATE PROGRESS */
-      console.log('2');
+      console.log("2");
       this.updateProgress(1);
-    
-      var res = JSON.stringify({});
-    
-      try{
-          res = await fetch(
-                this.props.rcp_url.proxy_domain +
-                  "/wp-admin/admin-ajax.php?action=stripe_payment_intent",
-                {
-                  method: "post",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    money: membership.price,
-                    currency_symbol: membership.currency_symbol,
-                  }),
-                }
-              );
-      
-            }catch(e){
-              alert(e);
-              this.resetProgress();
-              return;
-            }
+      const formData = new FormData();
+      formData.append("action", "stripe_payment_intent");
+      formData.append("price", membership.price);
+      formData.append("currency_symbol", membership.currency_symbol);
+
+      const res = await fetch(
+        this.props.rcp_url.proxy_domain +
+          "/wp-admin/admin-ajax.php?action=stripe_payment_intent",
+        {
+          method: "post",
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          body: formData,
+        }
+      );
 
       /* UPDATE PROGRESS */
-      console.log('3');
+      console.log("3");
       this.updateProgress(1);
       const {
         data: { client_secret },
       } = await res.json();
 
       /* UPDATE PROGRESS */
-      console.log('4');
+      console.log("4");
       this.updateProgress(1);
-      
+
       const paymentMethodReq = await stripe.createPaymentMethod({
         type: "card",
         card: cardElement,
@@ -210,7 +200,7 @@ class AddIndividualMembership extends React.Component {
 
       if (paymentMethodReq.error) {
         alert(paymentMethodReq.error.message);
-      this.resetProgress();
+        this.resetProgress();
         return;
       }
 
@@ -227,36 +217,30 @@ class AddIndividualMembership extends React.Component {
         return;
       }
 
-      const user_args = {
-        first_name: event.target.first_name.value,
-        last_name: event.target.last_name.value,
-        user_email: event.target.email.value,
-        user_pass: event.target.password.value,
-      };
-    //  const transaction = "";
-
-    
-      this.onSuccessfullCheckout(user_args, membership, transaction);
-
-    /* UPDATE PROGRESS */      
-    console.log('5');
-    this.updateProgress(1);
-
+      return transaction;
     } catch (err) {
-      alert(err);
-      this.setState({ error_message: "Error happened" + err });
+      this.resetProgress();
+      return Promise.reject(err);
     }
   }
 
+  /**
+   * Submit the form.
+   */
+  async submitForm(event) {
+    event.persist();
+    event.preventDefault();
+    const user_args = {
+      first_name: event.target.first_name.value,
+      last_name: event.target.last_name.value,
+      user_email: event.target.email.value,
+      user_pass: event.target.password.value,
+    };
 
+    this.onSuccessfullCheckout(event, user_args, this.state.selectedMembership);
+  }
 
-
-
-
-
-
-  
-  onSuccessfullCheckout(user_args, membership, event) {
+  onSuccessfullCheckout(event, user_args, membership) {
     this.addCustomer(user_args)
       .then((res) => {
         if (res.status !== 200) return Promise.reject(res);
@@ -401,10 +385,14 @@ class AddIndividualMembership extends React.Component {
                   <h3 className="mb-0">Add Individual Membership</h3>
                 </CardHeader>
                 <CardBody>
-
-                {/* PROGRESS BAR */}
-                {this.state.progress > 0 && <Progress value={(this.state.progress/ this.state.totalProgress) * 100 } />}
-                
+                  {/* PROGRESS BAR */}
+                  {this.state.progress > 0 && (
+                    <Progress
+                      value={
+                        (this.state.progress / this.state.totalProgress) * 100
+                      }
+                    />
+                  )}
 
                   <Form onSubmit={this.submitForm.bind(this)}>
                     <FormGroup row>

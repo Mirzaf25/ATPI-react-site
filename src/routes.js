@@ -13,6 +13,10 @@ import Filr from "views/filr/Filr";
 import Library from "views/filr/Library";
 import Logos from "views/sponsored-logos/Logos";
 import Speakers from "views/speakers/Speakers";
+import Users from "views/users/Users";
+import EditUser from "views/users/EditUser";
+import CreateLogo from "views/sponsored-logos/CreateLogo";
+import CreateSpeaker from "views/speakers/CreateSpeaker";
 
 var routes = [
   {
@@ -24,7 +28,7 @@ var routes = [
   },
   {
     path: "/customer",
-    name: "Customers",
+    name: "Members",
     icon: "ni ni-single-02 text-red",
     component: Customers,
     layout: "/admin",
@@ -107,6 +111,16 @@ var routes = [
     icon: "fa fa-images text-green",
     component: Logos,
     layout: "/admin",
+    children: [
+      {
+        path: "/sponsored-logos/create",
+        name: "Create Logo",
+        icon: "fa  fa-book text-green", // redundant
+        component: CreateLogo,
+        layout: "/admin",
+        showInSidebar: false,
+      },
+    ],
   },
   {
     path: "/speakers",
@@ -114,6 +128,33 @@ var routes = [
     icon: "fa fa-bullhorn text-green",
     component: Speakers,
     layout: "/admin",
+    children: [
+      {
+        path: "/speakers/create",
+        name: "Create Ppeaker",
+        icon: "fa  fa-book text-green", // redundant
+        component: CreateSpeaker,
+        layout: "/admin",
+        showInSidebar: false,
+      },
+    ],
+  },
+  {
+    path: "/users",
+    name: "Users",
+    icon: "fa fa-user text-green",
+    component: Users,
+    layout: "/admin",
+    children: [
+      {
+        path: "/users/:id",
+        name: "User",
+        icon: "fa  fa-book text-green", // redundant
+        component: EditUser,
+        layout: "/admin",
+        showInSidebar: false,
+      },
+    ],
   },
   {
     path: "/login",
