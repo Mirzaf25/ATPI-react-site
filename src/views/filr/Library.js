@@ -26,6 +26,7 @@ import {
   NavLink,
   Form,
   FormGroup,
+  Dropdown,
 } from "reactstrap";
 
 //MUI
@@ -60,6 +61,7 @@ class Library extends React.Component {
     this.state = {
       libraries: [],
       addLibrary: false,
+      
     };
   }
 
@@ -73,6 +75,8 @@ class Library extends React.Component {
   }
 
   componentDidUpdate() {}
+
+
 
   fetchLibraries = async (url) => {
     const queryUrl = new URL(url);
@@ -182,7 +186,7 @@ class Library extends React.Component {
                       <Col className="animated fadeInLeft" xs={10}>
                         <Form onSubmit={this.addLibrary.bind(this)}>
                           <FormGroup className="mb-0" row>
-                            <Col>
+                            <Row>
                               <TextField
                                 onChange={(e) => this.handleChange(e)}
                                 required
@@ -192,7 +196,7 @@ class Library extends React.Component {
                                 variant="outlined"
                                 size="small"
                               />
-                            </Col>
+                            </Row>
                             <Button type="submit" variant="contained">
                               Submit
                             </Button>

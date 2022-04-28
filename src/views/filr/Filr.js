@@ -24,6 +24,13 @@ import {
   UncontrolledTooltip,
   Navbar,
   NavLink,
+  Form,
+  FormGroup,
+  Dropdown,
+  Modal,
+  ModalBody,
+  ModalHeader,
+  ModalFooter
 } from "reactstrap";
 
 //MUI
@@ -44,6 +51,8 @@ import {
   Link,
   LinearProgress,
   Breadcrumbs,
+  Grow,
+  TextField,
 } from "@material-ui/core";
 import ListItemButton from "@material-ui/core/Button";
 
@@ -59,10 +68,55 @@ class Filr extends React.Component {
       viewFiles: [],
       viewLoading: false,
       currentFolder: null,
+      dropdownOpen:false,
+      createFolderModalStatus : false,
+      uploadFileModalStatus : false,
+      uploadType : '',
+      newFolderName : '',
+      newFolderId : '',
+      selectedFile : Object,   
+      breadcrumbObjectList : []
     };
     this.breadcrumbs = [];
   }
 
+  fileChangedHandler = event => {
+   this.setState({ selectedFile: event.target.files[0] })
+  }
+  
+  uploadHandler = () => {
+    // @todo upload to api
+  }
+
+
+  createFolder = async(e) => {
+    e.preventDefault();
+
+    if (this.props.user.token === null) return;
+
+    // @todo create folder
+    
+    this.setState({ newFolderName: "" });
+
+  }
+
+
+  handleFolderNameChange = (e) =>{
+    this.setState({newFolderName:e});
+  }
+
+  handleFolderIdChange = (e) =>{
+    this.setState({newFolderId:e});
+  }
+  toggleCreateFolderModal = () =>{
+    this.setState({createFolderModalStatus : !this.state.createFolderModalStatus});
+  }
+  toggleUploadFileModal = () =>{
+    this.setState({uploadFileModalStatus : !this.state.uploadFileModalStatus});
+  }
+  dropdownToggle = () =>{
+    this.setState({dropdownOpen : !this.state.dropdownOpen});
+  }
   componentDidMount() {
     if (this.state.files.length === 0)
       this.fetchFiles(
@@ -83,6 +137,9 @@ class Filr extends React.Component {
         ),
       });
     }
+
+
+
     if (prevViewFiles !== this.state.viewFiles) {
       const index = this.breadcrumbs.findIndex(
         (item) => item.key == this.state.currentFolder
@@ -91,9 +148,11 @@ class Filr extends React.Component {
       if (index !== -1) {
         this.breadcrumbs = this.breadcrumbs.slice(0, index + 1);
       } else {
+
         const folder = this.state.files.find(
           (el) => el.id == this.state.currentFolder
         );
+
         //use indexes to clear up breadcrumbs.
         if (folder !== undefined && folder?.metadata["assigned-folder"] != 0) {
           this.breadcrumbs.push(
@@ -119,11 +178,15 @@ class Filr extends React.Component {
               color="inherit"
               data-id={folder.id}
               href="#"
-              onClick={(e) => {
+              /*onClick={(e) => {
                 e.preventDefault();
                 this.openFolder(folder);
-              }}
-            >
+              }}*/
+            >   <span onClick={()=>{ 
+              this.openFolder(this.state.breadcrumbObjectList[this.state.breadcrumbObjectList.length-1] );
+
+
+              }}>../   </span>
               {folder?.title.rendered}
             </Link>,
           ];
@@ -146,7 +209,7 @@ class Filr extends React.Component {
   };
 
   openFolder = (item) => {
-    console.log(item);
+    
     this.setState({
       viewLoading: true,
       currentFolder: item.id,
@@ -162,11 +225,15 @@ class Filr extends React.Component {
         el.classList.toggle("fa-folder-open");
       }
     });
+    
+    this.setState( {breadcrumbObjectList :  [...this.state.breadcrumbObjectList , item] } );
+
     // @todo fetch from api
     setTimeout(() => {
       this.setState({ viewLoading: false });
     }, 2000);
   };
+
 
   render() {
     const columns = [
@@ -218,9 +285,55 @@ class Filr extends React.Component {
       },
     ];
     const rows = [];
-    console.log('this.state.files ==>> ',this.state.files);
+
     return (
       <>
+
+<Modal isOpen={this.state.uploadFileModalStatus} toggle={this.toggleUploadFileModal} >
+  <ModalHeader>Upload File</ModalHeader>
+  <ModalBody>
+      <input type="file" onChange={this.fileChangedHandler}/>
+    <Button  variant="contained" onClick={this.uploadHandler}>Upload</Button>
+  </ModalBody>
+  <ModalFooter></ModalFooter>
+</Modal>
+
+
+<Modal isOpen={this.state.createFolderModalStatus} toggle={this.toggleCreateFolderModal} >
+  <ModalHeader>Create Folder</ModalHeader>
+  <ModalBody>
+    <Form onSubmit={this.createFolder.bind(this)} >
+
+    <Col>
+          <TextField
+            onChange={(e) => this.handleFolderNameChange(e)}
+            required
+            name="folder_name"
+            id="folder_name"
+            label="Name"
+            variant="outlined"
+            size="small"
+          />
+
+        <TextField
+          onChange={(e) => this.handleFolderIdChange(e)}
+          name="folder_id"
+          id="folder_id"
+          label="Folder Id (Optional)"
+          variant="outlined"
+          size="small"
+        />
+
+        
+        <Button type="submit" variant="contained">
+            Submit
+        </Button>
+    </Col>
+    </Form>
+  </ModalBody>
+  <ModalFooter></ModalFooter>
+</Modal>
+
         <OnlyHeader />
         <Container className="mt--8" fluid>
           <Row>
@@ -228,7 +341,22 @@ class Filr extends React.Component {
               <Card className="shadow">
                 <CardHeader className="border-0">
                   <h3 className="mb-0">Filr</h3>
+
+                  <Row className="d-flex flex-row-reverse ">
+                      
+                            <Dropdown isOpen={this.state.dropdownOpen} toggle={this.dropdownToggle}>
+                              <DropdownToggle caret>Options</DropdownToggle>
+                              <DropdownMenu>
+                                <DropdownItem onClick = {this.toggleUploadFileModal} >Upload File</DropdownItem>
+                                <DropdownItem onClick={this.toggleCreateFolderModal } >Create Folder</DropdownItem>
+                              </DropdownMenu>
+                            </Dropdown>                           
+                      
+                  </Row>
+
                 </CardHeader>
+
+
                 <CardBody>
                   <Breadcrumbs maxItems={3}>{this.breadcrumbs}</Breadcrumbs>
                   <Grid container spacing={2}>
@@ -253,7 +381,10 @@ class Filr extends React.Component {
                                         />
                                       }
                                       className="w-100 justify-content-start text-capitalize folder-buttons"
-                                      onClick={this.openFolder.bind(this, item)}
+                                      onClick={
+                                       //()=>{console.log(item)} 
+                                        this.openFolder.bind(this, item)
+                                      }
                                     >
                                       {item.title.rendered.slice(0, 20) + "..."}
                                     </ListItemButton>

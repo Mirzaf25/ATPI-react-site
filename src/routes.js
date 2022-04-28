@@ -152,10 +152,12 @@ var routes = [
         icon: "fa  fa-book text-green", // redundant
         component: EditUser,
         layout: "/admin",
-        showInSidebar: false,
+        showInSidebar: true,
       },
     ],
   },
+
+
   {
     path: "/login",
     name: "Login",
