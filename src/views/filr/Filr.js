@@ -138,13 +138,12 @@ class Filr extends React.Component {
       });
     }
 
-
-
     if (prevViewFiles !== this.state.viewFiles) {
       const index = this.breadcrumbs.findIndex(
         (item) => item.key == this.state.currentFolder
       );
 
+      //console.log('index ==>> ',index);
       if (index !== -1) {
         this.breadcrumbs = this.breadcrumbs.slice(0, index + 1);
       } else {
@@ -152,7 +151,7 @@ class Filr extends React.Component {
         const folder = this.state.files.find(
           (el) => el.id == this.state.currentFolder
         );
-
+ 
         //use indexes to clear up breadcrumbs.
         if (folder !== undefined && folder?.metadata["assigned-folder"] != 0) {
           this.breadcrumbs.push(
@@ -178,14 +177,13 @@ class Filr extends React.Component {
               color="inherit"
               data-id={folder.id}
               href="#"
-              /*onClick={(e) => {
+              onClick={(e) => {
                 e.preventDefault();
                 this.openFolder(folder);
-              }}*/
+              }}
             >   <span onClick={()=>{ 
-              this.openFolder(this.state.breadcrumbObjectList[this.state.breadcrumbObjectList.length-1] );
-
-
+              //window.location.reload(false);
+              //this.openFolder(this.state.breadcrumbObjectList[this.state.breadcrumbObjectList.length-1] );
               }}>../   </span>
               {folder?.title.rendered}
             </Link>,
@@ -209,7 +207,7 @@ class Filr extends React.Component {
   };
 
   openFolder = (item) => {
-    
+
     this.setState({
       viewLoading: true,
       currentFolder: item.id,
@@ -431,6 +429,11 @@ class Filr extends React.Component {
                               status: item.status,
                               isFolder: isFolder,
                             });
+                           if (rows != []){
+                              //console.log('first Item ==>> ', item.id);
+                              //this.setState({breadcrumbObjectList : [...this.state.breadcrumbObjectList, item] });
+                             // console.log(this.state.breadcrumbObjectList);
+                            }
 
                             // return (
                             //   <>
