@@ -208,7 +208,7 @@ var routes = [
         icon: "fa  fa-book text-green", // redundant
         component: EditUser,
         layout: "/admin",
-        showInSidebar: true,
+        showInSidebar: false,
       },
     ],
   },

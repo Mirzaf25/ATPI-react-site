@@ -1,5 +1,6 @@
 import OnlyHeader from "components/Headers/OnlyHeader";
 import React from "react";
+//import CloseIcon from '@mui/icons-material/Close';
 
 // reactstrap components
 import {
@@ -30,7 +31,8 @@ import {
   Modal,
   ModalBody,
   ModalHeader,
-  ModalFooter
+  ModalFooter,
+  ButtonGroup
 } from "reactstrap";
 
 //MUI
@@ -53,6 +55,7 @@ import {
   Breadcrumbs,
   Grow,
   TextField,
+  Snackbar,
 } from "@material-ui/core";
 import ListItemButton from "@material-ui/core/Button";
 
@@ -75,10 +78,15 @@ class Filr extends React.Component {
       newFolderName : '',
       newFolderId : '',
       selectedFile : Object,   
-      breadcrumbObjectList : []
+/*      snackbarStatus : false,
+      snackBarMessage:'Default Text',*/
     };
     this.breadcrumbs = [];
   }
+
+/*  handleSnackbarChange = () =>{
+    this.setState({snackbarStatus: !this.state.snackbarStatus});
+  }*/
 
   fileChangedHandler = event => {
    this.setState({ selectedFile: event.target.files[0] })
@@ -183,7 +191,6 @@ class Filr extends React.Component {
               }}
             >   <span onClick={()=>{ 
               //window.location.reload(false);
-              //this.openFolder(this.state.breadcrumbObjectList[this.state.breadcrumbObjectList.length-1] );
               }}>../   </span>
               {folder?.title.rendered}
             </Link>,
@@ -224,8 +231,6 @@ class Filr extends React.Component {
       }
     });
     
-    this.setState( {breadcrumbObjectList :  [...this.state.breadcrumbObjectList , item] } );
-
     // @todo fetch from api
     setTimeout(() => {
       this.setState({ viewLoading: false });
@@ -283,7 +288,19 @@ class Filr extends React.Component {
       },
     ];
     const rows = [];
-
+   /* const action = (
+      <React.Fragment>
+        <Button
+          size="small"
+          aria-label="close"
+          color="inherit"
+          onClick={this.handleSnackbarChange}
+        >
+          Close
+        </Button>
+      </React.Fragment>
+    );
+    */
     return (
       <>
 
@@ -332,8 +349,20 @@ class Filr extends React.Component {
   <ModalFooter></ModalFooter>
 </Modal>
 
+{/*
+<Snackbar
+        open={this.state.snackbarStatus}
+        autoHideDuration={4000}
+        onClose={this.handleSnackbarChange}
+        message={this.state.snackBarMessage}
+        action={action}
+      />
+*/}
         <OnlyHeader />
         <Container className="mt--8" fluid>
+
+{/*        <Button onClick={this.handleSnackbarChange}>Snack Bar</Button>
+*/}
           <Row>
             <div className="col">
               <Card className="shadow">
@@ -429,11 +458,6 @@ class Filr extends React.Component {
                               status: item.status,
                               isFolder: isFolder,
                             });
-                           if (rows != []){
-                              //console.log('first Item ==>> ', item.id);
-                              //this.setState({breadcrumbObjectList : [...this.state.breadcrumbObjectList, item] });
-                             // console.log(this.state.breadcrumbObjectList);
-                            }
 
                             // return (
                             //   <>

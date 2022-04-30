@@ -31,6 +31,7 @@ import {
   Chip,
   Button,
   ButtonGroup,
+  Snackbar,
 } from "@material-ui/core";
 
 import MatEdit from "views/MatEdit";
@@ -61,6 +62,8 @@ class EditCustomer extends React.Component {
       },
       profileImageChanged: false,
       dropdownOpen: false,
+      snackbarStatus : false,
+      snackBarMessage:'Default Text',
     };
 
     this.current_customer_url =
@@ -76,7 +79,10 @@ class EditCustomer extends React.Component {
       this.props.match.params.id;
   }
 
-  
+  handleSnackbarChange = () =>{
+    this.setState({snackbarStatus: !this.state.snackbarStatus});
+  }
+
   componentDidMount() {
     if (this.state.user === null && this.props.user.token !== null)
       this.fetchCustomer(this.current_customer_url);
@@ -205,7 +211,18 @@ class EditCustomer extends React.Component {
   
 
   render() {
-
+    const action = (
+      <React.Fragment>
+        <Button
+          size="small"
+          aria-label="close"
+          color="inherit"
+          onClick={this.handleSnackbarChange}
+        >
+          Close
+        </Button>
+      </React.Fragment>
+    );
     const countries = [
       { code: "AD", label: "Andorra", phone: "376" },
       { code: "AE", label: "United Arab Emirates", phone: "971" },
@@ -468,6 +485,17 @@ class EditCustomer extends React.Component {
     return (
       <>
         <OnlyHeader />
+      
+      <Snackbar
+        open={this.state.snackbarStatus}
+        autoHideDuration={4000}
+        onClose={this.handleSnackbarChange}
+        message={this.state.snackBarMessage}
+        action={action}
+      />
+      
+{/*      <Button onClick={this.handleSnackbarChange}>Snack Bar</Button>
+  */}    
         <Container className="mt--8" fluid>
           <Row>
             <div className="col">
