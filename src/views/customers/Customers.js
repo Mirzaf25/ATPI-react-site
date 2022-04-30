@@ -1,7 +1,7 @@
 import OnlyHeader from "components/Headers/OnlyHeader";
 import React from "react";
-import { DataGrid } from '@material-ui/data-grid';
-import Moment from 'moment';
+import { DataGrid } from "@material-ui/data-grid";
+
 // reactstrap components
 import {
   Card,
@@ -22,41 +22,40 @@ import {
 
 import { connect } from "react-redux";
 import { setUserLoginDetails } from "features/user/userSlice";
-import MatEdit from "./MatEdit";
+import MatEdit from "../MatEdit";
+import { CountryDropdown } from "react-country-region-selector";
 class Customers extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       memberships: [],
-      customers:[],
+      customers: [],
       page: 1,
       number: 5,
       toggle: false,
     };
   }
-
   componentDidMount() {
-    this.fetchToken(
-        this.props.rcp_url.domain + this.props.rcp_url.auth_url + "token"
+    if (null !== this.props.user.token && this.state.customers.length === 0) {
+      this.fetchCustomers(
+        this.props.rcp_url.proxy_domain +
+          this.props.rcp_url.base_url +
+          "customers",
+        this.props.user.token
       );
+    }
   }
 
-  async fetchToken(token_url) {
-    const response = await fetch(token_url, {
-      method: "post",
-      mode: "cors",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: process.env.REACT_APP_ATPI_USERNAME, // Hardcoded for now.
-        password: process.env.REACT_APP_ATPI_PASSWORD, // Hardcoded for now.
-      }),
-    });
-    const data = await response.json();
-    this.props.setUserLoginDetails(data);
+  componentDidUpdate() {
+    if (null !== this.props.user.token && this.state.customers.length === 0) {
+      this.fetchCustomers(
+        this.props.rcp_url.proxy_domain +
+          this.props.rcp_url.base_url +
+          "customers",
+        this.props.user.token
+      );
+    }
   }
-
 
   fetchCustomers = async (url, token) => {
     const urlQuery = new URL(url);
@@ -100,7 +99,7 @@ class Customers extends React.Component {
       );
 
     const columns = [
-      { field: "id", headerName: "ID", width: 90 },
+      { field: "id", headerName: "ID", width: 100 },
       { field: "user_id", headerName: "User ID", width: 180 },
       { field: "name", headerName: "Name", width: 180 },
       { field: "membership_id", headerName: "Membership Id", width: 180 },
@@ -131,7 +130,7 @@ class Customers extends React.Component {
         membership_id:
           item.memberships.length === 0 ? "No Memberhsip" : item.memberships[0],
         name: item.name,
-        date: Moment(item.date_registered).format('DD-MM-YYYY') ,
+        date: item.date_registered,
       };
     });
 
@@ -288,8 +287,13 @@ class Customers extends React.Component {
                 <CardHeader className="border-0">
                   <h3 className="mb-0">Customers</h3>
                 </CardHeader>
-               <DataGrid loading={this.state.customers.length === 0}
-                 autoHeight rows={rows} columns={columns} pagination/>
+                <DataGrid
+                  loading={this.state.customers.length === 0}
+                  autoHeight
+                  rows={rows}
+                  columns={columns}
+                  pagination
+                />
               </Card>
             </div>
           </Row>

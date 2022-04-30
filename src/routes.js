@@ -4,7 +4,8 @@ import Login from "views/auth/Login.js";
 import Tables from "views/Tables.js";
 import Memberships from "views/memberships/Memberships";
 import AddIndividualMembership from "views/memberships/AddIndividualMembership";
-import Customers from "views/Customers";
+import Customers from "views/customers/Customers";
+import EditCustomer from "views/customers/EditCustomer";
 import Payment from "views/Payment";
 import AddClubMembership from "views/memberships/AddClubMembership";
 import Clubs from "views/Clubs";
@@ -17,6 +18,10 @@ import Users from "views/users/Users";
 import EditUser from "views/users/EditUser";
 import CreateLogo from "views/sponsored-logos/CreateLogo";
 import CreateSpeaker from "views/speakers/CreateSpeaker";
+import Video from "views/videos/Video";
+import Media from "views/media/Media";
+import DiscountCodes from "views/discount/DiscountCodes";
+import CreateDiscountCode from "views/discount/CreateDiscountCode";
 
 var routes = [
   {
@@ -32,6 +37,16 @@ var routes = [
     icon: "ni ni-single-02 text-red",
     component: Customers,
     layout: "/admin",
+    children: [
+      {
+        path: "/customer/:id",
+        name: "Edit Customer",
+        icon: "fa fa-user-plus text-info", // redundant
+        component: EditCustomer,
+        layout: "/admin",
+        showInSidebar: true,
+      },
+    ],
   },
   {
     path: "/payment",
@@ -89,6 +104,23 @@ var routes = [
     ],
   },
   {
+    path: "/discount",
+    name: "Discount Codes",
+    icon: "fa fa-tags text-blue",
+    component: DiscountCodes,
+    layout: "/admin",
+    children: [
+      {
+        path: "/discount/create",
+        name: "Create Speaker",
+        icon: "fa  fa-book text-green", // redundant
+        component: CreateDiscountCode,
+        layout: "/admin",
+        showInSidebar: false,
+      },
+    ],
+  },
+  {
     path: "/filr",
     name: "Filr",
     icon: "fa fa-folder text-red",
@@ -138,6 +170,30 @@ var routes = [
         showInSidebar: false,
       },
     ],
+  },
+  {
+    path: "/videos",
+    name: "videos",
+    icon: "fa fa-video text-blue",
+    component: Video,
+    layout: "/admin",
+    children: [
+      {
+        path: "/videos/create",
+        name: "Create Ppeaker",
+        icon: "fa  fa-book text-green", // redundant
+        component: CreateSpeaker,
+        layout: "/admin",
+        showInSidebar: false,
+      },
+    ],
+  },
+  {
+    path: "/media",
+    name: "media",
+    icon: "fa fa-images text-blue",
+    component: Media,
+    layout: "/admin",
   },
   {
     path: "/users",
