@@ -178,7 +178,7 @@ class EditCustomer extends React.Component {
     const formData = new FormData(e.target);
 
     fetch(this.update_customer_url, {
-      method: "PUT",
+      method: "nonnnnnn",//"PUT",
       headers: {
         Authorization: "Bearer " + this.props.user.token,
         "Content-Type": "application/json",
@@ -187,7 +187,7 @@ class EditCustomer extends React.Component {
     })
       .then((res) => res.json())
       .then((data) =>
-        this.setState((prevState) => ({
+        {this.setState((prevState) => ({
           user: data,
           form: {
             ...prevState.form,
@@ -204,8 +204,19 @@ class EditCustomer extends React.Component {
             phone: data?.phone,
           },
         }))
-      )
-      .catch((err) => console.error(err));
+        this.handleSnackbarChange();
+        this.setState({snackBarMessage:"Uploaded Successfully" });
+      }
+      
+      
+        )
+      .catch(
+        (err) =>// console.error(err)
+        {
+          this.handleSnackbarChange();
+          this.setState({snackBarMessage:err.toString() });
+        }
+      );
   };
 
   
@@ -487,11 +498,13 @@ class EditCustomer extends React.Component {
         <OnlyHeader />
       
       <Snackbar
+        
         open={this.state.snackbarStatus}
         autoHideDuration={4000}
         onClose={this.handleSnackbarChange}
         message={this.state.snackBarMessage}
         action={action}
+        anchorOrigin={{vertical: 'top',horizontal: 'center'}}
       />
       
 {/*      <Button onClick={this.handleSnackbarChange}>Snack Bar</Button>

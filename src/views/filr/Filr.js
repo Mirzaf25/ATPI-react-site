@@ -301,12 +301,18 @@ class Filr extends React.Component {
       </React.Fragment>
     );
     */
+    const folder = this.state.files.find(
+      (el) => el.id == this.state.currentFolder
+    );
+
+//   console.log('folder.title.rendered ==>> ',folder?.title.rendered);
     return (
       <>
 
 <Modal isOpen={this.state.uploadFileModalStatus} toggle={this.toggleUploadFileModal} >
-  <ModalHeader>Upload File</ModalHeader>
+  <ModalHeader>Upload File{folder?.title.rendered == undefined ? ' to root' : ' to '+folder?.title.rendered}</ModalHeader>
   <ModalBody>
+    
       <input type="file" onChange={this.fileChangedHandler}/>
     <Button  variant="contained" onClick={this.uploadHandler}>Upload</Button>
   </ModalBody>
@@ -315,7 +321,7 @@ class Filr extends React.Component {
 
 
 <Modal isOpen={this.state.createFolderModalStatus} toggle={this.toggleCreateFolderModal} >
-  <ModalHeader>Create Folder</ModalHeader>
+  <ModalHeader>Create Folder{folder?.title.rendered == undefined ? ' in root' : ' in '+folder?.title.rendered} </ModalHeader>
   <ModalBody>
     <Form onSubmit={this.createFolder.bind(this)} >
 

@@ -11,6 +11,7 @@ import {
   ImageList,
   ImageListItem,
   ImageListItemBar,
+  Snackbar,
 } from "@material-ui/core";
 
 import "file-viewer";
@@ -21,7 +22,13 @@ class Videos extends React.Component {
     super(props);
     this.state = {
       videos: [],
+      snackbarStatus : false,
+      snackBarMessage:'Default Text',
     };
+  }
+  
+  handleSnackbarChange = () =>{
+    this.setState({snackbarStatus: !this.state.snackbarStatus});
   }
 
   componentDidMount() {
@@ -50,6 +57,21 @@ class Videos extends React.Component {
   };
 
   render() {
+
+        /*ADDED FOR SNACKBAR */
+        const action = (
+          <React.Fragment>
+            <Button
+              size="small"
+              aria-label="close"
+              color="inherit"
+              onClick={this.handleSnackbarChange}
+            >
+              Close
+            </Button>
+          </React.Fragment>
+        );
+
     return (
       <>
         <OnlyHeader />
@@ -61,14 +83,36 @@ class Videos extends React.Component {
                   <h3 className="mb-0">Videos</h3>
                   <Button
                     variant="contained"
-                    onClick={() =>
-                      this.props.history.push("sponsored-logos/create")
+                    onClick={
+                     () =>{
+                        try{
+                        this.props.history.push("sponsored-logos/create");
+                        this.handleSnackbarChange();
+                        this.setState({snackBarMessage:"Uploaded Successfully" });
+                
+                      }catch(e){
+                        this.handleSnackbarChange();
+                        this.setState({snackBarMessage:e.toString() });
+                      }
+                      }
+                      //() => this.props.history.push("sponsored-logos/create")
+                    
                     }
                   >
                     Create
                   </Button>
                 </CardHeader>
                 <CardBody>
+  {/* ADDED SNACKBAR */}
+                <Snackbar
+                open={this.state.snackbarStatus}
+                autoHideDuration={4000}
+                onClose={this.handleSnackbarChange}
+                message={this.state.snackBarMessage}
+                action={action}
+                anchorOrigin={{vertical: 'top',horizontal: 'center'}}
+              />
+
                   <ImageList variant="masonry" cols={3} gap={8}>
                     {this.state.videos.length !== 0 &&
                       this.state.videos.map((item, key) => (
