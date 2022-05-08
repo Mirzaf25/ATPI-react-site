@@ -99,9 +99,58 @@ class Filr extends React.Component {
 
   fileChangedHandler = (event) => {};
 
-  uploadHandler = () => {
+  uploadHandler = async (event) => {
     // @todo upload to api
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    console.log(formData);
+    this.uploadToMedia(formData)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        return fetch(
+          this.props.rcp_url.proxy_domain +
+            this.props.rcp_url.base_wp_url +
+            "filr",
+          {
+            method: "POST",
+            headers: {
+              Authorization: "Bearer " + this.props.user.token,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              title: formData.get("title"),
+              metadata: {
+                "file-download": data.source_url,
+                "assigned-folder": this.state.currentFolder
+                  ? this.state.currentFolder
+                  : 0,
+              },
+            }),
+          }
+        );
+      })
+      .then((res) => res.json())
+      .then((data) => console.log(data))
+      .catch((err) => {
+        console.error(err);
+      });
   };
+
+  uploadToMedia(form) {
+    return fetch(
+      this.props.rcp_url.proxy_domain +
+        this.props.rcp_url.base_wp_url +
+        "media",
+      {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + this.props.user.token,
+        },
+        body: form,
+      }
+    );
+  }
 
   createFolder = async (e) => {
     e.preventDefault();
@@ -318,17 +367,23 @@ class Filr extends React.Component {
         >
           <ModalHeader>Upload File</ModalHeader>
           <ModalBody>
-            <Col className="mb-2">
-              <input type="file" onChange={this.fileChangedHandler} />
-            </Col>
-            <Col className="mb-2">
-              <TextField label="Title" name="title" variant="outlined" />
-            </Col>
-            <Col>
-              <Button variant="contained" onClick={this.uploadHandler}>
-                Upload
-              </Button>
-            </Col>
+            <Form onSubmit={this.uploadHandler}>
+              <Col className="mb-2">
+                <input
+                  type="file"
+                  name="file"
+                  onChange={this.fileChangedHandler}
+                />
+              </Col>
+              <Col className="mb-2">
+                <TextField label="Title" name="title" variant="outlined" />
+              </Col>
+              <Col>
+                <Button type="submit" variant="contained">
+                  Upload
+                </Button>
+              </Col>
+            </Form>
           </ModalBody>
           <ModalFooter></ModalFooter>
         </Modal>
