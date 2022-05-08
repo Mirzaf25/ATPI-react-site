@@ -559,7 +559,6 @@ class Filr extends React.Component {
                           components={{
                             LoadingOverlay: LinearProgress,
                           }}
-                          checkboxSelection
                           autoHeight
                           rows={rows}
                           columns={columns}
