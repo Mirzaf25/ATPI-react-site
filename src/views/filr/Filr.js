@@ -77,7 +77,8 @@ class Filr extends React.Component {
       uploadType : '',
       newFolderName : '',
       newFolderId : '',
-      selectedFile : Object,   
+      selectedFile : Object,
+      showFolderNav : true,   
 /*      snackbarStatus : false,
       snackBarMessage:'Default Text',*/
     };
@@ -136,6 +137,7 @@ class Filr extends React.Component {
 
   componentDidUpdate(
     prevProps,
+    
     { files: prevFiles, viewFiles: prevViewFiles }
   ) {
     if (this.state.files.length !== 0 && prevFiles !== this.state.files) {
@@ -151,7 +153,6 @@ class Filr extends React.Component {
         (item) => item.key == this.state.currentFolder
       );
 
-      //console.log('index ==>> ',index);
       if (index !== -1) {
         this.breadcrumbs = this.breadcrumbs.slice(0, index + 1);
       } else {
@@ -159,7 +160,7 @@ class Filr extends React.Component {
         const folder = this.state.files.find(
           (el) => el.id == this.state.currentFolder
         );
- 
+        
         //use indexes to clear up breadcrumbs.
         if (folder !== undefined && folder?.metadata["assigned-folder"] != 0) {
           this.breadcrumbs.push(
@@ -178,7 +179,34 @@ class Filr extends React.Component {
             </Link>
           );
         } else if (folder !== undefined) {
-          this.breadcrumbs = [
+          this.breadcrumbs = 
+           [
+            <Row>
+            
+            <Link
+            underline="hover"
+            key='000'
+            color="inherit"
+            data-id={'root'}
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              this.setState({viewFiles:prevViewFiles });
+              this.setState({viewLoading: false});
+              this.setState({currentFolder: null});
+              
+              document.querySelectorAll(".folder-icon").forEach((el) => {
+                if (el.classList.contains("fa-folder-open")) {
+                  el.classList.toggle("fa-folder-open");
+                } 
+              });
+
+              this.setState({showFolderNav:false});
+          }}
+            >
+            ../
+            </Link>
+            
             <Link
               underline="hover"
               key={folder?.id}
@@ -189,12 +217,14 @@ class Filr extends React.Component {
                 e.preventDefault();
                 this.openFolder(folder);
               }}
-            >   <span onClick={()=>{ 
-              //window.location.reload(false);
-              }}>../   </span>
+            > 
               {folder?.title.rendered}
-            </Link>,
+            </Link>
+            </Row>
+
           ];
+          this.setState({showFolderNav:true}); 
+          
         }
       }
     }
@@ -305,7 +335,6 @@ class Filr extends React.Component {
       (el) => el.id == this.state.currentFolder
     );
 
-//   console.log('folder.title.rendered ==>> ',folder?.title.rendered);
     return (
       <>
 
@@ -391,12 +420,13 @@ class Filr extends React.Component {
 
 
                 <CardBody>
-                  <Breadcrumbs maxItems={3}>{this.breadcrumbs}</Breadcrumbs>
+                  <Breadcrumbs maxItems={6}>{this.state.showFolderNav ? this.breadcrumbs:[]}</Breadcrumbs>
                   <Grid container spacing={2}>
                     <Grid item xs={12} md={4}>
                       <Navbar className="p-0">
                         <List className="w-100">
-                          {this.state.files.length !== 0 &&
+                          {
+                          this.state.files.length !== 0 &&
                             this.state.files
                               .filter(
                                 (el) =>
