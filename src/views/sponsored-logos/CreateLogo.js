@@ -47,6 +47,7 @@ class CreateLogo extends React.Component {
       taxonomies: [],
       pages_show: [],
       logoCreated: false,
+      uploadedImg : ''
     };
     this.handleChange = this.handleChange.bind(this);
 
@@ -82,6 +83,14 @@ class CreateLogo extends React.Component {
     );
   }
 
+
+  onImageChange = (e) => {
+    const [file] = e.target.files;
+    this.setState({uploadedImg :URL.createObjectURL(file) });
+  }
+
+
+  
   componentDidMount() {
     const url = new URL(
       this.props.rcp_url.domain + this.props.rcp_url.base_wp_url + "page_show"
@@ -221,9 +230,25 @@ class CreateLogo extends React.Component {
                           name="file"
                           id="featured_image"
                           accept="image/png, image/jpeg"
+                          onChange={this.onImageChange}
                         />
                       </Col>
                     </FormGroup>
+
+
+                    {this.state.uploadedImg!='' && 
+                    
+                    <FormGroup row>
+                      <Col>
+                      <img 
+                          width={300} height={200}
+                          src={this.state.uploadedImg} 
+                          alt=''    
+                      />
+                      </Col>
+                    </FormGroup>
+                    }
+
                     <FormGroup check row>
                       <Col>
                         <Button variant="contained" type="submit">
