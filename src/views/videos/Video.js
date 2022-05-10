@@ -49,6 +49,11 @@ class Videos extends React.Component {
     this.setState({ videos: data });
   };
 
+  formattedVideoDate = (date) =>{
+    const result = date.split('T')[0].split("-").reverse().join("-");
+    return result
+  }
+
   render() {
     return (
       <>
@@ -67,22 +72,40 @@ class Videos extends React.Component {
                   </Button>
                 </CardHeader>
                 <CardBody>
-                  <ImageList variant="masonry" cols={2} gap={8}>
+
+                  <ListGroup variant="masonry" cols={2} gap={8}>
                     {this.state.videos.length !== 0 &&
                       this.state.videos.map((item, key) => (
-                        <ImageListItem key={key}>
+                        <ListGroupItem  key={key}>
                           {/*  maybe just use native video  */}
                           {item.acf?.webinar_recording_video.search(/vimeo/) !==
                           -1 ? (
+                            <Col>
+                            <Row>
                             <Vimeo
+                              width={300}
+                              height={200}
                               className={this.props.classes.vimeo}
                               onError={(e) => console.log(e)}
                               controls={true}
                               video={item.acf?.webinar_recording_video}
                             />
+                            <Col>
+                            <h2 dangerouslySetInnerHTML={{__html: item.title.rendered}}></h2>
+                              <p>Date : {this.formattedVideoDate(item.date)}</p>
+                              <p>Type : {item.type}</p>
+                            </Col>
+                            
+                            </Row>
+
+                            </Col>
                           ) : (
-                            <div className={this.props.classes.youtube}>
+                            <div /*className={this.props.classes.youtube}*/ >
+                              <Col>
+                              <Row>
                               <YouTube
+                              width={300}
+                              height={200}
                                 onError={(e) => console.log(e)}
                                 controls={true}
                                 video={item.acf?.webinar_recording_video.substr(
@@ -93,11 +116,22 @@ class Videos extends React.Component {
                                     3
                                 )}
                               />
+
+                            <Col>
+                              <h2 dangerouslySetInnerHTML={{__html: item.title.rendered}}></h2>
+                              <p>Date : {this.formattedVideoDate(item.date)}</p>
+                              <p>Type : {item.type}</p>
+                            </Col>
+                            </Row>
+                            
+                            </Col>
+
+
                             </div>
                           )}
-                        </ImageListItem>
+                        </ListGroupItem>
                       ))}
-                  </ImageList>
+                  </ListGroup>
                 </CardBody>
               </Card>
             </div>

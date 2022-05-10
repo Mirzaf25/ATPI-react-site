@@ -5,7 +5,9 @@ import React from "react";
 import { Card, CardHeader, CardBody, Media, Container, Row } from "reactstrap";
 
 //MUI
-import { DataGrid } from "@material-ui/data-grid";
+import { DataGrid  } from "@material-ui/data-grid";
+//import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
+
 
 import { connect } from "react-redux";
 import { setUserLoginDetails } from "features/user/userSlice";
@@ -16,6 +18,8 @@ import {
   withStyles,
   Button,
 } from "@material-ui/core";
+
+import MatEdit from "views/MatEdit";
 
 class DiscountCodes extends React.Component {
   constructor(props) {
@@ -113,6 +117,35 @@ class DiscountCodes extends React.Component {
         type: "used",
         headerName: "Used",
         width: 100,
+      },
+     /* {
+        field: 'actions',
+        type: 'actions',
+        width: 80,
+        getActions: (params) => [
+          <GridActionsCellItem
+            icon={<FaTrash/>}
+            label="Delete"
+            onClick={()=>{}}
+          />,
+        ],
+      },*/
+      {
+        field: "actions",
+        type: "actions",
+        headerName: "Actions",
+        width: 100,
+        cellClassName: "actions",
+        renderCell: (params) => {
+          return (
+            <div
+              className="d-flex justify-content-between align-items-center"
+              style={{ cursor: "pointer" }}
+            >
+              <MatEdit /*index={params.row.id}*/ />
+            </div>
+          );
+        },
       },
     ];
 

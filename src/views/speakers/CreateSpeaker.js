@@ -42,6 +42,7 @@ class CreateSpeaker extends React.Component {
     this.state = {
       validate: {},
       logoCreated: false,
+      uploadedImg : ''
     };
 
     this.create_logo_url =
@@ -118,6 +119,11 @@ class CreateSpeaker extends React.Component {
         acf: { ...Object.fromEntries(formData), profile_picture: parseInt(id) },
       }),
     });
+  }
+
+  onImageChange = (e) => {
+    const [file] = e.target.files;
+    this.setState({uploadedImg :URL.createObjectURL(file) });
   }
 
   render() {
@@ -206,14 +212,35 @@ class CreateSpeaker extends React.Component {
                     <FormGroup row>
                       <Col>
                         <Label for="featured_image">Profile Picture</Label>
+                        
+                        
                         <Input
+                          //id="fileElem"
                           type="file"
                           name="file"
-                          id="featured_image"
                           accept="image/png, image/jpeg"
+                          onChange={this.onImageChange}
                         />
+
+                    
+
                       </Col>
                     </FormGroup>
+
+                    {this.state.uploadedImg!='' && 
+                    
+                    <FormGroup row>
+                      <Col>
+                      <img 
+                          width={300} height={200}
+                          src={this.state.uploadedImg} 
+                          alt=''    
+                      />
+                      </Col>
+                    </FormGroup>
+                    }
+                    
+                    
                     <FormGroup check row>
                       <Col>
                         <Button variant="contained" type="submit">
