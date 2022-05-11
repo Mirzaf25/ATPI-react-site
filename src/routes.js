@@ -23,7 +23,7 @@ import CreateVideo from "views/videos/CreateVideo";
 import Media from "views/media/Media";
 import DiscountCodes from "views/discount/DiscountCodes";
 import CreateDiscountCode from "views/discount/CreateDiscountCode";
-
+import EditDiscountCode from 'views/discount/EditDiscountCode';
 var routes = [
   {
     path: "/index",
@@ -116,6 +116,14 @@ var routes = [
         name: "Create Speaker",
         icon: "fa  fa-book text-green", // redundant
         component: CreateDiscountCode,
+        layout: "/admin",
+        showInSidebar: false,
+      },
+      {
+        path: "/discount/edit",
+        name: "Edit Speaker",
+        icon: "fa  fa-book text-green", // redundant
+        component: EditDiscountCode,
         layout: "/admin",
         showInSidebar: false,
       },

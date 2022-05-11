@@ -114,6 +114,27 @@ class DiscountCodes extends React.Component {
         headerName: "Used",
         width: 100,
       },
+<<<<<<< Updated upstream
+=======
+
+      {
+        field: "actions",
+        type: "actions",
+        headerName: "Actions",
+        width: 100,
+        cellClassName: "actions",
+        renderCell: (params) => {
+          return (
+            <div
+              className="d-flex justify-content-between align-items-center"
+              style={{ cursor: "pointer" }}
+            >
+              <MatEdit index={params.row.id} handleClick={() => this.props.history.push({pathname:"discount/edit",state:{id:params.row}})} />
+            </div>
+          );
+        },
+      },
+>>>>>>> Stashed changes
     ];
 
     const rows =
