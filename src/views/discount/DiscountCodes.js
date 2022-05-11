@@ -1,5 +1,6 @@
 import OnlyHeader from "components/Headers/OnlyHeader";
 import React from "react";
+import MatEdit from "views/MatEdit";
 
 // reactstrap components
 import { Card, CardHeader, CardBody, Media, Container, Row } from "reactstrap";
@@ -114,8 +115,6 @@ class DiscountCodes extends React.Component {
         headerName: "Used",
         width: 100,
       },
-<<<<<<< Updated upstream
-=======
 
       {
         field: "actions",
@@ -134,7 +133,6 @@ class DiscountCodes extends React.Component {
           );
         },
       },
->>>>>>> Stashed changes
     ];
 
     const rows =
