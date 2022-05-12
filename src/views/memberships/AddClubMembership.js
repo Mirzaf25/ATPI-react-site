@@ -365,33 +365,34 @@ class AddClubMembership extends React.Component {
                 <CardBody>
                   <Form onSubmit={this.submitForm.bind(this)}>
                     <FormGroup row>
-                      <Label sm={3}>Name</Label>
-                      <Row style={{ flex: 2, paddingLeft: "1em" }}>
-                        <Col md={6}>
-                          <Input
-                            id="first_name"
-                            name="first_name"
-                            placeholder="First Name"
-                            type="text"
-                            onChange={(e) => {
-                              this.handleChange(e);
-                            }}
-                            required
-                          />
-                        </Col>
-                        <Col className="mt-sm-2 mt-md-0" md={6}>
-                          <Input
-                            id="last_name"
-                            name="last_name"
-                            placeholder="Last Name"
-                            type="text"
-                            onChange={(e) => {
-                              this.handleChange(e);
-                            }}
-                            required
-                          />
-                        </Col>
-                      </Row>
+                      <Label sm={3}>First Name</Label>
+                      <Col md={6}>
+                        <Input
+                          id="first_name"
+                          name="first_name"
+                          placeholder="First Name"
+                          type="text"
+                          onChange={(e) => {
+                            this.handleChange(e);
+                          }}
+                          required
+                        />
+                      </Col>
+                    </FormGroup>
+                    <FormGroup row>
+                      <Label sm={3}>Last Name</Label>
+                      <Col className="mt-sm-2 mt-md-0" md={6}>
+                        <Input
+                          id="last_name"
+                          name="last_name"
+                          placeholder="Last Name"
+                          type="text"
+                          onChange={(e) => {
+                            this.handleChange(e);
+                          }}
+                          required
+                        />
+                      </Col>
                     </FormGroup>
                     <FormGroup row>
                       <Label for="email" sm={3}>
@@ -475,6 +476,14 @@ class AddClubMembership extends React.Component {
                       </Col>
                     </FormGroup>
                     <FormGroup row>
+                      <Label sm={4} for="reference_club">
+                        Job Title
+                      </Label>
+                      <Col md={6}>
+                        <Input name="reference_club" type="text" />
+                      </Col>
+                    </FormGroup>
+                    <FormGroup row>
                       <Label sm={4} for="address">
                         Address
                       </Label>
@@ -491,6 +500,14 @@ class AddClubMembership extends React.Component {
                       </Col>
                     </FormGroup>
                     <FormGroup row>
+                      <Label sm={4} for="town">
+                        Town
+                      </Label>
+                      <Col md={6}>
+                        <Input required name="town" type="text" />
+                      </Col>
+                    </FormGroup>
+                    <FormGroup row>
                       <Label sm={4} for="country">
                         Country
                       </Label>
@@ -504,17 +521,25 @@ class AddClubMembership extends React.Component {
                       </Col>
                     </FormGroup>
                     <FormGroup row>
-                      <Label sm={4} for="region">
-                        Region
+                      <Label sm={4} for="county">
+                        County
                       </Label>
                       <Col md={6}>
                         <RegionDropdown
                           className="form-control"
-                          name="region"
+                          name="county"
                           country={country}
                           value={region}
                           onChange={(val) => this.selectRegion(val)}
                         />
+                      </Col>
+                    </FormGroup>
+                    <FormGroup row>
+                      <Label sm={4} for="eircode">
+                        Eircode
+                      </Label>
+                      <Col md={6}>
+                        <Input required name="eircode" type="text" />
                       </Col>
                     </FormGroup>
                     {undefined !== this.state.selectedMembership && (
