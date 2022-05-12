@@ -158,6 +158,7 @@ class DiscountCodes extends React.Component {
               used: `${item?.use_count} / ${
                 item?.max_uses == 0 ? "unlimited" : item?.max_uses
               }`,
+              is_one_time: item?.is_one_time,
               class: this.props.classes.chip,
             };
           })
