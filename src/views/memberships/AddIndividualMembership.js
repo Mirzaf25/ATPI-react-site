@@ -700,6 +700,44 @@ class AddIndividualMembership extends React.Component {
 											</Table>
 										)}
 										<FormGroup row>
+											<Label sm={4} for='discount_code'>
+												ATPI staff code / Discount Code
+											</Label>
+											<Col md={6}>
+												<Input
+													required
+													name='discount_code'
+													type='text'
+												/>
+											</Col>
+										</FormGroup>
+										<FormGroup check>
+											<Input
+												type='checkbox'
+												name='consent'
+												className={
+													this.props.classes.checkbox
+												}
+												onChange={e =>
+													this.setState({
+														consent:
+															e.target.checked,
+													})
+												}
+											/>
+											<Col>
+												<Label for='consent' check>
+													We are aware of the
+													importance of your personal
+													information. For more
+													information, please read
+													about how we keep your data
+													protected in our Privacy
+													Policy
+												</Label>
+											</Col>
+										</FormGroup>
+										<FormGroup row>
 											<Label sm={4} for='payment'>
 												Pay with card.
 											</Label>
@@ -772,7 +810,23 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = { setUserLoginDetails, setMembershipLevels };
 
+const styles = {
+	checkbox: {
+		width: '1em',
+		height: '1em',
+		marginTop: '0.25em',
+		verticalAlign: 'top',
+		backgroundColor: '#fff',
+		backgroundRepeat: 'no-repeat',
+		backgroundPosition: 'center',
+		backgroundSize: 'contain',
+		border: '1px solid rgba(0,0,0,.25)',
+		'-webkit-print-color-adjust': 'exact',
+		colorAdjust: 'exact',
+	},
+};
+
 export default connect(
 	mapStateToProps,
 	mapDispatchToProps
-)(injectedCheckoutForm);
+)(withStyles(styles)(injectedCheckoutForm));
