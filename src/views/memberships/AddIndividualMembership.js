@@ -421,7 +421,53 @@ class AddIndividualMembership extends React.Component {
 
 									<Form onSubmit={this.submitForm.bind(this)}>
 										<FormGroup row>
-											<Label sm={3}>First Name</Label>
+											<Label
+												for='individual_membership'
+												sm={4}
+											>
+												Individual Membership
+											</Label>
+											<Col md={6}>
+												<Input
+													name='membership_level'
+													defaultValue=''
+													type='select'
+													onChange={e => {
+														this.handleChange(e);
+													}}
+													required
+												>
+													<option disabled>
+														Select a membership
+														level.
+													</option>
+													{this.props.levels.levels
+														.length > 0 &&
+														this.props.levels.levels
+															.filter(
+																el => el.level
+															)
+															.map(
+																(item, key) => (
+																	<option
+																		key={
+																			key
+																		}
+																		value={
+																			item.id
+																		}
+																	>
+																		{
+																			item.name
+																		}
+																	</option>
+																)
+															)}
+												</Input>
+											</Col>
+										</FormGroup>
+										<FormGroup row>
+											<Label sm={4}>First Name</Label>
 											<Col md={6}>
 												<Input
 													id='first_name'
@@ -498,52 +544,6 @@ class AddIndividualMembership extends React.Component {
 													type='password'
 													required
 												/>
-											</Col>
-										</FormGroup>
-										<FormGroup row>
-											<Label
-												for='individual_membership'
-												sm={4}
-											>
-												Individual Membership
-											</Label>
-											<Col md={6}>
-												<Input
-													name='membership_level'
-													defaultValue=''
-													type='select'
-													onChange={e => {
-														this.handleChange(e);
-													}}
-													required
-												>
-													<option disabled>
-														Select a membership
-														level.
-													</option>
-													{this.props.levels.levels
-														.length > 0 &&
-														this.props.levels.levels
-															.filter(
-																el => el.level
-															)
-															.map(
-																(item, key) => (
-																	<option
-																		key={
-																			key
-																		}
-																		value={
-																			item.id
-																		}
-																	>
-																		{
-																			item.name
-																		}
-																	</option>
-																)
-															)}
-												</Input>
 											</Col>
 										</FormGroup>
 										<FormGroup row>
