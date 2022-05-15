@@ -1,7 +1,7 @@
 import OnlyHeader from 'components/Headers/OnlyHeader';
 import React from 'react';
 
-import { Switch } from '@material-ui/core';
+import { Switch, withStyles } from '@material-ui/core';
 
 // reactstrap components
 import {
@@ -482,7 +482,7 @@ class AddIndividualMembership extends React.Component {
 											</Col>
 										</FormGroup>
 										<FormGroup row>
-											<Label sm={3}>Last Name</Label>
+											<Label sm={4}>Last Name</Label>
 											<Col
 												className='mt-sm-2 mt-md-0'
 												md={6}
@@ -500,7 +500,7 @@ class AddIndividualMembership extends React.Component {
 											</Col>
 										</FormGroup>
 										<FormGroup row>
-											<Label for='email' sm={3}>
+											<Label for='email' sm={4}>
 												Email
 											</Label>
 											<Col md={6}>
@@ -533,7 +533,7 @@ class AddIndividualMembership extends React.Component {
 											</Col>
 										</FormGroup>
 										<FormGroup row>
-											<Label for='password' sm={3}>
+											<Label for='password' sm={4}>
 												Password
 											</Label>
 											<Col md={6}>
