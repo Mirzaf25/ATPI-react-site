@@ -245,14 +245,27 @@ class AddIndividualMembership extends React.Component {
 	 * Submit the form.
 	 */
 	async submitForm(event) {
-		event.persist();
 		event.preventDefault();
+		const formData = new FormData(event.target);
+		const user_additional_fields = [
+			'workplace',
+			'reference_club',
+			'address',
+			'address_secondary',
+			'town',
+			'country',
+			'county',
+			'eircode',
+		];
 		const user_args = {
 			first_name: event.target.first_name.value,
 			last_name: event.target.last_name.value,
 			user_email: event.target.email.value,
 			user_pass: event.target.password.value,
 		};
+		formData.forEach((val, key) => {
+			if (user_additional_fields.includes(key)) user_args[key] = val;
+		});
 
 		this.onSuccessfullCheckout(
 			event,
@@ -738,13 +751,16 @@ class AddIndividualMembership extends React.Component {
 											</Label>
 											<Col md={6}>
 												<Input
-													required
 													name='discount_code'
 													type='text'
 												/>
 											</Col>
 										</FormGroup>
-										<FormGroup check>
+										<FormGroup
+											check
+											row
+											className='form-group'
+										>
 											<Input
 												type='checkbox'
 												name='consent'
