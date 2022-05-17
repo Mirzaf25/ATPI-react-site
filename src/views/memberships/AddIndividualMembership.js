@@ -280,9 +280,12 @@ class AddIndividualMembership extends React.Component {
 			.then(data_memership => {
 				const { errors, user_id, object_id } = data_memership;
 				if (errors) return Promise.reject(errors);
-				if (this.state.enable_payment) {
+				if (this.state.enable_stripe_payment) {
 					const transaction = this.handlePayment(event);
 					return this.addPayment(user_id, membership, transaction);
+				}
+				if (this.state.enable_manual_payment) {
+					return this.addManualPayment(event, user_id, membership);
 				}
 				return Promise.resolve(data_memership);
 			})
@@ -363,6 +366,36 @@ class AddIndividualMembership extends React.Component {
 					Authorization: 'Bearer ' + this.props.user.token,
 				},
 				body: JSON.stringify(args),
+			}
+		);
+	}
+
+	addManualPayment(event, user_id, membership) {
+		const formData = new FormData(event.target);
+		const fields = ['transaction_id', 'gateway', 'date', 'transaction_id'];
+		const payment_args = {
+			subscription: membership.name,
+			object_id: membership.id,
+			user_id: user_id,
+			amount: membership.price,
+			status: 'complete',
+		};
+		formData.forEach((val, key) => {
+			if (fields.includes(key)) {
+				payment_args[key] = val;
+			}
+		});
+		return fetch(
+			this.props.rcp_url.proxy_domain +
+				this.props.rcp_url.base_url +
+				'payments/new',
+			{
+				method: 'post',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: 'Bearer ' + this.props.user.token,
+				},
+				body: JSON.stringify(payment_args),
 			}
 		);
 	}
@@ -737,26 +770,59 @@ class AddIndividualMembership extends React.Component {
 												</Label>
 											</Col>
 										</FormGroup>
-										<FormGroup row>
-											<Label sm={4} for='payment'>
-												Pay with card.
+										<FormGroup
+											check
+											row
+											className='form-group'
+										>
+											<Input
+												type='checkbox'
+												name='auto_renew'
+												className={
+													this.props.classes.checkbox
+												}
+												onChange={e =>
+													this.setState({
+														auto_renew:
+															e.target.checked,
+													})
+												}
+											/>
+											<Col>
+												<Label for='auto_renew' check>
+													Auto Renew
+												</Label>
+											</Col>
+										</FormGroup>
+										<FormGroup
+											row
+											disabled={
+												this.state.enable_manual_payment
+											}
+										>
+											<Label sm={4} for='payment_stripe'>
+												Pay with Credit Card(Stripe).
 											</Label>
 											<Col md={6}>
 												<Switch
-													name='payment_enable'
-													onChange={e =>
+													name='payment_stripe'
+													disabled={
+														this.state
+															.enable_manual_payment
+													}
+													onChange={e => {
 														this.setState({
-															enable_payment:
+															enable_stripe_payment:
 																e.target
 																	.checked,
-														})
-													}
+														});
+													}}
 												/>
 											</Col>
 										</FormGroup>
 										{this.state.selectedMembership
 											?.price !== 0 &&
-											this.state.enable_payment ===
+											this.state.enable_stripe_payment ===
 												true && (
 												<FormGroup row>
 													<Col md={12}>
@@ -766,6 +832,156 @@ class AddIndividualMembership extends React.Component {
 															}
 														/>
 													</Col>
+												</FormGroup>
+											)}
+										<FormGroup
+											row
+											disabled={
+												this.state.enable_stripe_payment
+											}
+										>
+											<Label sm={4} for='payment_manual'>
+												Manual Payment
+											</Label>
+											<Col md={6}>
+												<Switch
+													name='payment_manual'
+													disabled={
+														this.state
+															.enable_stripe_payment
+													}
+													onChange={e => {
+														this.setState({
+															enable_manual_payment:
+																e.target
+																	.checked,
+														});
+													}}
+												/>
+											</Col>
+										</FormGroup>
+										{this.state.selectedMembership
+											?.price !== 0 &&
+											this.state.enable_manual_payment ===
+												true && (
+												<FormGroup tag='fieldset'>
+													<legend>
+														Payment Type
+													</legend>
+													<FormGroup check>
+														<Input
+															name='gateway'
+															type='radio'
+															value='stripe'
+														/>
+														<Label check>
+															Stripe Phone Payment
+														</Label>
+													</FormGroup>
+													<FormGroup check>
+														<Input
+															name='gateway'
+															type='radio'
+															value='stripe'
+														/>
+														<Label check>
+															Stripe Payment link
+														</Label>
+													</FormGroup>
+													<FormGroup check>
+														<Input
+															name='gateway'
+															type='radio'
+															value='paypal'
+														/>{' '}
+														<Label check>
+															PayPal
+														</Label>
+													</FormGroup>
+													<FormGroup check>
+														<Input
+															name='gateway'
+															type='radio'
+															value='bank transfer'
+														/>
+														<Label check>
+															Bank Transfer
+														</Label>
+													</FormGroup>
+													<FormGroup check>
+														<Input
+															name='gateway'
+															type='radio'
+															value='cheque'
+														/>
+														<Label check>
+															Cheque
+														</Label>
+													</FormGroup>
+													<FormGroup check>
+														<Input
+															name='gateway'
+															type='radio'
+															value='cash'
+														/>
+														<Label check>
+															Cash
+														</Label>
+													</FormGroup>
+													<FormGroup check>
+														<Input
+															name='gateway'
+															type='radio'
+															value='honorary'
+														/>
+														<Label check>
+															Honorary
+														</Label>
+													</FormGroup>
+													<FormGroup row>
+														<Label sm={4}>
+															Payment date
+														</Label>
+														<Col
+															className='mt-sm-2 mt-md-0'
+															md={6}
+														>
+															<Input
+																id='payment_date'
+																name='date'
+																placeholder='Payment date'
+																type='date'
+																onChange={e => {
+																	this.handleChange(
+																		e
+																	);
+																}}
+																required
+															/>
+														</Col>
+													</FormGroup>
+													<FormGroup row>
+														<Label sm={4}>
+															Payment Reference:
+														</Label>
+														<Col
+															className='mt-sm-2 mt-md-0'
+															md={6}
+														>
+															<Input
+																id='transaction_id'
+																name='transaction_id'
+																placeholder='Payment Reference:'
+																type='text'
+																onChange={e => {
+																	this.handleChange(
+																		e
+																	);
+																}}
+																required
+															/>
+														</Col>
+													</FormGroup>
 												</FormGroup>
 											)}
 										<FormGroup check row>
