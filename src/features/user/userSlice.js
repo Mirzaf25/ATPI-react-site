@@ -12,7 +12,9 @@ const userSlice = createSlice({
 	reducers: {
 		setUserLoginDetails: (state, action) => {
 			state.name = action.payload.user_display_name;
-			state.id = action.payload.user_email;
+			state.id = action.payload.user_id;
+			state.user_nicename = action.payload.user_nicename;
+			state.user_email = action.payload.user_email;
 			state.token = action.payload.token;
 		},
 		setUserSignoutState: state => {
