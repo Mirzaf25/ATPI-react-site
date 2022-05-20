@@ -11,6 +11,7 @@ import {
 	Label,
 	Col,
 	Input,
+	InputGroup,
 	Container,
 	Row,
 	CardBody,
@@ -38,6 +39,7 @@ import {
 	CountryRegionData,
 } from 'react-country-region-selector';
 
+import Cart from './Cart';
 class AddIndividualMembership extends React.Component {
 	constructor(props) {
 		super(props);
@@ -52,6 +54,7 @@ class AddIndividualMembership extends React.Component {
 			error_message: [],
 			progress: 0,
 			totalProgress: 5,
+			discountDetails: {},
 		};
 		this.handleChange = this.handleChange.bind(this);
 	}
@@ -150,6 +153,37 @@ class AddIndividualMembership extends React.Component {
 	resetProgress() {
 		this.setState({ progress: 0 });
 	}
+
+	validateDiscount() {
+		if (!this.state.selectedMembership) return;
+
+		const code = document.getElementById('discount_code').value;
+		//@todo check res.ok on all fetch calls.
+		fetch(
+			this.props.rcp_url.proxy_domain +
+				this.props.rcp_url.base_url +
+				'discounts/validate',
+			{
+				method: 'POST',
+				headers: {
+					Authorization: 'Bearer ' + this.props.user.token,
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					code: code,
+					object_id: this.state.selectedMembership.id,
+					user_id: this.props.user.id,
+				}),
+			}
+		)
+			.then(res => res.json())
+			.then(data => {
+				console.log(data);
+				this.setState({ discountDetails: data });
+			})
+			.catch(e => console.error(e));
+	}
+
 	/**
 	 * Handle Payment
 	 * @param {*} event
@@ -483,7 +517,7 @@ class AddIndividualMembership extends React.Component {
 													}}
 													required
 												>
-													<option disabled>
+													<option disabled selected>
 														Select a membership
 														level.
 													</option>
@@ -698,62 +732,35 @@ class AddIndividualMembership extends React.Component {
 										</FormGroup>
 										{undefined !==
 											this.state.selectedMembership && (
-											<Table
-												bordered
-												striped
-												className='mb-2'
-											>
-												<thead>
-													<tr>
-														<th className='border-right-0'>
-															<h2>
-																Memberhsip
-																Details
-															</h2>
-														</th>
-													</tr>
-												</thead>
-												<tbody>
-													<tr>
-														<td className='font-weight-bold'>
-															Name
-														</td>
-														<td>
-															{
-																this.state
-																	.selectedMembership
-																	.name
-															}
-														</td>
-													</tr>
-													<tr>
-														<td className='font-weight-bold'>
-															Duration
-														</td>
-														<td>
-															{`${this.state.selectedMembership.duration} ${this.state.selectedMembership.duration_unit}`}
-														</td>
-													</tr>
-													<tr>
-														<td className='font-weight-bold'>
-															Price
-														</td>
-														<td>
-															{`${this.state.selectedMembership.price} ${this.state.selectedMembership.currency_symbol}`}
-														</td>
-													</tr>
-												</tbody>
-											</Table>
+											<Cart
+												membership={
+													this.state
+														.selectedMembership
+												}
+												discount={
+													this.state.discountDetails
+												}
+											/>
 										)}
 										<FormGroup row>
 											<Label sm={4} for='discount_code'>
 												ATPI staff code / Discount Code
 											</Label>
 											<Col md={6}>
-												<Input
-													name='discount_code'
-													type='text'
-												/>
+												<InputGroup>
+													<Input
+														name='discount_code'
+														type='text'
+														id='discount_code'
+													/>
+													<Button
+														onClick={this.validateDiscount.bind(
+															this
+														)}
+													>
+														Apply
+													</Button>
+												</InputGroup>
 											</Col>
 										</FormGroup>
 										<FormGroup
