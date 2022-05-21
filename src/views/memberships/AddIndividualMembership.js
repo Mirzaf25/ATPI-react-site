@@ -208,28 +208,34 @@ class AddIndividualMembership extends React.Component {
 			console.log('2');
 			this.updateProgress(1);
 			const formData = new FormData();
-			formData.append('action', 'stripe_payment_intent');
-			formData.append('price', membership.price);
-			formData.append('currency_symbol', membership.currency_symbol);
+			formData.append(
+				'code',
+				this.state.discountDetails.code
+					? this.state.discountDetails.code
+					: event.target.discount_code.value
+			);
+			formData.append('object_id', membership.id);
+
+			//@todo remove payment if discount is 100%.
 
 			const res = await fetch(
 				this.props.rcp_url.proxy_domain +
-					'/wp-admin/admin-ajax.php?action=stripe_payment_intent',
+					this.props.rcp_url.base_url +
+					'payments/payment_intent',
 				{
 					method: 'post',
 					headers: {
-						'Content-Type': 'multipart/form-data',
+						Authorization: 'Bearer ' + this.props.user.token,
+						'Content-Type': 'application/json',
 					},
-					body: formData,
+					body: JSON.stringify(Object.fromEntries(formData)),
 				}
 			);
 
 			/* UPDATE PROGRESS */
 			console.log('3');
 			this.updateProgress(1);
-			const {
-				data: { client_secret },
-			} = await res.json();
+			const { client_secret } = await res.json();
 
 			/* UPDATE PROGRESS */
 			console.log('4');
@@ -242,7 +248,7 @@ class AddIndividualMembership extends React.Component {
 					name: `${event.target.first_name.value} ${event.target.last_name.value}`,
 					email: event.target.email.value,
 					address: {
-						address: event.target.address.value,
+						line1: event.target.address.value,
 						country: this.props.country,
 						state: this.props.region,
 					},
@@ -267,8 +273,7 @@ class AddIndividualMembership extends React.Component {
 				this.resetProgress();
 				return;
 			}
-
-			return transaction;
+			return Promise.resolve(transaction.paymentIntent);
 		} catch (err) {
 			this.resetProgress();
 			return Promise.reject(err);
@@ -279,6 +284,7 @@ class AddIndividualMembership extends React.Component {
 	 * Submit the form.
 	 */
 	async submitForm(event) {
+		event.persist();
 		event.preventDefault();
 		const formData = new FormData(event.target);
 		const user_additional_fields = [
@@ -324,12 +330,15 @@ class AddIndividualMembership extends React.Component {
 				if (res.status !== 200) return Promise.reject(res);
 				return res.json();
 			})
-			.then(data_memership => {
+			.then(async data_memership => {
 				const { errors, user_id, object_id } = data_memership;
 				if (errors) return Promise.reject(errors);
 				if (this.state.enable_stripe_payment) {
-					const transaction = this.handlePayment(event);
+					const transaction = await this.handlePayment(event);
+
+					console.log(transaction);
 					return this.addPayment(user_id, membership, transaction);
+					// return this.addPayment(user_id, membership, transaction);
 				}
 				if (this.state.enable_manual_payment) {
 					return this.addManualPayment(event, user_id, membership);
@@ -366,38 +375,12 @@ class AddIndividualMembership extends React.Component {
 		);
 	}
 
-	// addPaymentAndMembership(data, membership, transaction) {
-	//   this.addPayment(data.user_id, membership, transaction)
-	//     .then((res) => {
-	//       if (res.status !== 200) return Promise.reject(res);
-	//       return res.json();
-	//     })
-	//     .then((data_payment) => {
-	//       const { errors } = data_payment;
-	//       if (errors) return Promise.reject(errors);
-	//       return this.addMembership(data.customer_id, membership);
-	//     })
-	//     .then((res) => {
-	//       if (res.status !== 200) return Promise.reject(res);
-	//       return res.json();
-	//     })
-	//     .then((data) => {
-	//       const { errors } = data;
-	//       if (errors) return Promise.reject(errors);
-	//       console.log(data);
-	//       return data;
-	//     })
-	//     .catch((err) => {
-	//       console.error(err);
-	//     });
-	// }
-
 	addPayment(user_id, membership, transaction) {
 		const args = {
 			subscription: membership.name,
 			object_id: membership.id,
 			user_id: user_id,
-			amount: membership.price,
+			amount: transaction.amount,
 			transaction_id: transaction.id,
 			status: transaction.status,
 		};
@@ -424,7 +407,9 @@ class AddIndividualMembership extends React.Component {
 			subscription: membership.name,
 			object_id: membership.id,
 			user_id: user_id,
-			amount: membership.price,
+			amount: this.state.discountDetails?.total
+				? this.state.discountDetails?.total
+				: membership.price,
 			status: 'complete',
 		};
 		formData.forEach((val, key) => {
