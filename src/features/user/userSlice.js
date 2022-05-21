@@ -4,6 +4,10 @@ const initialState = {
 	name: '',
 	id: null,
 	token: null,
+	user_nicename: null,
+	user_email: null,
+	is_admin: false,
+	roles: [],
 };
 
 const userSlice = createSlice({
@@ -15,11 +19,17 @@ const userSlice = createSlice({
 			state.id = action.payload.user_id;
 			state.user_nicename = action.payload.user_nicename;
 			state.user_email = action.payload.user_email;
+			state.is_admin = action.payload.is_admin;
+			state.roles = action.payload.roles;
 			state.token = action.payload.token;
 		},
 		setUserSignoutState: state => {
 			state.name = null;
 			state.id = null;
+			state.user_email = null;
+			state.is_admin = null;
+			state.roles = null;
+			state.user_nicename = null;
 			state.token = null;
 		},
 	},

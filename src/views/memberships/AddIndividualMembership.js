@@ -3,6 +3,8 @@ import React from 'react';
 
 import { Switch, withStyles } from '@material-ui/core';
 
+import PhoneInput from 'react-phone-input-2';
+
 // reactstrap components
 import {
 	Button,
@@ -715,6 +717,51 @@ class AddIndividualMembership extends React.Component {
 												/>
 											</Col>
 										</FormGroup>
+										<FormGroup row>
+											<Label sm={4} for='phone'>
+												Phone
+											</Label>
+											<Col md={6}>
+												<PhoneInput
+													name='phone'
+													specialLabel={''}
+													country={'ir'}
+												/>
+											</Col>
+										</FormGroup>
+										{this.props.user.is_admin && (
+											<FormGroup row>
+												<Label sm={4} for='region'>
+													Region
+												</Label>
+												<Col md={6}>
+													<Input
+														name='region'
+														type='select'
+													>
+														<option value='NW'>
+															NW
+														</option>
+														<option value='SW'>
+															SW
+														</option>
+														<option value='SE'>
+															SE
+														</option>
+														<option value='NE'>
+															NE
+														</option>
+														<option value='NI'>
+															NI
+														</option>
+														<option value='INT'>
+															INT
+														</option>
+													</Input>
+												</Col>
+											</FormGroup>
+										)}
+
 										{undefined !==
 											this.state.selectedMembership && (
 											<Cart
@@ -802,6 +849,32 @@ class AddIndividualMembership extends React.Component {
 												</Label>
 											</Col>
 										</FormGroup>
+										{this.props.user.is_admin && (
+											<FormGroup row>
+												<Label sm={4} for='paid_by'>
+													Paid by
+												</Label>
+												<Col md={6}>
+													<Input
+														name='paid_by'
+														type='select'
+													>
+														<option value='Individual'>
+															Individual
+														</option>
+														<option value='Club'>
+															Club
+														</option>
+														<option value='College'>
+															College
+														</option>
+														<option value='Honorary'>
+															Honorary
+														</option>
+													</Input>
+												</Col>
+											</FormGroup>
+										)}
 										<FormGroup
 											row
 											disabled={
