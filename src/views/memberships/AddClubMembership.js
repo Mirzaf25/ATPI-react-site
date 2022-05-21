@@ -490,6 +490,10 @@ class AddClubMembership extends React.Component {
 													}}
 													required
 												>
+													<option disabled selected>
+														Select club membership
+														level.
+													</option>
 													{this.props.levels.levels
 														.length > 0 &&
 														this.props.levels.levels
@@ -501,7 +505,6 @@ class AddClubMembership extends React.Component {
 															.map(
 																(item, key) => (
 																	<option
-																		selected
 																		key={
 																			key
 																		}
