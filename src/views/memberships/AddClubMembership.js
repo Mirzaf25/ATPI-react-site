@@ -61,6 +61,7 @@ class AddClubMembership extends React.Component {
 			totalProgress: 5,
 			discountDetails: {},
 			numberOfMembers: 0,
+			owner_workplace: {},
 		};
 		this.handleChange = this.handleChange.bind(this);
 	}
@@ -440,6 +441,7 @@ class AddClubMembership extends React.Component {
 		formData.append('customer_id', customer_id);
 		formData.append('object_id', membership.id);
 		formData.append('club_name', club_name);
+		formData.append('autorenew', event.target.auto_renew.checked);
 		return fetch(
 			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_url +
@@ -456,10 +458,12 @@ class AddClubMembership extends React.Component {
 
 	incrementNumberOfMembers = e => {
 		e.preventDefault();
+		if (this.state.numberOfMembers >= 5) return;
 		this.setState({ numberOfMembers: this.state.numberOfMembers + 1 });
 	};
 	decrementNumberOfMembers = e => {
 		e.preventDefault();
+		if (this.state.numberOfMembers < -1) return;
 		this.setState({ numberOfMembers: this.state.numberOfMembers - 1 });
 	};
 	render() {
@@ -471,7 +475,7 @@ class AddClubMembership extends React.Component {
 
 		const numOfMembers = [];
 
-		for (var i = 0; i <= this.state.numberOfMembers; i += 1) {
+		for (var i = 0; i <= this.state.numberOfMembers && i <= 5; i += 1) {
 			numOfMembers.push(
 				<ClubMember
 					memberIndex={i}
@@ -479,6 +483,7 @@ class AddClubMembership extends React.Component {
 					handleChange={this.handleChange}
 					increment={this.incrementNumberOfMembers}
 					decrement={this.decrementNumberOfMembers}
+					workplace={this.state.owner_workplace.value}
 				/>
 			);
 		}
@@ -560,6 +565,23 @@ class AddClubMembership extends React.Component {
 													name='club_name'
 													placeholder='Club Name'
 													type='text'
+													onChange={e => {
+														this.handleChange(e);
+													}}
+													required
+												/>
+											</Col>
+										</FormGroup>
+										<FormGroup row>
+											<Label sm={4}>
+												Club Description
+											</Label>
+											<Col md={6}>
+												<Input
+													id='club_description'
+													name='club_description'
+													placeholder='Club Description'
+													type='textarea'
 													onChange={e => {
 														this.handleChange(e);
 													}}
@@ -652,6 +674,10 @@ class AddClubMembership extends React.Component {
 												<Input
 													name='workplace'
 													type='text'
+													innerRef={el =>
+														(this.state.owner_workplace =
+															el)
+													}
 												/>
 											</Col>
 										</FormGroup>
@@ -1031,7 +1057,7 @@ class AddClubMembership extends React.Component {
 														<Input
 															name='gateway'
 															type='radio'
-															value='bank transfer'
+															value='manual'
 														/>
 														<Label check>
 															Bank Transfer
@@ -1041,7 +1067,7 @@ class AddClubMembership extends React.Component {
 														<Input
 															name='gateway'
 															type='radio'
-															value='cheque'
+															value='manual'
 														/>
 														<Label check>
 															Cheque
@@ -1051,7 +1077,7 @@ class AddClubMembership extends React.Component {
 														<Input
 															name='gateway'
 															type='radio'
-															value='cash'
+															value='manual'
 														/>
 														<Label check>
 															Cash
@@ -1061,7 +1087,7 @@ class AddClubMembership extends React.Component {
 														<Input
 															name='gateway'
 															type='radio'
-															value='honorary'
+															value='manual'
 														/>
 														<Label check>
 															Honorary

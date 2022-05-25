@@ -193,7 +193,9 @@ class ClubMember extends React.Component {
 								'][workplace]'
 							}
 							type='text'
+							disabled
 							placeholder='Workplace'
+							value={this.props.workplace}
 						/>
 					</Col>
 				</FormGroup>

@@ -325,7 +325,7 @@ class AddIndividualMembership extends React.Component {
 			.then(data => {
 				const { errors } = data;
 				if (errors) return Promise.reject(errors);
-				return this.addMembership(data.customer_id, membership);
+				return this.addMembership(event, data.customer_id, membership);
 				// return this.addPaymentAndMembership(data, membership, transaction);
 			})
 			.then(res => {
@@ -434,8 +434,7 @@ class AddIndividualMembership extends React.Component {
 		);
 	}
 
-	addMembership(customer_id, membership) {
-		console.log(membership);
+	addMembership(event, customer_id, membership) {
 		return fetch(
 			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_url +
@@ -449,6 +448,8 @@ class AddIndividualMembership extends React.Component {
 				body: JSON.stringify({
 					customer_id: customer_id,
 					object_id: membership.id,
+					status: 'active',
+					auto_renew: event.target.auto_renew.checked,
 				}),
 			}
 		);
@@ -983,7 +984,7 @@ class AddIndividualMembership extends React.Component {
 														<Input
 															name='gateway'
 															type='radio'
-															value='bank transfer'
+															value='manual'
 														/>
 														<Label check>
 															Bank Transfer
@@ -993,7 +994,7 @@ class AddIndividualMembership extends React.Component {
 														<Input
 															name='gateway'
 															type='radio'
-															value='cheque'
+															value='manual'
 														/>
 														<Label check>
 															Cheque
@@ -1003,7 +1004,7 @@ class AddIndividualMembership extends React.Component {
 														<Input
 															name='gateway'
 															type='radio'
-															value='cash'
+															value='manual'
 														/>
 														<Label check>
 															Cash
@@ -1013,7 +1014,7 @@ class AddIndividualMembership extends React.Component {
 														<Input
 															name='gateway'
 															type='radio'
-															value='honorary'
+															value='manual'
 														/>
 														<Label check>
 															Honorary
