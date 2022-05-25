@@ -12,10 +12,11 @@ import {
   ImageListItem,
   CircularProgress,
 } from "@material-ui/core";
+import WP_ImagesList from "../../components/Utils/WP_ImagesList";
 
 
 
-class DropAreaUpload extends React.Component {
+class CombinedDropAreaUpload extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -98,9 +99,10 @@ class DropAreaUpload extends React.Component {
             uploadFiles: [],
           };
         });
+      }).then(()=>{
+        this.props.updateFunc(this.state.media);
       })
       .catch((err) => {
-        this.refs.dropArea.classList.remove("highlight");
         console.log(err);
         this.setState({ uploading: false, uploadFiles: [] });
       });
@@ -131,6 +133,9 @@ class DropAreaUpload extends React.Component {
     return (
       <>
      <Container>
+          
+          <Col>
+          
           <Row>
             <div className="col">
 
@@ -196,6 +201,11 @@ class DropAreaUpload extends React.Component {
                   </div>
             </div>
           </Row>
+
+          <WP_ImagesList media = {this.state.media}/>
+          </Col>
+
+
         </Container>
 
 
@@ -213,4 +223,4 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = { setUserLoginDetails };
 
-export default connect(mapStateToProps, mapDispatchToProps)(DropAreaUpload);
+export default connect(mapStateToProps, mapDispatchToProps)(CombinedDropAreaUpload);

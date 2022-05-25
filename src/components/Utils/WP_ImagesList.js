@@ -23,22 +23,22 @@ class WP_ImagesList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      media: [],
+//      media: [],
       selectedMedia: null,
     };
   }
 
   componentDidMount() {
-    console.log('Component Mounted');
+    /*console.log('Component Mounted');
     if (this.state.media.length === 0)
       this.fetchMedia(
         this.props.rcp_url.domain + this.props.rcp_url.base_wp_url + "media"
-      );
+      );*/
   }
 
   componentDidUpdate() {}
 
-  fetchMedia = async (url) => {
+/*  fetchMedia = async (url) => {
     const queryUrl = new URL(url);
     const params = {
       per_page: 100,
@@ -50,12 +50,12 @@ class WP_ImagesList extends React.Component {
     const res = await fetch(queryUrl);
     const data = await res.json();
     this.setState({ media: data });
-  }; 
+  };*/ 
 
   openImage(e, id) {
     e.preventDefault();
     this.setState({
-      selectedMedia: this.state.media.filter((el) => el.id === id).pop(),
+      selectedMedia: this.props.media.filter((el) => el.id === id).pop(),
     });
   }
 
@@ -68,8 +68,8 @@ class WP_ImagesList extends React.Component {
             <div className="col">
 {/* Start SHOW IMAGE LIST */}                                
                 <ImageList variant="masonry" cols={3} gap={8}>
-                    {this.state.media.length !== 0 &&
-                      this.state.media.map((item, key) => (
+                    {this.props.media.length !== 0 &&
+                      this.props.media.map((item, key) => (
                         <ImageListItem key={key}>
                           <a
                             href="#"
