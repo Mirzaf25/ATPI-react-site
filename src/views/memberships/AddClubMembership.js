@@ -747,7 +747,7 @@ class AddClubMembership extends React.Component {
 											</Col>
 										</FormGroup>
 										<FormGroup row>
-											<Label sm={4} for='region'>
+											<Label sm={4} for='county'>
 												County
 											</Label>
 											<Col md={6}>
