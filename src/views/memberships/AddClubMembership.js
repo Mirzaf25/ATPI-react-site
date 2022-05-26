@@ -382,7 +382,7 @@ class AddClubMembership extends React.Component {
 			user_id: user_id,
 			amount: transaction.amount,
 			transaction_id: transaction.id,
-			status: transaction.status,
+			status: transaction.status === 'succeeded' ? 'complete' : 'failed',
 			gateway: 'stripe',
 		};
 
