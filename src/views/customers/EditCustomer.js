@@ -32,6 +32,7 @@ import {
 import MatEdit from 'views/MatEdit';
 import UpdateCustomer from './UpdateCustomer';
 import MembershipDetails from './MembershipDetails';
+import PaymentDetails from './PaymentDetails';
 
 class EditCustomer extends React.Component {
 	constructor(props) {
@@ -204,6 +205,7 @@ class EditCustomer extends React.Component {
 										customer={this.state.customer}
 									/>
 									<MembershipDetails
+										className='mb-4'
 										membership={
 											this.state.customer &&
 											this.state.customer.memberships_data
@@ -213,6 +215,24 @@ class EditCustomer extends React.Component {
 												: null
 										}
 									/>
+									{this.state.customer &&
+										this.state.customer.payments.length !==
+											0 && (
+											<>
+												<h2 className='mb-4'>
+													Payments:
+												</h2>
+												{this.state.customer?.payments.map(
+													(payment, key) => (
+														<PaymentDetails
+															key={key}
+															payment={payment}
+															className='mb-4'
+														/>
+													)
+												)}
+											</>
+										)}
 								</CardBody>
 							</Card>
 						</div>

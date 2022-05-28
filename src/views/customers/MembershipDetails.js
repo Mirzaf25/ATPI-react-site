@@ -105,6 +105,7 @@ class MembershipDetails extends React.Component {
 				<Col>
 					<Button
 						variant='contained'
+						className='mb-4'
 						href={
 							'/admin/membership/edit/' + this.props.membership.id
 						}
