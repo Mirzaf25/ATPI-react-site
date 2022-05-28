@@ -103,7 +103,12 @@ class MembershipDetails extends React.Component {
 					</tbody>
 				</Table>
 				<Col>
-					<Button variant='contained' href='/admin/membership'>
+					<Button
+						variant='contained'
+						href={
+							'/admin/membership/edit/' + this.props.membership.id
+						}
+					>
 						Edit Membership
 					</Button>
 				</Col>

@@ -96,6 +96,7 @@ class EditCustomer extends React.Component {
 				Authorization: 'Bearer ' + this.props.user.token,
 			},
 		});
+		if (!res.ok) return;
 		const data = await res.json();
 		this.setState(prevState => ({
 			customer: data,
@@ -158,7 +159,7 @@ class EditCustomer extends React.Component {
 			},
 			body: JSON.stringify(Object.fromEntries(formData)),
 		})
-			.then(res => res.json())
+			.then(res => res.ok && res.json())
 			.then(data =>
 				this.setState(prevState => ({
 					user: data,
@@ -183,6 +184,8 @@ class EditCustomer extends React.Component {
 	};
 
 	render() {
+		if (!this.state.customer && this.props.user.token)
+			this.fetchCustomer(this.current_customer_url);
 		return (
 			<>
 				<OnlyHeader />
@@ -202,7 +205,9 @@ class EditCustomer extends React.Component {
 									/>
 									<MembershipDetails
 										membership={
-											this.state.customer
+											this.state.customer &&
+											this.state.customer.memberships_data
+												.length !== 0
 												? this.state.customer
 														?.memberships_data[0]
 												: null
