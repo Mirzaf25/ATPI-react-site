@@ -472,6 +472,7 @@ class AddClubMembership extends React.Component {
 					memberIndex={this.memberIndex}
 					key={this.memberIndex}
 					handleChange={this.handleChange}
+					levels={this.props.levels}
 					increment={this.incrementNumberOfMembers}
 					decrement={this.decrementNumberOfMembers}
 					workplace={this.state.owner_workplace.value}
