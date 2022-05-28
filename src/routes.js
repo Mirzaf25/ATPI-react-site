@@ -87,7 +87,7 @@ var routes = [
 				showInSidebar: true,
 			},
 			{
-				path: '/membership/renew-membership/:id',
+				path: '/membership/edit/:id',
 				name: 'Renew or change a Membership',
 				icon: 'ni ni-bullet-list-67 text-blue', // redundant
 				component: RenewMembership,
