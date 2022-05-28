@@ -1,6 +1,5 @@
 import OnlyHeader from 'components/Headers/OnlyHeader';
 import React from 'react';
-//import CloseIcon from '@mui/icons-material/Close';
 
 // reactstrap components
 import {
@@ -58,6 +57,7 @@ import {
 	Grow,
 	TextField,
 	Snackbar,
+	withStyles,
 } from '@material-ui/core';
 import ListItemButton from '@material-ui/core/Button';
 
@@ -81,15 +81,163 @@ class Filr extends React.Component {
 			newFolderId: '',
 			selectedFile: Object,
 			showFolderNav: true,
-			/*      snackbarStatus : false,
-      snackBarMessage:'Default Text',*/
 		};
-		this.breadcrumbs = [];
+		this.breadcrumbs = [
+			<Link
+				underline='hover'
+				color='inherit'
+				href='#'
+				onClick={e => {
+					e.preventDefault();
+					if (this.state.files.length !== 0) {
+						this.setState({
+							viewFiles: this.state.files.filter(
+								el =>
+									el.metadata['assigned-folder'] === undefined
+							),
+						});
+					}
+				}}
+			>
+				...
+			</Link>,
+		];
 	}
 
-	/*  handleSnackbarChange = () =>{
-    this.setState({snackbarStatus: !this.state.snackbarStatus});
-  }*/
+	componentDidMount() {
+		if (this.state.files.length === 0)
+			this.fetchFiles(
+				this.props.rcp_url.domain +
+					this.props.rcp_url.base_wp_url +
+					'filr'
+			);
+	}
+
+	componentDidUpdate(
+		prevProps,
+		{ files: prevFiles, viewFiles: prevViewFiles }
+	) {
+		if (this.state.files.length !== 0 && prevFiles !== this.state.files) {
+			this.setState({
+				viewFiles: this.state.files.filter(
+					el => el.metadata['assigned-folder'] === undefined
+				),
+			});
+		}
+		if (prevViewFiles !== this.state.viewFiles) {
+			const index = this.breadcrumbs.findIndex(
+				item => item.key == this.state.currentFolder
+			);
+
+			if (index !== -1) {
+				this.breadcrumbs = this.breadcrumbs.slice(0, index + 1);
+			} else {
+				const folder = this.state.files.find(
+					el => el.id == this.state.currentFolder
+				);
+				//use indexes to clear up breadcrumbs.
+				if (
+					folder !== undefined &&
+					folder?.metadata['assigned-folder'] != 0
+				) {
+					this.breadcrumbs.push(
+						<Link
+							underline='hover'
+							key={folder.id}
+							color='inherit'
+							href='#'
+							data-id={folder.id}
+							onClick={e => {
+								e.preventDefault();
+								this.openFolder(folder);
+							}}
+						>
+							{folder?.title.rendered}
+						</Link>
+					);
+				} else if (folder !== undefined) {
+					this.breadcrumbs = [
+						<Link
+							underline='hover'
+							color='inherit'
+							href='#'
+							onClick={e => {
+								e.preventDefault();
+								if (this.state.files.length !== 0) {
+									this.setState({
+										viewFiles: this.state.files.filter(
+											el =>
+												el.metadata[
+													'assigned-folder'
+												] === undefined
+										),
+									});
+								}
+							}}
+						>
+							..
+						</Link>,
+						<Link
+							underline='hover'
+							key={folder?.id}
+							color='inherit'
+							data-id={folder.id}
+							href='#'
+							onClick={e => {
+								e.preventDefault();
+								this.openFolder(folder);
+							}}
+						>
+							{folder?.title.rendered}
+						</Link>,
+					];
+				}
+			}
+		}
+	}
+
+	fetchFiles = async url => {
+		const queryUrl = new URL(url);
+		const params = {
+			per_page: 100,
+		};
+		for (let key in params) {
+			queryUrl.searchParams.set(key, params[key]);
+		}
+		const res = await fetch(queryUrl);
+		const data = await res.json();
+		this.setState({ files: data });
+	};
+
+	openFolder = item => {
+		console.log(item);
+		this.setState({
+			viewLoading: true,
+			currentFolder: item.id,
+			viewFiles: this.state.files.filter(el => {
+				return (
+					el.metadata.hasOwnProperty('assigned-folder') &&
+					el.metadata['assigned-folder'] == item.id
+				);
+			}),
+		});
+		document.querySelectorAll('.folder-icon').forEach(el => {
+			if (
+				el.classList.contains('fa-folder-open') ||
+				el.dataset.id == item.id
+			) {
+				el.classList.toggle('fa-folder-open');
+			}
+		});
+		// @todo fetch from api
+		setTimeout(() => {
+			this.setState({ viewLoading: false });
+		}, 2000);
+	};
+
+	dropdownToggle = () => {
+		this.setState({ dropdownOpen: !this.state.dropdownOpen });
+	};
 
 	fileChangedHandler = event => {
 		this.setState({ selectedFile: event.target.files[0] });
@@ -136,127 +284,12 @@ class Filr extends React.Component {
 	dropdownToggle = () => {
 		this.setState({ dropdownOpen: !this.state.dropdownOpen });
 	};
-	componentDidMount() {
-		if (this.state.files.length === 0)
-			this.fetchFiles(
-				this.props.rcp_url.proxy_domain +
-					this.props.rcp_url.base_wp_url +
-					'filr'
-			);
-	}
 
-	componentDidUpdate(
-		prevProps,
-
-		{ files: prevFiles, viewFiles: prevViewFiles }
-	) {
-		if (this.state.files.length !== 0 && prevFiles !== this.state.files) {
-			this.setState({
-				viewFiles: this.state.files.filter(
-					el => el.metadata['assigned-folder'] === undefined
-				),
-			});
-		}
-
-		if (prevViewFiles !== this.state.viewFiles) {
-			const index = this.breadcrumbs.findIndex(
-				item => item.key == this.state.currentFolder
-			);
-
-			if (index !== -1) {
-				this.breadcrumbs = this.breadcrumbs.slice(0, index + 1);
-			} else {
-				const folder = this.state.files.find(
-					el => el.id == this.state.currentFolder
-				);
-
-				//use indexes to clear up breadcrumbs.
-				if (
-					folder !== undefined &&
-					folder?.metadata['assigned-folder'] != 0
-				) {
-					this.breadcrumbs.push(
-						<Link
-							underline='hover'
-							key={folder.id}
-							color='inherit'
-							href='#'
-							data-id={folder.id}
-							onClick={e => {
-								e.preventDefault();
-								this.openFolder(folder);
-							}}
-						>
-							{folder?.title.rendered}
-						</Link>
-					);
-				} else if (folder !== undefined) {
-					this.breadcrumbs = [
-						<Row>
-							<Link
-								underline='hover'
-								key='000'
-								color='inherit'
-								data-id={'root'}
-								href='#'
-								onClick={e => {
-									e.preventDefault();
-									this.setState({ viewFiles: prevViewFiles });
-									this.setState({ viewLoading: false });
-									this.setState({ currentFolder: null });
-
-									document
-										.querySelectorAll('.folder-icon')
-										.forEach(el => {
-											if (
-												el.classList.contains(
-													'fa-folder-open'
-												)
-											) {
-												el.classList.toggle(
-													'fa-folder-open'
-												);
-											}
-										});
-
-									this.setState({ showFolderNav: false });
-								}}
-							>
-								../
-							</Link>
-
-							<Link
-								underline='hover'
-								key={folder?.id}
-								color='inherit'
-								data-id={folder.id}
-								href='#'
-								onClick={e => {
-									e.preventDefault();
-									this.openFolder(folder);
-								}}
-							>
-								{folder?.title.rendered}
-							</Link>
-						</Row>,
-					];
-					this.setState({ showFolderNav: true });
-				}
-			}
-		}
-	}
-
-	fetchFiles = async url => {
-		const queryUrl = new URL(url);
-		const params = {
-			per_page: 100,
-		};
-		for (let key in params) {
-			queryUrl.searchParams.set(key, params[key]);
-		}
-		const res = await fetch(queryUrl);
-		const data = await res.json();
-		this.setState({ files: data });
+	clearFields = () => {
+		this.setState({
+			newFolderId: '',
+			newFolderName: '',
+		});
 	};
 
 	createNewFolder = async (url, payload, onSuccess = () => {}) => {
@@ -355,19 +388,6 @@ class Filr extends React.Component {
 			},
 		];
 		const rows = [];
-		/* const action = (
-      <React.Fragment>
-        <Button
-          size="small"
-          aria-label="close"
-          color="inherit"
-          onClick={this.handleSnackbarChange}
-        >
-          Close
-        </Button>
-      </React.Fragment>
-    );
-    */
 		const folder = this.state.files.find(
 			el => el.id == this.state.currentFolder
 		);
@@ -489,26 +509,13 @@ class Filr extends React.Component {
 						</ModalFooter>
 					</Form>
 				</Modal>
-
-				{/*
-<Snackbar
-        open={this.state.snackbarStatus}
-        autoHideDuration={4000}
-        onClose={this.handleSnackbarChange}
-        message={this.state.snackBarMessage}
-        action={action}
-      />
-*/}
 				<OnlyHeader />
 				<Container className='mt--8' fluid>
-					{/*        <Button onClick={this.handleSnackbarChange}>Snack Bar</Button>
-					 */}
 					<Row>
 						<div className='col'>
 							<Card className='shadow'>
 								<CardHeader className='border-0'>
 									<h3 className='mb-0'>Filr</h3>
-
 									<Row className='d-flex flex-row-reverse '>
 										<Dropdown
 											isOpen={this.state.dropdownOpen}
@@ -538,12 +545,9 @@ class Filr extends React.Component {
 										</Dropdown>
 									</Row>
 								</CardHeader>
-
 								<CardBody>
-									<Breadcrumbs maxItems={6}>
-										{this.state.showFolderNav
-											? this.breadcrumbs
-											: []}
+									<Breadcrumbs maxItems={3}>
+										{this.breadcrumbs}
 									</Breadcrumbs>
 									<Grid container spacing={2}>
 										<Grid item xs={12} md={4}>
@@ -581,13 +585,10 @@ class Filr extends React.Component {
 																					/>
 																				}
 																				className='w-100 justify-content-start text-capitalize folder-buttons'
-																				onClick={
-																					//()=>{console.log(item)}
-																					this.openFolder.bind(
-																						this,
-																						item
-																					)
-																				}
+																				onClick={this.openFolder.bind(
+																					this,
+																					item
+																				)}
 																			>
 																				{item.title.rendered.slice(
 																					0,
@@ -715,7 +716,11 @@ class Filr extends React.Component {
 									</Grid>
 								</CardBody>
 							</Card>
-							<Drawer anchor='left' open={this.state.drawer}>
+							<Drawer
+								anchor='left'
+								open={this.state.drawer}
+								className={this.props.classes.fileViewer}
+							>
 								{Object.keys(this.state.selectedFile).length !==
 									0 && (
 									<>
@@ -828,4 +833,15 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = { setUserLoginDetails, setFilrLoading };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Filr);
+const styles = {
+	fileViewer: {
+		'& .MuiPaper-root.MuiDrawer-paper': {
+			width: '75%',
+		},
+	},
+};
+
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(withStyles(styles)(Filr));
