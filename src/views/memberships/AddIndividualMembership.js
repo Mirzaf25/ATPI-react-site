@@ -42,6 +42,7 @@ import {
 } from 'react-country-region-selector';
 
 import Cart from './Cart';
+import ManualPaymentDropdown from './ManualPaymentDropdown';
 class AddIndividualMembership extends React.Component {
 	constructor(props) {
 		super(props);
@@ -406,7 +407,13 @@ class AddIndividualMembership extends React.Component {
 
 	addManualPayment(event, user_id, membership) {
 		const formData = new FormData(event.target);
-		const fields = ['transaction_id', 'gateway', 'date', 'transaction_id'];
+		const fields = [
+			'transaction_id',
+			'gateway',
+			'date',
+			'transaction_id',
+			'gateway_manual',
+		];
 		const payment_args = {
 			subscription: membership.name,
 			object_id: membership.id,
@@ -452,6 +459,8 @@ class AddIndividualMembership extends React.Component {
 					object_id: membership.id,
 					status: 'active',
 					auto_renew: event.target.auto_renew.checked,
+					paid_by: event.target.paid_by.value,
+					region: event.target.region.value,
 				}),
 			}
 		);
@@ -949,79 +958,12 @@ class AddIndividualMembership extends React.Component {
 											this.state.enable_manual_payment ===
 												true && (
 												<FormGroup tag='fieldset'>
-													<legend>
-														Payment Type
-													</legend>
-													<FormGroup check>
-														<Input
-															name='gateway'
-															type='radio'
-															value='stripe'
-														/>
-														<Label check>
-															Stripe Phone Payment
-														</Label>
-													</FormGroup>
-													<FormGroup check>
-														<Input
-															name='gateway'
-															type='radio'
-															value='stripe'
-														/>
-														<Label check>
-															Stripe Payment link
-														</Label>
-													</FormGroup>
-													<FormGroup check>
-														<Input
-															name='gateway'
-															type='radio'
-															value='paypal'
-														/>{' '}
-														<Label check>
-															PayPal
-														</Label>
-													</FormGroup>
-													<FormGroup check>
-														<Input
-															name='gateway'
-															type='radio'
-															value='manual'
-														/>
-														<Label check>
-															Bank Transfer
-														</Label>
-													</FormGroup>
-													<FormGroup check>
-														<Input
-															name='gateway'
-															type='radio'
-															value='manual'
-														/>
-														<Label check>
-															Cheque
-														</Label>
-													</FormGroup>
-													<FormGroup check>
-														<Input
-															name='gateway'
-															type='radio'
-															value='manual'
-														/>
-														<Label check>
-															Cash
-														</Label>
-													</FormGroup>
-													<FormGroup check>
-														<Input
-															name='gateway'
-															type='radio'
-															value='manual'
-														/>
-														<Label check>
-															Honorary
-														</Label>
-													</FormGroup>
+													<Input
+														name='gateway'
+														value='manual'
+														type='hidden'
+													/>
+													<ManualPaymentDropdown />
 													<FormGroup row>
 														<Label sm={4}>
 															Payment date
