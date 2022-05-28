@@ -33,6 +33,7 @@ import MatEdit from 'views/MatEdit';
 import UpdateCustomer from './UpdateCustomer';
 import MembershipDetails from './MembershipDetails';
 import PaymentDetails from './PaymentDetails';
+import WebsiteAccess from './WebsiteAccess';
 
 class EditCustomer extends React.Component {
 	constructor(props) {
@@ -184,6 +185,11 @@ class EditCustomer extends React.Component {
 			.catch(err => console.error(err));
 	};
 
+	updateStateUserRole = roles => {
+		const customer = { ...this.state.customer, roles: roles };
+		this.setState({ customer: customer });
+	};
+
 	render() {
 		if (!this.state.customer && this.props.user.token)
 			this.fetchCustomer(this.current_customer_url);
@@ -232,6 +238,21 @@ class EditCustomer extends React.Component {
 													)
 												)}
 											</>
+										)}
+									{this.state.customer &&
+										this.state.customer.user_id &&
+										this.state.customer.roles && (
+											<WebsiteAccess
+												user_id={
+													this.state.customer.user_id
+												}
+												user_roles={
+													this.state.customer.roles
+												}
+												updateStateUserRole={
+													this.updateStateUserRole
+												}
+											/>
 										)}
 								</CardBody>
 							</Card>
