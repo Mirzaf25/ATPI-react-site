@@ -23,6 +23,7 @@ import CreateVideo from 'views/videos/CreateVideo';
 import Media from 'views/media/Media';
 import DiscountCodes from 'views/discount/DiscountCodes';
 import CreateDiscountCode from 'views/discount/CreateDiscountCode';
+import EditPayment from 'views/EditPayment';
 
 var routes = [
 	{
@@ -55,6 +56,16 @@ var routes = [
 		icon: 'ni ni-credit-card text-black',
 		component: Payment,
 		layout: '/admin',
+		children: [
+			{
+				path: '/payment/edit/:id',
+				name: 'Edit Payment',
+				icon: 'ni ni-credit-card text-black', // redundant
+				component: EditPayment,
+				layout: '/admin',
+				showInSidebar: false,
+			},
+		],
 	},
 	{
 		path: '/clubs',
