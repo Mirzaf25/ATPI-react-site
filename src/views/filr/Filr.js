@@ -450,7 +450,8 @@ class Filr extends React.Component {
 						<div className='col'>
 							<Card className='shadow'>
 								<CardHeader className='border-0'>
-									<h3 className='mb-0'>Filr</h3>
+									<h3 className='mb-0'>ATPI Library</h3>
+									<h4>Files shared with all club members</h4>
 
 									<Row className='d-flex flex-row-reverse '>
 										<Dropdown
