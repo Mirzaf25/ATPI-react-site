@@ -143,28 +143,27 @@ class Memberships extends React.Component {
 							style={{ color: '#3f51b5' }}
 							position='start'
 						>
-							{!this.state.searched ? (
-								<IconButton
-									size='small'
-									onClick={() => {
-										this.setState({
-											membershipLoading: true,
-											searched: true,
-										});
-										this.fetchMemberships(
-											this.props.rcp_url.proxy_domain +
-												this.props.rcp_url.base_url +
-												'memberships',
-											this.props.user.token,
-											this.state.page,
-											null,
-											this.state.search
-										);
-									}}
-								>
-									<i className='fa fa-search' />
-								</IconButton>
-							) : (
+							<IconButton
+								size='small'
+								onClick={() => {
+									this.setState({
+										membershipLoading: true,
+										searched: true,
+									});
+									this.fetchMemberships(
+										this.props.rcp_url.proxy_domain +
+											this.props.rcp_url.base_url +
+											'memberships',
+										this.props.user.token,
+										this.state.page,
+										null,
+										this.state.search
+									);
+								}}
+							>
+								<i className='fa fa-search' />
+							</IconButton>
+							{this.state.searched && (
 								<IconButton
 									size='small'
 									onClick={() => {
