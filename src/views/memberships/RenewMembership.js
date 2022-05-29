@@ -62,11 +62,13 @@ class RenewMembership extends React.Component {
 				status: '',
 				gateway_customer_id: '',
 				gateway_subscription_id: '',
+				user_login: '',
 			},
 			selectedMembership: null,
 		};
 		this.handleChange = this.handleChange.bind(this);
 		this.submit_edit_membership = this.submit_edit_membership.bind(this);
+		this.renew_membership = this.renew_membership.bind(this);
 	}
 
 	async componentDidMount() {
@@ -143,6 +145,7 @@ class RenewMembership extends React.Component {
 				status: data?.status,
 				gateway_customer_id: data?.gateway_customer_id,
 				gateway_subscription_id: data?.gateway_subscription_id,
+				user_login: data?.user_login,
 			},
 		});
 
@@ -276,25 +279,24 @@ class RenewMembership extends React.Component {
 					if (res.ok) return res.json();
 				})
 				.then(data => {
-					if (this.state.update) {
-						this.setState({
-							membership: data,
-							form: {
-								object_id: data?.object_id,
-								customer_name: data?.customer_name,
-								recurring_amount: data?.recurring_amount,
-								created_date: data?.created_date,
-								expiration_date: data?.expiration_date,
-								auto_renew: data?.auto_renew,
-								maximum_renewals: data?.maximum_renewals,
-								times_billed: data?.times_billed,
-								status: data?.status,
-								gateway_customer_id: data?.gateway_customer_id,
-								gateway_subscription_id:
-									data?.gateway_subscription_id,
-							},
-						});
-					}
+					this.setState({
+						membership: data,
+						form: {
+							object_id: data?.object_id,
+							customer_name: data?.customer_name,
+							recurring_amount: data?.recurring_amount,
+							created_date: data?.created_date,
+							expiration_date: data?.expiration_date,
+							auto_renew: data?.auto_renew,
+							maximum_renewals: data?.maximum_renewals,
+							times_billed: data?.times_billed,
+							status: data?.status,
+							gateway_customer_id: data?.gateway_customer_id,
+							gateway_subscription_id:
+								data?.gateway_subscription_id,
+							user_login: data?.user_login,
+						},
+					});
 				})
 				.catch(e => console.error(e));
 		} else if (this.state.enable_manual_payment) {
@@ -312,25 +314,24 @@ class RenewMembership extends React.Component {
 					if (res.ok) return res.json();
 				})
 				.then(data => {
-					if (this.state.update) {
-						this.setState({
-							membership: data,
-							form: {
-								object_id: data?.object_id,
-								customer_name: data?.customer_name,
-								recurring_amount: data?.recurring_amount,
-								created_date: data?.created_date,
-								expiration_date: data?.expiration_date,
-								auto_renew: data?.auto_renew,
-								maximum_renewals: data?.maximum_renewals,
-								times_billed: data?.times_billed,
-								status: data?.status,
-								gateway_customer_id: data?.gateway_customer_id,
-								gateway_subscription_id:
-									data?.gateway_subscription_id,
-							},
-						});
-					}
+					this.setState({
+						membership: data,
+						form: {
+							object_id: data?.object_id,
+							customer_name: data?.customer_name,
+							recurring_amount: data?.recurring_amount,
+							created_date: data?.created_date,
+							expiration_date: data?.expiration_date,
+							auto_renew: data?.auto_renew,
+							maximum_renewals: data?.maximum_renewals,
+							times_billed: data?.times_billed,
+							status: data?.status,
+							gateway_customer_id: data?.gateway_customer_id,
+							gateway_subscription_id:
+								data?.gateway_subscription_id,
+							user_login: data?.user_login,
+						},
+					});
 				})
 				.catch(e => console.error(e));
 		} else {
@@ -347,18 +348,18 @@ class RenewMembership extends React.Component {
 						form: {
 							...this.state.form,
 							object_id: data?.object_id,
-							//@todo add in the api.
-							// customer_name: data?.customer_name,
-							// recurring_amount: data?.recurring_amount,
-							// created_date: data?.created_date,
-							// expiration_date: data?.expiration_date,
-							// auto_renew: data?.auto_renew,
-							// maximum_renewals: data?.maximum_renewals,
-							// times_billed: data?.times_billed,
-							// status: data?.status,
-							// gateway_customer_id: data?.gateway_customer_id,
-							// gateway_subscription_id:
-							// 	data?.gateway_subscription_id,
+							customer_name: data?.customer_name,
+							recurring_amount: data?.recurring_amount,
+							created_date: data?.created_date,
+							expiration_date: data?.expiration_date,
+							auto_renew: data?.auto_renew,
+							maximum_renewals: data?.maximum_renewals,
+							times_billed: data?.times_billed,
+							status: data?.status,
+							gateway_customer_id: data?.gateway_customer_id,
+							gateway_subscription_id:
+								data?.gateway_subscription_id,
+							user_login: data?.user_login,
 						},
 					});
 					return data;
@@ -367,7 +368,7 @@ class RenewMembership extends React.Component {
 		}
 	}
 
-	renew_membership(membership) {
+	renew_membership(event, membership) {
 		return fetch(
 			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_url +
@@ -394,7 +395,8 @@ class RenewMembership extends React.Component {
 		return fetch(
 			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_url +
-				'memberships/new',
+				'memberships/update/' +
+				this.props.match.params.id,
 			{
 				method: 'post',
 				headers: {
@@ -403,6 +405,7 @@ class RenewMembership extends React.Component {
 				},
 				body: JSON.stringify({
 					...Object.fromEntries(formData),
+					auto_renew: event.target.auto_renew.checked,
 					// paid_by: event.target.paid_by.value,
 				}),
 			}
@@ -497,9 +500,10 @@ class RenewMembership extends React.Component {
 											}
 											className='mr-3'
 											onClick={e =>
-												this.submit_edit_membership(
-													e
-												).bind(this)
+												this.renew_membership(
+													e,
+													this.state.membership
+												)
 											}
 										>
 											Renew
@@ -521,16 +525,21 @@ class RenewMembership extends React.Component {
 										/>
 										<FormGroup row>
 											<Col>
+												<Input
+													type='hidden'
+													name='user_id'
+													value={
+														this.state.membership
+															?.user_id
+													}
+												/>
 												<TextField
 													id='outlined-basic'
 													label='ATPI Membership Number'
 													name='user_login'
 													variant='outlined'
-													helperText={
-														'You cannot change this.'
-													}
 													value={
-														this.state.membership
+														this.state.form
 															?.user_login || ''
 													}
 													InputLabelProps={{
@@ -540,7 +549,6 @@ class RenewMembership extends React.Component {
 																?.user_login !==
 															undefined,
 													}}
-													disabled
 												/>
 											</Col>
 										</FormGroup>
