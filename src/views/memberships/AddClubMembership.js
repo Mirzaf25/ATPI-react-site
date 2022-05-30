@@ -206,7 +206,25 @@ class AddClubMembership extends React.Component {
 	async submitForm(event) {
 		event.persist();
 		event.preventDefault();
-		const user_args = {
+
+		const successData = {
+			first_name: event.target.first_name.value,
+			last_name: event.target.last_name.value,
+			email: event.target.email.value,
+			club_name: event.target.club_name.value,
+			membership_level: event.target.membership_level.value,
+			workplace: event.target.workplace.value,
+			address: event.target.address.value,
+			address_secondary: event.target.address_secondary.value,
+			country: event.target.country.value,
+			region: event.target.region.value,
+		};
+
+		this.props.history.push('/admin/membership/success-page', {
+			info: successData,
+		});
+
+		/*		const user_args = {
 			first_name: event.target.first_name.value,
 			last_name: event.target.last_name.value,
 			user_email: event.target.email.value,
@@ -219,7 +237,11 @@ class AddClubMembership extends React.Component {
 			this.state.selectedMembership,
 			event.target.club_name.value
 		)
-			.then(this.setState({ openSnackbar: true, errorSnackbar: false }))
+			.then(	
+				this.props.history.push('/admin/membership/success-page', {
+				info: successData,
+			})
+				)
 			.catch(err => {
 				this.setState({
 					openSnackbar: true,
@@ -227,6 +249,7 @@ class AddClubMembership extends React.Component {
 					error: err,
 				});
 			});
+		*/
 	}
 
 	onSuccessfullCheckout(event, user_args, membership, club_name) {

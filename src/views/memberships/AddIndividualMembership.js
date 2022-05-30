@@ -39,6 +39,7 @@ import {
 	CountryRegionData,
 } from 'react-country-region-selector';
 import { Snackbar } from '@material-ui/core';
+import SuccessPage from 'views/SuccessPage/successPage';
 
 class AddIndividualMembership extends React.Component {
 	constructor(props) {
@@ -237,8 +238,25 @@ class AddIndividualMembership extends React.Component {
 	 * Submit the form.
 	 */
 	async submitForm(event) {
-		event.persist();
+		//	event.persist();
 		event.preventDefault();
+		const successData = {
+			first_name: event.target.first_name.value,
+			last_name: event.target.last_name.value,
+			email: event.target.email.value,
+			membership_level: event.target.membership_level.value,
+			workplace: event.target.workplace.value,
+			address: event.target.address.value,
+			address_secondary: event.target.address_secondary.value,
+			country: event.target.country.value,
+			region: event.target.region.value,
+		};
+
+		this.props.history.push('/admin/membership/success-page', {
+			info: successData,
+		});
+
+		/*
 		const user_args = {
 			first_name: event.target.first_name.value,
 			last_name: event.target.last_name.value,
@@ -251,7 +269,16 @@ class AddIndividualMembership extends React.Component {
 			user_args,
 			this.state.selectedMembership
 		)
-			.then(this.setState({ openSnackbar: true, errorSnackbar: false }))
+
+			.then(
+				this.props.history.push('/admin/membership/success-page', {
+					info: successData,
+				})
+				//this.setState({
+					//			openSnackbar: true,
+					//			errorSnackbar: false,
+				//})
+			)
 			.catch(err => {
 				this.setState({
 					openSnackbar: true,
@@ -259,6 +286,8 @@ class AddIndividualMembership extends React.Component {
 					error: err,
 				});
 			});
+
+			*/
 	}
 
 	onSuccessfullCheckout(event, user_args, membership) {
@@ -389,6 +418,20 @@ class AddIndividualMembership extends React.Component {
 
 	render() {
 		const { email, country, region } = this.state;
+
+		/*		console.log(
+			'this.props.rcp_url ==>> ',
+			this.props.rcp_url,
+			'this.props.user ==>> ',
+			this.props.user,
+			'this.props.levels ==>> ',
+			this.props.levels
+		);
+
+		console.log(
+			'this.state.selectedMembership ==>> ',
+			this.state.selectedMembership
+		);*/
 
 		const cardElementOptions = {
 			style: { base: {}, invalid: {} },
