@@ -240,6 +240,9 @@ class AddIndividualMembership extends React.Component {
 	async submitForm(event) {
 		//	event.persist();
 		event.preventDefault();
+
+		const membershipData = this.state.selectedMembership;
+
 		const successData = {
 			first_name: event.target.first_name.value,
 			last_name: event.target.last_name.value,
@@ -250,6 +253,7 @@ class AddIndividualMembership extends React.Component {
 			address_secondary: event.target.address_secondary.value,
 			country: event.target.country.value,
 			region: event.target.region.value,
+			selectedMembership: membershipData,
 		};
 
 		this.props.history.push('/admin/membership/success-page', {
@@ -427,11 +431,11 @@ class AddIndividualMembership extends React.Component {
 			'this.props.levels ==>> ',
 			this.props.levels
 		);
-
+*/
 		console.log(
 			'this.state.selectedMembership ==>> ',
 			this.state.selectedMembership
-		);*/
+		);
 
 		const cardElementOptions = {
 			style: { base: {}, invalid: {} },
