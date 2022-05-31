@@ -1,6 +1,14 @@
 import OnlyHeader from 'components/Headers/OnlyHeader';
 import React from 'react';
-import { Card, CardBody, CardHeader, Col, Container, Row } from 'reactstrap';
+import {
+	Card,
+	CardBody,
+	CardHeader,
+	Col,
+	Container,
+	Row,
+	Table,
+} from 'reactstrap';
 
 class SuccessPage extends React.Component {
 	render() {
@@ -8,205 +16,287 @@ class SuccessPage extends React.Component {
 			<>
 				<OnlyHeader />
 
+				{/*
+​​currency_symbol: "EUR"
+​​duration: 1
+​​duration_unit: "year"
+​​fee: 0
+​​id: 12
+​​level: 0
+​maximum_renewals: 0
+name: "Club included members"
+price: 0
+renewal_date: "27/05/2023"
+​role: "club_member"​
+trial_duration: 0
+trial_duration_unit: "day"
+*/}
+
 				<Container className='mt--8' fluid>
 					<Card>
 						<CardHeader>User Added Successfully</CardHeader>
 
 						<CardBody>
-							<Col>
-								<Row>
-									<h3>First Name : </h3>
+							<Table striped bordered>
+								<thead>
+									<tr>
+										<th colSpan={2}>User Info</th>
 
-									<p>
-										{
-											this.props.location.state.info
-												.first_name
-										}{' '}
-									</p>
-								</Row>
-								<Row>
-									<h3>Last Name : </h3>
+										{this.props.location.state.info
+											.selectedMembership !=
+											undefined && (
+											<th colSpan={2}>Membership Info</th>
+										)}
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>First Name</td>
 
-									<p>
-										{
-											this.props.location.state.info
-												.last_name
-										}{' '}
-									</p>
-								</Row>
-								<Row>
-									<h3>User Email : </h3>
-
-									<p>
-										{this.props.location.state.info.email}{' '}
-									</p>
-								</Row>
-								<Row>
-									<h3>Membership Level : </h3>
-
-									<p>
-										{
-											this.props.location.state.info
-												.membership_level
-										}{' '}
-									</p>
-								</Row>
-
-								{this.props.location.state.info.club_name !=
-									undefined && (
-									<Row>
-										<h3>Club Name : </h3>
-										<p>
+										<td>
 											{
 												this.props.location.state.info
-													.club_name
+													.first_name
 											}{' '}
-										</p>
-									</Row>
-								)}
+										</td>
 
-								<Row>
-									<h3>Workplace : </h3>
+										{this.props.location.state.info
+											.selectedMembership !=
+											undefined && (
+											<>
+												<td>Membership Name </td>
+												<td>
+													{
+														this.props.location
+															.state.info
+															.selectedMembership
+															.name
+													}{' '}
+												</td>
+											</>
+										)}
+									</tr>
 
-									<p>
-										{
-											this.props.location.state.info
-												.workplace
-										}{' '}
-									</p>
-								</Row>
+									<tr>
+										<td>Last Name</td>
+										<td>
+											{
+												this.props.location.state.info
+													.last_name
+											}{' '}
+										</td>
 
-								<Row>
-									<h3>Address : </h3>
+										{this.props.location.state.info
+											.selectedMembership !=
+											undefined && (
+											<>
+												<td>Duration </td>
 
-									<p>
-										{this.props.location.state.info.address}{' '}
-									</p>
-								</Row>
+												<td>
+													{
+														this.props.location
+															.state.info
+															.selectedMembership
+															.duration
+													}{' '}
+													{
+														this.props.location
+															.state.info
+															.selectedMembership
+															.duration_unit
+													}
+												</td>
+											</>
+										)}
+									</tr>
 
-								<Row>
-									<h3>Address Secondary : </h3>
+									<tr>
+										<td>User Email</td>
+										<td>
+											{
+												this.props.location.state.info
+													.email
+											}
+										</td>
 
-									<p>
-										{
-											this.props.location.state.info
-												.address_secondary
-										}{' '}
-									</p>
-								</Row>
+										{this.props.location.state.info
+											.selectedMembership !=
+											undefined && (
+											<>
+												<td>Trial Duration</td>
+												<td>
+													{
+														this.props.location
+															.state.info
+															.selectedMembership
+															.trial_duration
+													}{' '}
+													{
+														this.props.location
+															.state.info
+															.selectedMembership
+															.trial_duration_unit
+													}
+												</td>
+											</>
+										)}
+									</tr>
 
-								<Row>
-									<h3>Country : </h3>
+									<tr>
+										<td>Membership Level </td>
 
-									<p>
-										{this.props.location.state.info.country}{' '}
-									</p>
-								</Row>
+										<td>
+											{
+												this.props.location.state.info
+													.membership_level
+											}{' '}
+										</td>
 
-								<Row>
-									<h3>Region : </h3>
+										{this.props.location.state.info
+											.selectedMembership !=
+											undefined && (
+											<>
+												<td>Maximum Renewals </td>
+												<td>
+													{
+														this.props.location
+															.state.info
+															.selectedMembership
+															.maximum_renewals
+													}{' '}
+												</td>
+											</>
+										)}
+									</tr>
 
-									<p>
-										{this.props.location.state.info.region}{' '}
-									</p>
-								</Row>
+									<tr>
+										<td>Workplace </td>
 
-								{/*selectedMembership */}
+										<td>
+											{
+												this.props.location.state.info
+													.workplace
+											}{' '}
+										</td>
 
-								<Row>
-									<h3>Membership Detail</h3>
-								</Row>
+										{this.props.location.state.info
+											.selectedMembership !=
+											undefined && (
+											<>
+												<td>Fee </td>
+												<td>
+													{
+														this.props.location
+															.state.info
+															.selectedMembership
+															.fee
+													}{' '}
+													{
+														this.props.location
+															.state.info
+															.selectedMembership
+															.currency_symbol
+													}
+												</td>
+											</>
+										)}
+									</tr>
 
-								<Row>
-									<h3>Name : </h3>
-									<p>
-										{
-											this.props.location.state.info
-												.selectedMembership.name
-										}{' '}
-									</p>
-								</Row>
+									<tr>
+										<td>Address </td>
 
-								<Row>
-									<h3>Duration : </h3>
-									<p>
-										{
-											this.props.location.state.info
-												.selectedMembership.duration
-										}{' '}
-										{
-											this.props.location.state.info
-												.selectedMembership
-												.duration_unit
-										}
-									</p>
-								</Row>
+										<td>
+											{
+												this.props.location.state.info
+													.address
+											}{' '}
+										</td>
 
-								<Row>
-									<h3>Fee : </h3>
-									<p>
-										{
-											this.props.location.state.info
-												.selectedMembership.fee
-										}{' '}
-										{
-											this.props.location.state.info
-												.selectedMembership
-												.currency_symbol
-										}
-									</p>
-								</Row>
+										{this.props.location.state.info
+											.selectedMembership !=
+											undefined && (
+											<>
+												<td>Price </td>
+												<td>
+													{
+														this.props.location
+															.state.info
+															.selectedMembership
+															.price
+													}{' '}
+													{
+														this.props.location
+															.state.info
+															.currency_symbol
+													}
+												</td>
+											</>
+										)}
+									</tr>
 
-								<Row>
-									<h3>Price : </h3>
-									<p>
-										{
-											this.props.location.state.info
-												.selectedMembership.price
-										}{' '}
-										{
-											this.props.location.state.info
-												.currency_symbol
-										}
-									</p>
-								</Row>
-								<Row>
-									<h3>Trial Duration : </h3>
-									<p>
-										{
-											this.props.location.state.info
-												.selectedMembership
-												.trial_duration
-										}{' '}
-										{
-											this.props.location.state.info
-												.selectedMembership
-												.trial_duration_unit
-										}
-									</p>
-								</Row>
+									<tr>
+										<td>Address Secondary </td>
 
-								<Row>
-									<h3>Maximum Renewals : </h3>
-									<p>
-										{
-											this.props.location.state.info
-												.selectedMembership
-												.maximum_renewals
-										}{' '}
-									</p>
-								</Row>
+										<td>
+											{
+												this.props.location.state.info
+													.address_secondary
+											}{' '}
+										</td>
 
-								<Row>
-									<h3>Renewal Date : </h3>
-									<p>
-										{
-											this.props.location.state.info
-												.selectedMembership.renewal_date
-										}{' '}
-									</p>
-								</Row>
-							</Col>
+										{this.props.location.state.info
+											.selectedMembership !=
+											undefined && (
+											<>
+												<td>Renewal Date </td>
+												<td>
+													{
+														this.props.location
+															.state.info
+															.selectedMembership
+															.renewal_date
+													}{' '}
+												</td>
+											</>
+										)}
+									</tr>
+
+									<tr>
+										<td>Country </td>
+
+										<td>
+											{
+												this.props.location.state.info
+													.country
+											}{' '}
+										</td>
+									</tr>
+
+									<tr>
+										<td>Region </td>
+
+										<td>
+											{
+												this.props.location.state.info
+													.region
+											}{' '}
+										</td>
+									</tr>
+
+									{this.props.location.state.info.club_name !=
+										undefined && (
+										<tr>
+											<td>Club Name </td>
+											<td>
+												{
+													this.props.location.state
+														.info.club_name
+												}{' '}
+											</td>
+										</tr>
+									)}
+								</tbody>
+							</Table>
 						</CardBody>
 					</Card>
 				</Container>
