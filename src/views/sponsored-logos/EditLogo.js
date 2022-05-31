@@ -68,8 +68,11 @@ class EditLogo extends React.Component {
 			document.getElementById('update-logo-form')
 		);
 		let image_id = false;
-		console.log(formData.has('file'), formData.get('file'));
-		if (formData.has('file')) {
+
+		if (
+			formData.has('file') &&
+			document.getElementById('update-logo-form').file.files.length !== 0
+		) {
 			const resImage = await this.addProfileImage(formData);
 			if (resImage.ok) {
 				const data = await resImage.json();
@@ -222,7 +225,7 @@ class EditLogo extends React.Component {
 						<div className='col'>
 							<Card className='shadow'>
 								<CardHeader className='border-0'>
-									<h3 className='mb-0'>Create Logo</h3>
+									<h3 className='mb-0'>Edit Logo</h3>
 								</CardHeader>
 								<CardBody>
 									<Form

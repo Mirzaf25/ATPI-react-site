@@ -91,7 +91,7 @@ class Logos extends React.Component {
 						<div className='col'>
 							<Card className='shadow'>
 								<CardHeader className='border-0 d-flex justify-content-between pl-3 pr-3'>
-									<h3 className='mb-0'>Sponsored Logos</h3>
+									<h3 className='mb-0'>Sponsor Logos</h3>
 									<Button
 										variant='contained'
 										onClick={() =>
