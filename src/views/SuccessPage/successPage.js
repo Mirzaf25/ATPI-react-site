@@ -16,25 +16,11 @@ class SuccessPage extends React.Component {
 			<>
 				<OnlyHeader />
 
-				{/*
-​​currency_symbol: "EUR"
-​​duration: 1
-​​duration_unit: "year"
-​​fee: 0
-​​id: 12
-​​level: 0
-​maximum_renewals: 0
-name: "Club included members"
-price: 0
-renewal_date: "27/05/2023"
-​role: "club_member"​
-trial_duration: 0
-trial_duration_unit: "day"
-*/}
-
 				<Container className='mt--8' fluid>
 					<Card>
-						<CardHeader>User Added Successfully</CardHeader>
+						<CardHeader>
+							<b>User Added Successfully</b>
+						</CardHeader>
 
 						<CardBody>
 							<Table striped bordered>

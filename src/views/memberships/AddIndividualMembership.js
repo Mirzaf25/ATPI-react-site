@@ -255,12 +255,11 @@ class AddIndividualMembership extends React.Component {
 			region: event.target.region.value,
 			selectedMembership: membershipData,
 		};
-
+		/*
 		this.props.history.push('/admin/membership/success-page', {
 			info: successData,
 		});
-
-		/*
+*/
 		const user_args = {
 			first_name: event.target.first_name.value,
 			last_name: event.target.last_name.value,
@@ -279,8 +278,8 @@ class AddIndividualMembership extends React.Component {
 					info: successData,
 				})
 				//this.setState({
-					//			openSnackbar: true,
-					//			errorSnackbar: false,
+				//			openSnackbar: true,
+				//			errorSnackbar: false,
 				//})
 			)
 			.catch(err => {
@@ -290,8 +289,6 @@ class AddIndividualMembership extends React.Component {
 					error: err,
 				});
 			});
-
-			*/
 	}
 
 	onSuccessfullCheckout(event, user_args, membership) {

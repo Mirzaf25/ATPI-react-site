@@ -219,12 +219,12 @@ class AddClubMembership extends React.Component {
 			country: event.target.country.value,
 			region: event.target.region.value,
 		};
-
+		/*
 		this.props.history.push('/admin/membership/success-page', {
 			info: successData,
 		});
 
-		/*		const user_args = {
+		*/ const user_args = {
 			first_name: event.target.first_name.value,
 			last_name: event.target.last_name.value,
 			user_email: event.target.email.value,
@@ -237,11 +237,11 @@ class AddClubMembership extends React.Component {
 			this.state.selectedMembership,
 			event.target.club_name.value
 		)
-			.then(	
+			.then(
 				this.props.history.push('/admin/membership/success-page', {
-				info: successData,
-			})
-				)
+					info: successData,
+				})
+			)
 			.catch(err => {
 				this.setState({
 					openSnackbar: true,
@@ -249,7 +249,6 @@ class AddClubMembership extends React.Component {
 					error: err,
 				});
 			});
-		*/
 	}
 
 	onSuccessfullCheckout(event, user_args, membership, club_name) {
