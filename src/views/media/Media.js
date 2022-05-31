@@ -1,8 +1,9 @@
-import OnlyHeader from "components/Headers/OnlyHeader";
-import React from "react";
+import OnlyHeader from 'components/Headers/OnlyHeader';
+import React from 'react';
 
 // reactstrap components
-import { Card, CardHeader, CardBody, Container, Row, Col } from "reactstrap";
+import { Card, CardHeader, CardBody, Container, Row, Col } from 'reactstrap';
+
 
 import { connect } from "react-redux";
 import { setUserLoginDetails } from "features/user/userSlice";
@@ -28,25 +29,23 @@ class Media extends React.Component {
       );
   }
 
-  componentDidUpdate() {}
+	componentDidUpdate() {}
 
-  fetchMedia = async (url) => {
-    const queryUrl = new URL(url);
-    const params = {
-      per_page: 100,
-      _embed: true,
-    };
-    for (let key in params) {
-      queryUrl.searchParams.set(key, params[key]);
-    }
-    const res = await fetch(queryUrl);
-    const data = await res.json();
-    this.setState({ media: data });
-  };
-
+	fetchMedia = async url => {
+		const queryUrl = new URL(url);
+		const params = {
+			per_page: 100,
+			_embed: true,
+		};
+		for (let key in params) {
+			queryUrl.searchParams.set(key, params[key]);
+		}
+		const res = await fetch(queryUrl);
+		const data = await res.json();
+		this.setState({ media: data });
+	};
 
   updateMdeia(newMedia){
-    console.log('newMedia ==>> ',newMedia);
     this.setState({media:newMedia});
   }
 
@@ -88,11 +87,11 @@ class Media extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    rcp_url: state.rcp_url,
-    user: state.user,
-  };
+const mapStateToProps = state => {
+	return {
+		rcp_url: state.rcp_url,
+		user: state.user,
+	};
 };
 
 const mapDispatchToProps = { setUserLoginDetails };
