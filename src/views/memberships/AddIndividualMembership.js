@@ -3,6 +3,10 @@ import React from 'react';
 
 import { Switch } from '@material-ui/core';
 
+import { Switch, withStyles } from '@material-ui/core';
+
+import PhoneInput from 'react-phone-input-2';
+
 // reactstrap components
 import {
 	Alert,
@@ -12,6 +16,7 @@ import {
 	Label,
 	Col,
 	Input,
+	InputGroup,
 	Container,
 	Row,
 	CardBody,
@@ -40,6 +45,8 @@ import {
 } from 'react-country-region-selector';
 import { Snackbar } from '@material-ui/core';
 
+import Cart from './Cart';
+import ManualPaymentDropdown from './ManualPaymentDropdown';
 class AddIndividualMembership extends React.Component {
 	constructor(props) {
 		super(props);
@@ -58,8 +65,22 @@ class AddIndividualMembership extends React.Component {
 			error: null,
 			openSnackbar: false,
 			errorSnackbar: false,
+			discountDetails: {},
 		};
 		this.handleChange = this.handleChange.bind(this);
+	}
+
+	componentDidMount() {
+		if (
+			null !== this.props.user.token &&
+			this.props.levels?.levels?.length === 0
+		) {
+			this.fetchMembershipLevels(
+				this.props.rcp_url.proxy_domain +
+					this.props.rcp_url.base_url +
+					'levels'
+			);
+		}
 	}
 
 	componentDidUpdate(
@@ -114,7 +135,8 @@ class AddIndividualMembership extends React.Component {
 	};
 
 	validateEmail(e) {
-		const emailRegex = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/;
+		const emailRegex =
+			/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 		const { validate } = this.state;
 
@@ -142,6 +164,37 @@ class AddIndividualMembership extends React.Component {
 	resetProgress() {
 		this.setState({ progress: 0 });
 	}
+
+	validateDiscount() {
+		if (!this.state.selectedMembership) return;
+
+		const code = document.getElementById('discount_code').value;
+		//@todo check res.ok on all fetch calls.
+		fetch(
+			this.props.rcp_url.proxy_domain +
+				this.props.rcp_url.base_url +
+				'discounts/validate',
+			{
+				method: 'POST',
+				headers: {
+					Authorization: 'Bearer ' + this.props.user.token,
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					code: code,
+					object_id: this.state.selectedMembership.id,
+					user_id: this.props.user.id,
+				}),
+			}
+		)
+			.then(res => res.json())
+			.then(data => {
+				console.log(data);
+				this.setState({ discountDetails: data });
+			})
+			.catch(e => console.error(e));
+	}
+
 	/**
 	 * Handle Payment
 	 * @param {*} event
@@ -166,28 +219,34 @@ class AddIndividualMembership extends React.Component {
 			console.log('2');
 			this.updateProgress(1);
 			const formData = new FormData();
-			formData.append('action', 'stripe_payment_intent');
-			formData.append('price', membership.price);
-			formData.append('currency_symbol', membership.currency_symbol);
+			formData.append(
+				'code',
+				this.state.discountDetails.code
+					? this.state.discountDetails.code
+					: event.target.discount_code.value
+			);
+			formData.append('object_id', membership.id);
+
+			//@todo remove payment if discount is 100%.
 
 			const res = await fetch(
-				this.props.rcp_url.domain +
-					'/wp-admin/admin-ajax.php?action=stripe_payment_intent',
+				this.props.rcp_url.proxy_domain +
+					this.props.rcp_url.base_url +
+					'payments/payment_intent',
 				{
 					method: 'post',
 					headers: {
-						'Content-Type': 'multipart/form-data',
+						Authorization: 'Bearer ' + this.props.user.token,
+						'Content-Type': 'application/json',
 					},
-					body: formData,
+					body: JSON.stringify(Object.fromEntries(formData)),
 				}
 			);
 
 			/* UPDATE PROGRESS */
 			console.log('3');
 			this.updateProgress(1);
-			const {
-				data: { client_secret },
-			} = await res.json();
+			const { client_secret } = await res.json();
 
 			/* UPDATE PROGRESS */
 			console.log('4');
@@ -200,7 +259,7 @@ class AddIndividualMembership extends React.Component {
 					name: `${event.target.first_name.value} ${event.target.last_name.value}`,
 					email: event.target.email.value,
 					address: {
-						address: event.target.address.value,
+						line1: event.target.address.value,
 						country: this.props.country,
 						state: this.props.region,
 					},
@@ -225,8 +284,7 @@ class AddIndividualMembership extends React.Component {
 				this.resetProgress();
 				return;
 			}
-
-			return transaction;
+			return Promise.resolve(transaction.paymentIntent);
 		} catch (err) {
 			this.resetProgress();
 			return Promise.reject(err);
@@ -239,26 +297,33 @@ class AddIndividualMembership extends React.Component {
 	async submitForm(event) {
 		event.persist();
 		event.preventDefault();
+		const formData = new FormData(event.target);
+		const user_additional_fields = [
+			'workplace',
+			'reference_club',
+			'address',
+			'address_two',
+			'town',
+			'country',
+			'county',
+			'eircode',
+			'phone',
+		];
 		const user_args = {
 			first_name: event.target.first_name.value,
 			last_name: event.target.last_name.value,
 			user_email: event.target.email.value,
 			user_pass: event.target.password.value,
 		};
+		formData.forEach((val, key) => {
+			if (user_additional_fields.includes(key)) user_args[key] = val;
+		});
 
 		this.onSuccessfullCheckout(
 			event,
 			user_args,
 			this.state.selectedMembership
-		)
-			.then(this.setState({ openSnackbar: true, errorSnackbar: false }))
-			.catch(err => {
-				this.setState({
-					openSnackbar: true,
-					errorSnackbar: true,
-					error: err,
-				});
-			});
+		);
 	}
 
 	onSuccessfullCheckout(event, user_args, membership) {
@@ -270,19 +335,25 @@ class AddIndividualMembership extends React.Component {
 			.then(data => {
 				const { errors } = data;
 				if (errors) return Promise.reject(errors);
-				return this.addMembership(data.customer_id, membership);
+				return this.addMembership(event, data.customer_id, membership);
 				// return this.addPaymentAndMembership(data, membership, transaction);
 			})
 			.then(res => {
 				if (res.status !== 200) return Promise.reject(res);
 				return res.json();
 			})
-			.then(data_memership => {
+			.then(async data_memership => {
 				const { errors, user_id, object_id } = data_memership;
 				if (errors) return Promise.reject(errors);
-				if (this.state.enable_payment) {
-					const transaction = this.handlePayment(event);
+				if (this.state.enable_stripe_payment) {
+					const transaction = await this.handlePayment(event);
+
+					console.log(transaction);
 					return this.addPayment(user_id, membership, transaction);
+					// return this.addPayment(user_id, membership, transaction);
+				}
+				if (this.state.enable_manual_payment) {
+					return this.addManualPayment(event, user_id, membership);
 				}
 				return Promise.resolve(data_memership);
 			})
@@ -316,40 +387,15 @@ class AddIndividualMembership extends React.Component {
 		);
 	}
 
-	// addPaymentAndMembership(data, membership, transaction) {
-	//   this.addPayment(data.user_id, membership, transaction)
-	//     .then((res) => {
-	//       if (res.status !== 200) return Promise.reject(res);
-	//       return res.json();
-	//     })
-	//     .then((data_payment) => {
-	//       const { errors } = data_payment;
-	//       if (errors) return Promise.reject(errors);
-	//       return this.addMembership(data.customer_id, membership);
-	//     })
-	//     .then((res) => {
-	//       if (res.status !== 200) return Promise.reject(res);
-	//       return res.json();
-	//     })
-	//     .then((data) => {
-	//       const { errors } = data;
-	//       if (errors) return Promise.reject(errors);
-	//       console.log(data);
-	//       return data;
-	//     })
-	//     .catch((err) => {
-	//       console.error(err);
-	//     });
-	// }
-
 	addPayment(user_id, membership, transaction) {
 		const args = {
 			subscription: membership.name,
 			object_id: membership.id,
 			user_id: user_id,
-			amount: membership.price,
+			amount: transaction.amount,
 			transaction_id: transaction.id,
-			status: transaction.status,
+			status: transaction.status === 'succeeded' ? 'complete' : 'failed',
+			gateway: 'stripe',
 		};
 
 		return fetch(
@@ -367,8 +413,45 @@ class AddIndividualMembership extends React.Component {
 		);
 	}
 
-	addMembership(customer_id, membership) {
-		console.log(membership);
+	addManualPayment(event, user_id, membership) {
+		const formData = new FormData(event.target);
+		const fields = [
+			'transaction_id',
+			'gateway',
+			'date',
+			'transaction_id',
+			'gateway_manual',
+		];
+		const payment_args = {
+			subscription: membership.name,
+			object_id: membership.id,
+			user_id: user_id,
+			amount: this.state.discountDetails?.total
+				? this.state.discountDetails?.total
+				: membership.price,
+			status: 'complete',
+		};
+		formData.forEach((val, key) => {
+			if (fields.includes(key)) {
+				payment_args[key] = val;
+			}
+		});
+		return fetch(
+			this.props.rcp_url.proxy_domain +
+				this.props.rcp_url.base_url +
+				'payments/new',
+			{
+				method: 'post',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: 'Bearer ' + this.props.user.token,
+				},
+				body: JSON.stringify(payment_args),
+			}
+		);
+	}
+
+	addMembership(event, customer_id, membership) {
 		return fetch(
 			this.props.rcp_url.domain +
 				this.props.rcp_url.base_url +
@@ -382,6 +465,10 @@ class AddIndividualMembership extends React.Component {
 				body: JSON.stringify({
 					customer_id: customer_id,
 					object_id: membership.id,
+					status: 'active',
+					auto_renew: event.target.auto_renew.checked,
+					paid_by: event.target.paid_by.value,
+					region: event.target.region.value,
 				}),
 			}
 		);
@@ -421,48 +508,89 @@ class AddIndividualMembership extends React.Component {
 
 									<Form onSubmit={this.submitForm.bind(this)}>
 										<FormGroup row>
-											<Label sm={3}>Name</Label>
-											<Row
-												style={{
-													flex: 2,
-													paddingLeft: '1em',
-												}}
+											<Label
+												for='individual_membership'
+												sm={4}
 											>
-												<Col md={6}>
-													<Input
-														id='first_name'
-														name='first_name'
-														placeholder='First Name'
-														type='text'
-														onChange={e => {
-															this.handleChange(
-																e
-															);
-														}}
-														required
-													/>
-												</Col>
-												<Col
-													className='mt-sm-2 mt-md-0'
-													md={6}
+												Individual Membership
+											</Label>
+											<Col md={6}>
+												<Input
+													name='membership_level'
+													defaultValue='select'
+													type='select'
+													onChange={e => {
+														this.handleChange(e);
+													}}
+													required
 												>
-													<Input
-														id='last_name'
-														name='last_name'
-														placeholder='Last Name'
-														type='text'
-														onChange={e => {
-															this.handleChange(
-																e
-															);
-														}}
-														required
-													/>
-												</Col>
-											</Row>
+													<option
+														value='select'
+														disabled
+													>
+														Select a membership
+														level.
+													</option>
+													{this.props.levels.levels
+														.length > 0 &&
+														this.props.levels.levels
+															.filter(
+																el => el.level
+															)
+															.map(
+																(item, key) => (
+																	<option
+																		key={
+																			key
+																		}
+																		value={
+																			item.id
+																		}
+																	>
+																		{
+																			item.name
+																		}
+																	</option>
+																)
+															)}
+												</Input>
+											</Col>
 										</FormGroup>
 										<FormGroup row>
-											<Label for='email' sm={3}>
+											<Label sm={4}>First Name</Label>
+											<Col md={6}>
+												<Input
+													id='first_name'
+													name='first_name'
+													placeholder='First Name'
+													type='text'
+													onChange={e => {
+														this.handleChange(e);
+													}}
+													required
+												/>
+											</Col>
+										</FormGroup>
+										<FormGroup row>
+											<Label sm={4}>Last Name</Label>
+											<Col
+												className='mt-sm-2 mt-md-0'
+												md={6}
+											>
+												<Input
+													id='last_name'
+													name='last_name'
+													placeholder='Last Name'
+													type='text'
+													onChange={e => {
+														this.handleChange(e);
+													}}
+													required
+												/>
+											</Col>
+										</FormGroup>
+										<FormGroup row>
+											<Label for='email' sm={4}>
 												Email
 											</Label>
 											<Col md={6}>
@@ -495,7 +623,7 @@ class AddIndividualMembership extends React.Component {
 											</Col>
 										</FormGroup>
 										<FormGroup row>
-											<Label for='password' sm={3}>
+											<Label for='password' sm={4}>
 												Password
 											</Label>
 											<Col md={6}>
@@ -509,58 +637,23 @@ class AddIndividualMembership extends React.Component {
 											</Col>
 										</FormGroup>
 										<FormGroup row>
-											<Label
-												for='individual_membership'
-												sm={4}
-											>
-												Individual Membership
-											</Label>
-											<Col md={6}>
-												<Input
-													name='membership_level'
-													defaultValue=''
-													type='select'
-													onChange={e => {
-														this.handleChange(e);
-													}}
-													required
-												>
-													<option disabled>
-														Select a membership
-														level.
-													</option>
-													{this.props.levels.levels
-														.length > 0 &&
-														this.props.levels.levels
-															.filter(
-																el => el.level
-															)
-															.map(
-																(item, key) => (
-																	<option
-																		key={
-																			key
-																		}
-																		value={
-																			item.id
-																		}
-																	>
-																		{
-																			item.name
-																		}
-																	</option>
-																)
-															)}
-												</Input>
-											</Col>
-										</FormGroup>
-										<FormGroup row>
 											<Label sm={4} for='workplace'>
 												Workplace
 											</Label>
 											<Col md={6}>
 												<Input
 													name='workplace'
+													type='text'
+												/>
+											</Col>
+										</FormGroup>
+										<FormGroup row>
+											<Label sm={4} for='reference_club'>
+												Job Title
+											</Label>
+											<Col md={6}>
+												<Input
+													name='reference_club'
 													type='text'
 												/>
 											</Col>
@@ -578,16 +671,25 @@ class AddIndividualMembership extends React.Component {
 											</Col>
 										</FormGroup>
 										<FormGroup row>
-											<Label
-												sm={4}
-												for='address_secondary'
-											>
+											<Label sm={4} for='address_two'>
 												Address 2
 											</Label>
 											<Col md={6}>
 												<Input
 													required
-													name='address_secondary'
+													name='address_two'
+													type='text'
+												/>
+											</Col>
+										</FormGroup>
+										<FormGroup row>
+											<Label sm={4} for='town'>
+												Town
+											</Label>
+											<Col md={6}>
+												<Input
+													required
+													name='town'
 													type='text'
 												/>
 											</Col>
@@ -623,69 +725,199 @@ class AddIndividualMembership extends React.Component {
 												/>
 											</Col>
 										</FormGroup>
+										<FormGroup row>
+											<Label sm={4} for='eircode'>
+												Eircode
+											</Label>
+											<Col md={6}>
+												<Input
+													required
+													name='eircode'
+													type='text'
+												/>
+											</Col>
+										</FormGroup>
+										<FormGroup row>
+											<Label sm={4} for='phone'>
+												Phone
+											</Label>
+											<Col md={6}>
+												<PhoneInput
+													name='phone'
+													specialLabel={''}
+													country={'ir'}
+												/>
+											</Col>
+										</FormGroup>
+										{this.props.user.is_admin && (
+											<FormGroup row>
+												<Label sm={4} for='region'>
+													Region
+												</Label>
+												<Col md={6}>
+													<Input
+														name='region'
+														type='select'
+													>
+														<option value='NW'>
+															NW
+														</option>
+														<option value='SW'>
+															SW
+														</option>
+														<option value='SE'>
+															SE
+														</option>
+														<option value='NE'>
+															NE
+														</option>
+														<option value='NI'>
+															NI
+														</option>
+														<option value='INT'>
+															INT
+														</option>
+													</Input>
+												</Col>
+											</FormGroup>
+										)}
+
 										{undefined !==
 											this.state.selectedMembership && (
-											<Table
-												bordered
-												striped
-												className='mb-2'
-											>
-												<thead>
-													<tr>
-														<th className='border-right-0'>
-															<h2>
-																Memberhsip
-																Details
-															</h2>
-														</th>
-													</tr>
-												</thead>
-												<tbody>
-													<tr>
-														<td className='font-weight-bold'>
-															Name
-														</td>
-														<td>
-															{
-																this.state
-																	.selectedMembership
-																	.name
-															}
-														</td>
-													</tr>
-													<tr>
-														<td className='font-weight-bold'>
-															Duration
-														</td>
-														<td>
-															{`${this.state.selectedMembership.duration} ${this.state.selectedMembership.duration_unit}`}
-														</td>
-													</tr>
-													<tr>
-														<td className='font-weight-bold'>
-															Price
-														</td>
-														<td>
-															{`${this.state.selectedMembership.price} ${this.state.selectedMembership.currency_symbol}`}
-														</td>
-													</tr>
-												</tbody>
-											</Table>
+											<Cart
+												membership={
+													this.state
+														.selectedMembership
+												}
+												discount={
+													this.state.discountDetails
+												}
+											/>
 										)}
 										<FormGroup row>
-											<Label sm={4} for='payment'>
-												Pay with card.
+											<Label sm={4} for='discount_code'>
+												ATPI staff code / Discount Code
+											</Label>
+											<Col md={6}>
+												<InputGroup>
+													<Input
+														name='discount_code'
+														type='text'
+														id='discount_code'
+													/>
+													<Button
+														onClick={this.validateDiscount.bind(
+															this
+														)}
+													>
+														Apply
+													</Button>
+												</InputGroup>
+											</Col>
+										</FormGroup>
+										<FormGroup
+											check
+											row
+											className='form-group'
+										>
+											<Input
+												type='checkbox'
+												name='consent'
+												className={
+													this.props.classes.checkbox
+												}
+												onChange={e =>
+													this.setState({
+														consent:
+															e.target.checked,
+													})
+												}
+											/>
+											<Col>
+												<Label for='consent' check>
+													We are aware of the
+													importance of your personal
+													information. For more
+													information, please read
+													about how we keep your data
+													protected in our Privacy
+													Policy
+												</Label>
+											</Col>
+										</FormGroup>
+										<FormGroup
+											check
+											row
+											className='form-group'
+										>
+											<Input
+												type='checkbox'
+												name='auto_renew'
+												className={
+													this.props.classes.checkbox
+												}
+												onChange={e =>
+													this.setState({
+														auto_renew:
+															e.target.checked,
+													})
+												}
+											/>
+											<Col>
+												<Label for='auto_renew' check>
+													Auto Renew
+												</Label>
+											</Col>
+										</FormGroup>
+										{this.props.user.is_admin && (
+											<FormGroup row>
+												<Label sm={4} for='paid_by'>
+													Paid by
+												</Label>
+												<Col md={6}>
+													<Input
+														name='paid_by'
+														type='select'
+													>
+														<option value='Individual'>
+															Individual
+														</option>
+														<option value='Club'>
+															Club
+														</option>
+														<option value='College'>
+															College
+														</option>
+														<option value='Honorary'>
+															Honorary
+														</option>
+													</Input>
+												</Col>
+											</FormGroup>
+										)}
+										<FormGroup
+											row
+											disabled={
+												this.state.enable_manual_payment
+											}
+										>
+											<Label sm={4} for='payment_stripe'>
+												Pay with Credit Card(Stripe).
 											</Label>
 											<Col md={6}>
 												<Switch
-													name='payment_enable'
-													onChange={e =>
+													name='payment_stripe'
+													disabled={
+														this.state
+															.enable_manual_payment
+													}
+													onChange={e => {
 														this.setState({
-															enable_payment:
+															enable_stripe_payment:
 																e.target
 																	.checked,
-														})
-													}
+														});
+													}}
 												/>
 											</Col>
 										</FormGroup>
@@ -703,6 +935,89 @@ class AddIndividualMembership extends React.Component {
 													</Col>
 												</FormGroup>
 											)}
+										<FormGroup
+											row
+											disabled={
+												this.state.enable_stripe_payment
+											}
+										>
+											<Label sm={4} for='payment_manual'>
+												Manual Payment
+											</Label>
+											<Col md={6}>
+												<Switch
+													name='payment_manual'
+													disabled={
+														this.state
+															.enable_stripe_payment
+													}
+													onChange={e => {
+														this.setState({
+															enable_manual_payment:
+																e.target
+																	.checked,
+														});
+													}}
+												/>
+											</Col>
+										</FormGroup>
+										{this.state.selectedMembership
+											?.price !== 0 &&
+											this.state.enable_manual_payment ===
+												true && (
+												<FormGroup tag='fieldset'>
+													<Input
+														name='gateway'
+														value='manual'
+														type='hidden'
+													/>
+													<ManualPaymentDropdown />
+													<FormGroup row>
+														<Label sm={4}>
+															Payment date
+														</Label>
+														<Col
+															className='mt-sm-2 mt-md-0'
+															md={6}
+														>
+															<Input
+																id='payment_date'
+																name='date'
+																placeholder='Payment date'
+																type='date'
+																onChange={e => {
+																	this.handleChange(
+																		e
+																	);
+																}}
+																required
+															/>
+														</Col>
+													</FormGroup>
+													<FormGroup row>
+														<Label sm={4}>
+															Payment Reference:
+														</Label>
+														<Col
+															className='mt-sm-2 mt-md-0'
+															md={6}
+														>
+															<Input
+																id='transaction_id'
+																name='transaction_id'
+																placeholder='Payment Reference:'
+																type='text'
+																onChange={e => {
+																	this.handleChange(
+																		e
+																	);
+																}}
+																required
+															/>
+														</Col>
+													</FormGroup>
+												</FormGroup>
+											)}
 										<FormGroup check row>
 											<Col
 												sm={{
@@ -717,7 +1032,6 @@ class AddIndividualMembership extends React.Component {
 							</Card>
 						</div>
 					</Row>
-
 					<Snackbar
 						open={this.state.openSnackbar}
 						autoHideDuration={4000}
@@ -751,6 +1065,7 @@ class AddIndividualMembership extends React.Component {
 								: 'User Added'}
 						</Alert>
 					</Snackbar>
+					in
 				</Container>
 			</>
 		);
@@ -778,6 +1093,22 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = { setUserLoginDetails, setMembershipLevels };
+
+const styles = {
+	checkbox: {
+		width: '1em',
+		height: '1em',
+		marginTop: '0.25em',
+		verticalAlign: 'top',
+		backgroundColor: '#fff',
+		backgroundRepeat: 'no-repeat',
+		backgroundPosition: 'center',
+		backgroundSize: 'contain',
+		border: '1px solid rgba(0,0,0,.25)',
+		'-webkit-print-color-adjust': 'exact',
+		colorAdjust: 'exact',
+	},
+};
 
 export default connect(
 	mapStateToProps,

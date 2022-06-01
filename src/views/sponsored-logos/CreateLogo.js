@@ -50,7 +50,6 @@ class CreateLogo extends React.Component {
 			taxonomies: [],
 			pages_show: [],
 			logoCreated: false,
-
 			error: null,
 			openSnackbar: false,
 			errorSnackbar: false,
@@ -76,6 +75,8 @@ class CreateLogo extends React.Component {
 			})
 			.then(res => res.json())
 			.then(data => console.log(data))
+			.then(res => res.json())
+			.then(data => console.log(data))
 			.then(this.setState({ openSnackbar: true, errorSnackbar: false }))
 			.catch(err => {
 				this.setState({
@@ -83,9 +84,7 @@ class CreateLogo extends React.Component {
 					errorSnackbar: true,
 					error: err,
 				});
-			}); /*.catch(err => {
-				console.error(err);
-			});*/
+			});
 	}
 
 	handleChange(event) {

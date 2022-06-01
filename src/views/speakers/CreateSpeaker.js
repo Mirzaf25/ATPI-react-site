@@ -44,7 +44,6 @@ class CreateSpeaker extends React.Component {
 		this.state = {
 			validate: {},
 			logoCreated: false,
-
 			error: null,
 			openSnackbar: false,
 			errorSnackbar: false,
@@ -76,12 +75,6 @@ class CreateSpeaker extends React.Component {
 					error: err,
 				});
 			});
-		/*
-      .then(data => console.log(data))
-			.catch(err => {
-				console.error(err);
-			});
-*/
 	}
 
 	handleChange = event => {

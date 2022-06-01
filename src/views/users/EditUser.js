@@ -231,15 +231,7 @@ class EditUser extends React.Component {
 					},
 				}))
 			)
-			.then(this.setState({ openSnackbar: true, errorSnackbar: false }))
-			.catch(err => {
-				this.setState({
-					openSnackbar: true,
-					errorSnackbar: true,
-					error: err,
-				});
-			});
-		//			.catch(err => console.error(err));
+			.catch(err => console.error(err));
 	};
 
 	render() {
