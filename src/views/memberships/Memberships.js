@@ -480,10 +480,10 @@ class Memberships extends React.Component {
 									onPageChange={this.handlePageChange.bind(
 										this
 									)}
-									pageSize={
-										this.state.memberships.length > 20
+									pageSize={this.state.number
+										/*this.state.memberships.length > 20
 											? 20
-											: this.state.memberships.length
+											: this.state.memberships.length*/
 									}
 									page={this.state.page - 1}
 									rowCount={1000}

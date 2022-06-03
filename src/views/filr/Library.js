@@ -60,6 +60,7 @@ class Library extends React.Component {
 		this.state = {
 			libraries: [],
 			addLibrary: false,
+			number : 20,
 		};
 	}
 
@@ -259,6 +260,7 @@ class Library extends React.Component {
 											LoadingOverlay: LinearProgress,
 										}}
 										autoHeight
+										pageSize={this.state.number}
 										rows={rows}
 										columns={columns}
 									/>

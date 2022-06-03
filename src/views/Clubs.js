@@ -14,7 +14,7 @@ class Clubs extends React.Component {
 		this.state = {
 			clubs: [],
 			page: 1,
-			number: 5,
+			number: 20,
 		};
 	}
 
@@ -113,6 +113,7 @@ class Clubs extends React.Component {
 									autoHeight
 									rows={rows}
 									columns={columns}
+									pageSize={this.state.number}
 									pagination
 								/>
 							</Card>

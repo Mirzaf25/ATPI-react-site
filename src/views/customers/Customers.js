@@ -30,7 +30,7 @@ class Customers extends React.Component {
 			memberships: [],
 			customers: [],
 			page: 1,
-			number: 5,
+			number: 20,
 			toggle: false,
 		};
 	}
@@ -216,6 +216,7 @@ class Customers extends React.Component {
 									rows={rows}
 									columns={columns}
 									pagination
+									pageSize={this.state.number}
 									components={{
 										Toolbar: GridToolbar,
 									}}
