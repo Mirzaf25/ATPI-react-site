@@ -293,7 +293,7 @@ class Memberships extends React.Component {
 					break;
 			}
 		}
-		if (search !== null) {
+		if (search !== null && search !== undefined) {
 			paramsOptions.search_user = search;
 		}
 		for (let key in paramsOptions) {
