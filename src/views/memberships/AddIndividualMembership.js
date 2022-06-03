@@ -329,6 +329,10 @@ class AddIndividualMembership extends React.Component {
 			if (user_additional_fields.includes(key)) user_args[key] = val;
 		});
 
+		if (user_args['country']) {
+			user_args['country'] = this.state.country;
+		}
+
 		this.onSuccessfullCheckout(
 			event,
 			user_args,
