@@ -411,7 +411,27 @@ class EditEvent extends React.Component {
 												/>
 											</Col>
 										</FormGroup>
-
+										<FormGroup row>
+											<Col>
+												<Button
+													onClick={this.handleOpen.bind(
+														this
+													)}
+												>
+													Media
+												</Button>
+												<MediaSelect
+													open={this.state.mediaOpen}
+													onClose={this.handleClose.bind(
+														this
+													)}
+													setValue={val =>
+														console.log(val)
+													}
+													fieldName='something'
+												/>
+											</Col>
+										</FormGroup>
 										{/* <FormGroup row>
 											<Col>
 												{this.state.event !== null &&
