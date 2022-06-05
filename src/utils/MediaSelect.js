@@ -21,7 +21,7 @@ class MediaSelect extends React.Component {
 		this.state = {
 			page: 1,
 			loading: false,
-			[this.props.fieldName]: 0,
+			[this.props.fieldName]: this.props.initialVal || 0,
 			open: false,
 		};
 	}
@@ -42,7 +42,11 @@ class MediaSelect extends React.Component {
 		}
 	}
 
-	componentDidUpdate() {}
+	componentDidUpdate({ initialVal: prevInitialVal }) {
+		if (this.props.initialVal !== prevInitialVal) {
+			this.setState({ [this.props.fieldName]: this.props.initialVal });
+		}
+	}
 
 	onClose = () => this.setState({ open: false });
 
@@ -71,6 +75,25 @@ class MediaSelect extends React.Component {
 			.catch(e => console.error(e));
 	}
 
+	fetchSingleMedia = async () => {
+		if (
+			this.state[this.props.fieldName] !== 0 &&
+			this.state[this.props.fieldName]
+		) {
+			const res = await fetch(
+				this.props.rcp_url.proxy_domain +
+					this.props.rcp_url.base_wp_url +
+					'media/' +
+					this.state[this.props.fieldName]
+			);
+
+			if (!res.ok) return;
+			const data = await res.json();
+
+			this.props.setMedia(this.props.media.concat([data]));
+		}
+	};
+
 	render() {
 		return (
 			<React.Fragment>
@@ -86,7 +109,13 @@ class MediaSelect extends React.Component {
 									el =>
 										el.id ===
 										this.state[this.props.fieldName]
-								)?.source_url
+								)?.source_url === undefined
+									? this.fetchSingleMedia()
+									: this.props.media.find(
+											el =>
+												el.id ===
+												this.state[this.props.fieldName]
+									  )?.source_url
 							}
 						/>
 						<Button
@@ -102,22 +131,29 @@ class MediaSelect extends React.Component {
 						</Button>
 					</Box>
 				)}
-				<Button
-					className={this.props.classes.image_button}
-					variant='contained'
-					disableElevation
-					onClick={() => this.setState({ open: true })}
-				>
-					<i className='fa fa-plus mr-4' />
-					Add an Image
-				</Button>
+				{this.state[this.props.fieldName] === 0 && (
+					<Button
+						className={this.props.classes.image_button}
+						variant='contained'
+						disableElevation
+						onClick={() => this.setState({ open: true })}
+					>
+						<i className='fa fa-plus mr-4' />
+						Add an Image
+					</Button>
+				)}
 				<Modal open={this.state.open} onClose={this.onClose}>
 					<Box className={this.props.classes.box}>
 						<Card>
 							<CardHeader className='border-0 d-flex justify-content-between'>
 								<h3 className='mb-0'>Select Media</h3>
 								<Button
-									onClick={this.onClose}
+									onClick={() => {
+										this.onClose();
+										this.setState({
+											[this.props.fieldName]: 0,
+										});
+									}}
 									className={this.props.classes.close_button}
 								>
 									<i className='fa fa-times' />

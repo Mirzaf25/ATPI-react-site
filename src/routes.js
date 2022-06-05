@@ -28,6 +28,7 @@ import EditLogo from 'views/sponsored-logos/EditLogo';
 import EditVideo from 'views/videos/EditVideo';
 import Events from 'views/events/Events';
 import EditEvent from 'views/events/EditEvent';
+import Tradeshow from 'views/tradeshow/Tradeshow';
 
 var routes = [
 	{
@@ -244,6 +245,13 @@ var routes = [
 				showInSidebar: false,
 			},
 		],
+	},
+	{
+		path: '/tradeshow',
+		name: 'tradeshow',
+		icon: 'fa fa-calendar text-blue',
+		component: Tradeshow,
+		layout: '/admin',
 	},
 	{
 		path: '/media',
