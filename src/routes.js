@@ -26,6 +26,8 @@ import CreateDiscountCode from 'views/discount/CreateDiscountCode';
 import EditPayment from 'views/EditPayment';
 import EditLogo from 'views/sponsored-logos/EditLogo';
 import EditVideo from 'views/videos/EditVideo';
+import Events from 'views/events/Events';
+import EditEvent from 'views/events/EditEvent';
 
 var routes = [
 	{
@@ -213,6 +215,31 @@ var routes = [
 				name: 'Edit Video',
 				icon: 'fa  fa-book text-green', // redundant
 				component: EditVideo,
+				layout: '/admin',
+				showInSidebar: false,
+			},
+		],
+	},
+	{
+		path: '/events',
+		name: 'events',
+		icon: 'fa fa-calendar text-blue',
+		component: Events,
+		layout: '/admin',
+		children: [
+			// {
+			// 	path: '/events/create',
+			// 	name: 'Create Event',
+			// 	icon: 'fa  fa-book text-green', // redundant
+			// 	// component: CreateEvent,
+			// 	layout: '/admin',
+			// 	showInSidebar: false,
+			// },
+			{
+				path: '/events/edit/:id',
+				name: 'Edit Event',
+				icon: 'fa  fa-book text-green', // redundant
+				component: EditEvent,
 				layout: '/admin',
 				showInSidebar: false,
 			},
