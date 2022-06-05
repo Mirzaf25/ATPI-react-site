@@ -86,7 +86,7 @@ class Events extends React.Component {
 							<Card className='shadow'>
 								<CardHeader className='border-0 d-flex justify-content-between pl-3 pr-3'>
 									<h3 className='mb-0'>Sponsor events</h3>
-									<Button
+									{/* <Button
 										variant='contained'
 										onClick={() =>
 											this.props.history.push(
@@ -95,7 +95,7 @@ class Events extends React.Component {
 										}
 									>
 										Create
-									</Button>
+									</Button> */}
 								</CardHeader>
 								<CardBody>
 									<ImageList
