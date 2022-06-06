@@ -23,6 +23,10 @@ import CreateVideo from 'views/videos/CreateVideo';
 import Media from 'views/media/Media';
 import DiscountCodes from 'views/discount/DiscountCodes';
 import CreateDiscountCode from 'views/discount/CreateDiscountCode';
+import EditPayment from 'views/EditPayment';
+import EditLogo from 'views/sponsored-logos/EditLogo';
+import Events from 'views/events/Events';
+import EditEvent from 'views/events/EditEvent';
 
 var routes = [
 	{
@@ -55,6 +59,16 @@ var routes = [
 		icon: 'ni ni-credit-card text-black',
 		component: Payment,
 		layout: '/admin',
+		children: [
+			{
+				path: '/payment/edit/:id',
+				name: 'Edit Payment',
+				icon: 'ni ni-credit-card text-black', // redundant
+				component: EditPayment,
+				layout: '/admin',
+				showInSidebar: false,
+			},
+		],
 	},
 	{
 		path: '/clubs',
@@ -87,7 +101,7 @@ var routes = [
 				showInSidebar: true,
 			},
 			{
-				path: '/membership/renew-membership/:id',
+				path: '/membership/edit/:id',
 				name: 'Renew or change a Membership',
 				icon: 'ni ni-bullet-list-67 text-blue', // redundant
 				component: RenewMembership,
@@ -153,6 +167,14 @@ var routes = [
 				layout: '/admin',
 				showInSidebar: false,
 			},
+			{
+				path: '/sponsored-logos/edit/:id',
+				name: 'Create Logo',
+				icon: 'fa  fa-book text-green', // redundant
+				component: EditLogo,
+				layout: '/admin',
+				showInSidebar: false,
+			},
 		],
 	},
 	{
@@ -184,6 +206,31 @@ var routes = [
 				name: 'Create Video',
 				icon: 'fa  fa-book text-green', // redundant
 				component: CreateVideo,
+				layout: '/admin',
+				showInSidebar: false,
+			},
+		],
+	},
+	{
+		path: '/events',
+		name: 'events',
+		icon: 'fa fa-calendar text-blue',
+		component: Events,
+		layout: '/admin',
+		children: [
+			// {
+			// 	path: '/events/create',
+			// 	name: 'Create Event',
+			// 	icon: 'fa  fa-book text-green', // redundant
+			// 	// component: CreateEvent,
+			// 	layout: '/admin',
+			// 	showInSidebar: false,
+			// },
+			{
+				path: '/events/edit/:id',
+				name: 'Edit Event',
+				icon: 'fa  fa-book text-green', // redundant
+				component: EditEvent,
 				layout: '/admin',
 				showInSidebar: false,
 			},

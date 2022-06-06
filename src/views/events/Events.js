@@ -6,43 +6,37 @@ import { Card, CardHeader, CardBody, Container, Row } from 'reactstrap';
 
 import { connect } from 'react-redux';
 import { setUserLoginDetails } from 'features/user/userSlice';
-import {
-	Button,
-	ImageList,
-	ImageListItem,
-	ImageListItemBar,
-} from '@material-ui/core';
+import { Button, ImageList } from '@material-ui/core';
 
-import 'file-viewer';
-import LogoLoopSingle from './LogoLoopSingle';
+import EventLoopSingle from './EventLoopSingle';
 
-class Logos extends React.Component {
+class Events extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			logos: [],
+			events: [],
 		};
 	}
 
 	componentDidMount() {
-		if (this.state.logos.length === 0 && this.props.user.token !== null)
-			this.fetchLogos(
+		if (this.state.events.length === 0 && this.props.user.token !== null)
+			this.fetchevents(
 				this.props.rcp_url.domain +
 					this.props.rcp_url.base_wp_url +
-					'sponsored_logos'
+					'event_listing'
 			);
 	}
 
 	componentDidUpdate() {
-		if (this.state.logos.length === 0 && this.props.user.token !== null)
-			this.fetchLogos(
+		if (this.state.events.length === 0 && this.props.user.token !== null)
+			this.fetchevents(
 				this.props.rcp_url.domain +
 					this.props.rcp_url.base_wp_url +
-					'sponsored_logos'
+					'event_listing'
 			);
 	}
 
-	fetchLogos = async url => {
+	fetchevents = async url => {
 		const queryUrl = new URL(url);
 		const params = {
 			per_page: 100,
@@ -58,16 +52,16 @@ class Logos extends React.Component {
 			},
 		});
 		const data = await res.json();
-		this.setState({ logos: data });
+		this.setState({ events: data });
 	};
 
-	editLogo = (e, id) => {
+	editEvent = (e, id) => {
 		e.preventDefault();
 		this.props.history.push(
 			this.props.history.location.pathname + '/edit/' + id
 		);
 	};
-	deleteLogo = async (url, id) => {
+	deleteEvent = async (url, id) => {
 		const res = await fetch(url, {
 			method: 'DELETE',
 			headers: {
@@ -79,7 +73,7 @@ class Logos extends React.Component {
 			const data = await res.text();
 		}
 
-		this.setState({ logos: this.state.logos.filter(el => el.id !== id) });
+		this.setState({ events: this.state.events.filter(el => el.id !== id) });
 	};
 
 	render() {
@@ -91,17 +85,17 @@ class Logos extends React.Component {
 						<div className='col'>
 							<Card className='shadow'>
 								<CardHeader className='border-0 d-flex justify-content-between pl-3 pr-3'>
-									<h3 className='mb-0'>Sponsor Logos</h3>
-									<Button
+									<h3 className='mb-0'>Sponsor events</h3>
+									{/* <Button
 										variant='contained'
 										onClick={() =>
 											this.props.history.push(
-												'sponsored-logos/create'
+												'event_listing/create'
 											)
 										}
 									>
 										Create
-									</Button>
+									</Button> */}
 								</CardHeader>
 								<CardBody>
 									<ImageList
@@ -109,17 +103,17 @@ class Logos extends React.Component {
 										cols={3}
 										gap={8}
 									>
-										{this.state.logos.length !== 0 &&
-											this.state.logos.map(
+										{this.state.events.length !== 0 &&
+											this.state.events.map(
 												(item, key) => (
-													<LogoLoopSingle
+													<EventLoopSingle
 														key={key}
 														item={item}
 														deleteHandle={
-															this.deleteLogo
+															this.deleteEvent
 														}
 														editHandle={
-															this.editLogo
+															this.editEvent
 														}
 													/>
 												)
@@ -144,4 +138,4 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = { setUserLoginDetails };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Logos);
+export default connect(mapStateToProps, mapDispatchToProps)(Events);

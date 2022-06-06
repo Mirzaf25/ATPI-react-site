@@ -42,6 +42,7 @@ import {
 } from 'react-country-region-selector';
 
 import Cart from './Cart';
+import ManualPaymentDropdown from './ManualPaymentDropdown';
 class AddIndividualMembership extends React.Component {
 	constructor(props) {
 		super(props);
@@ -67,7 +68,7 @@ class AddIndividualMembership extends React.Component {
 			this.props.levels?.levels?.length === 0
 		) {
 			this.fetchMembershipLevels(
-				this.props.rcp_url.proxy_domain +
+				this.props.rcp_url.domain +
 					this.props.rcp_url.base_url +
 					'levels'
 			);
@@ -120,6 +121,24 @@ class AddIndividualMembership extends React.Component {
 			target.type === 'checkbox' ? target.checked : target.value;
 		const { name } = target;
 
+		if (name === 'country') {
+			let country;
+			switch (value) {
+				case 'IE':
+					country = 'Ireland';
+					break;
+				case 'GB':
+					country = 'UK';
+					break;
+				case 'US':
+					country = 'US';
+					break;
+			}
+			this.setState({
+				[name]: country,
+			});
+			return;
+		}
 		this.setState({
 			[name]: value,
 		});
@@ -162,7 +181,7 @@ class AddIndividualMembership extends React.Component {
 		const code = document.getElementById('discount_code').value;
 		//@todo check res.ok on all fetch calls.
 		fetch(
-			this.props.rcp_url.proxy_domain +
+			this.props.rcp_url.domain +
 				this.props.rcp_url.base_url +
 				'discounts/validate',
 			{
@@ -221,7 +240,7 @@ class AddIndividualMembership extends React.Component {
 			//@todo remove payment if discount is 100%.
 
 			const res = await fetch(
-				this.props.rcp_url.proxy_domain +
+				this.props.rcp_url.domain +
 					this.props.rcp_url.base_url +
 					'payments/payment_intent',
 				{
@@ -310,6 +329,10 @@ class AddIndividualMembership extends React.Component {
 			if (user_additional_fields.includes(key)) user_args[key] = val;
 		});
 
+		if (user_args['country']) {
+			user_args['country'] = this.state.country;
+		}
+
 		this.onSuccessfullCheckout(
 			event,
 			user_args,
@@ -326,7 +349,7 @@ class AddIndividualMembership extends React.Component {
 			.then(data => {
 				const { errors } = data;
 				if (errors) return Promise.reject(errors);
-				return this.addMembership(data.customer_id, membership);
+				return this.addMembership(event, data.customer_id, membership);
 				// return this.addPaymentAndMembership(data, membership, transaction);
 			})
 			.then(res => {
@@ -406,7 +429,13 @@ class AddIndividualMembership extends React.Component {
 
 	addManualPayment(event, user_id, membership) {
 		const formData = new FormData(event.target);
-		const fields = ['transaction_id', 'gateway', 'date', 'transaction_id'];
+		const fields = [
+			'transaction_id',
+			'gateway',
+			'date',
+			'transaction_id',
+			'gateway_manual',
+		];
 		const payment_args = {
 			subscription: membership.name,
 			object_id: membership.id,
@@ -422,7 +451,7 @@ class AddIndividualMembership extends React.Component {
 			}
 		});
 		return fetch(
-			this.props.rcp_url.proxy_domain +
+			this.props.rcp_url.domain +
 				this.props.rcp_url.base_url +
 				'payments/new',
 			{
@@ -436,8 +465,7 @@ class AddIndividualMembership extends React.Component {
 		);
 	}
 
-	addMembership(customer_id, membership) {
-		console.log(membership);
+	addMembership(event, customer_id, membership) {
 		return fetch(
 			this.props.rcp_url.domain +
 				this.props.rcp_url.base_url +
@@ -452,6 +480,9 @@ class AddIndividualMembership extends React.Component {
 					customer_id: customer_id,
 					object_id: membership.id,
 					status: 'active',
+					auto_renew: event.target.auto_renew.checked,
+					paid_by: event.target.paid_by.value,
+					region: event.target.region.value,
 				}),
 			}
 		);
@@ -689,6 +720,12 @@ class AddIndividualMembership extends React.Component {
 													onChange={val =>
 														this.selectCountry(val)
 													}
+													valueType='short'
+													whitelist={[
+														'IE',
+														'US',
+														'GB',
+													]}
 												/>
 											</Col>
 										</FormGroup>
@@ -702,6 +739,7 @@ class AddIndividualMembership extends React.Component {
 													name='county' //"country"
 													country={country}
 													value={region}
+													countryValueType='short'
 													onChange={val =>
 														this.selectRegion(val)
 													}
@@ -949,79 +987,12 @@ class AddIndividualMembership extends React.Component {
 											this.state.enable_manual_payment ===
 												true && (
 												<FormGroup tag='fieldset'>
-													<legend>
-														Payment Type
-													</legend>
-													<FormGroup check>
-														<Input
-															name='gateway'
-															type='radio'
-															value='stripe'
-														/>
-														<Label check>
-															Stripe Phone Payment
-														</Label>
-													</FormGroup>
-													<FormGroup check>
-														<Input
-															name='gateway'
-															type='radio'
-															value='stripe'
-														/>
-														<Label check>
-															Stripe Payment link
-														</Label>
-													</FormGroup>
-													<FormGroup check>
-														<Input
-															name='gateway'
-															type='radio'
-															value='paypal'
-														/>{' '}
-														<Label check>
-															PayPal
-														</Label>
-													</FormGroup>
-													<FormGroup check>
-														<Input
-															name='gateway'
-															type='radio'
-															value='bank transfer'
-														/>
-														<Label check>
-															Bank Transfer
-														</Label>
-													</FormGroup>
-													<FormGroup check>
-														<Input
-															name='gateway'
-															type='radio'
-															value='cheque'
-														/>
-														<Label check>
-															Cheque
-														</Label>
-													</FormGroup>
-													<FormGroup check>
-														<Input
-															name='gateway'
-															type='radio'
-															value='cash'
-														/>
-														<Label check>
-															Cash
-														</Label>
-													</FormGroup>
-													<FormGroup check>
-														<Input
-															name='gateway'
-															type='radio'
-															value='honorary'
-														/>
-														<Label check>
-															Honorary
-														</Label>
-													</FormGroup>
+													<Input
+														name='gateway'
+														value='manual'
+														type='hidden'
+													/>
+													<ManualPaymentDropdown />
 													<FormGroup row>
 														<Label sm={4}>
 															Payment date

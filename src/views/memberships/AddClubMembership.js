@@ -44,6 +44,7 @@ import {
 	CountryRegionData,
 } from 'react-country-region-selector';
 import ClubMember from './ClubMember';
+import ManualPaymentDropdown from './ManualPaymentDropdown';
 
 class AddClubMembership extends React.Component {
 	constructor(props) {
@@ -74,7 +75,7 @@ class AddClubMembership extends React.Component {
 			this.props.levels?.levels?.length === 0
 		) {
 			this.fetchMembershipLevels(
-				this.props.rcp_url.proxy_domain +
+				this.props.rcp_url.domain +
 					this.props.rcp_url.base_url +
 					'levels'
 			);
@@ -127,6 +128,24 @@ class AddClubMembership extends React.Component {
 			target.type === 'checkbox' ? target.checked : target.value;
 		const { name } = target;
 
+		if (name === 'country') {
+			let country;
+			switch (value) {
+				case 'IE':
+					country = 'Ireland';
+					break;
+				case 'GB':
+					country = 'UK';
+					break;
+				case 'US':
+					country = 'US';
+					break;
+			}
+			this.setState({
+				[name]: country,
+			});
+			return;
+		}
 		this.setState({
 			[name]: value,
 		});
@@ -168,7 +187,7 @@ class AddClubMembership extends React.Component {
 		const code = document.getElementById('discount_code').value;
 		//@todo check res.ok on all fetch calls.
 		fetch(
-			this.props.rcp_url.proxy_domain +
+			this.props.rcp_url.domain +
 				this.props.rcp_url.base_url +
 				'discounts/validate',
 			{
@@ -222,7 +241,7 @@ class AddClubMembership extends React.Component {
 			);
 			formData.append('object_id', membership.id);
 			const res = await fetch(
-				this.props.rcp_url.proxy_domain +
+				this.props.rcp_url.domain +
 					this.props.rcp_url.base_url +
 					'payments/payment_intent',
 				{
@@ -304,6 +323,10 @@ class AddClubMembership extends React.Component {
 		formData.forEach((val, key) => {
 			if (user_additional_fields.includes(key)) user_args[key] = val;
 		});
+
+		if (user_args['country']) {
+			user_args['country'] = this.state.country;
+		}
 		this.onSuccessfullCheckout(
 			event,
 			user_args,
@@ -405,7 +428,13 @@ class AddClubMembership extends React.Component {
 
 	addManualPayment(event, user_id, membership) {
 		const formData = new FormData(event.target);
-		const fields = ['transaction_id', 'gateway', 'date', 'transaction_id'];
+		const fields = [
+			'transaction_id',
+			'gateway',
+			'date',
+			'transaction_id',
+			'gateway_manual',
+		];
 		const payment_args = {
 			subscription: membership.name,
 			object_id: membership.id,
@@ -421,7 +450,7 @@ class AddClubMembership extends React.Component {
 			}
 		});
 		return fetch(
-			this.props.rcp_url.proxy_domain +
+			this.props.rcp_url.domain +
 				this.props.rcp_url.base_url +
 				'payments/new',
 			{
@@ -447,6 +476,8 @@ class AddClubMembership extends React.Component {
 		formData.append('club_name', club_name);
 		formData.append('autorenew', event.target.auto_renew.checked);
 		formData.append('status', 'active');
+		formData.append('paid_by', event.target.paid_by.value);
+		formData.append('region', event.target.region.value);
 		return fetch(
 			this.props.rcp_url.domain +
 				this.props.rcp_url.base_url +
@@ -472,6 +503,7 @@ class AddClubMembership extends React.Component {
 					memberIndex={this.memberIndex}
 					key={this.memberIndex}
 					handleChange={this.handleChange}
+					levels={this.props.levels}
 					increment={this.incrementNumberOfMembers}
 					decrement={this.decrementNumberOfMembers}
 					workplace={this.state.owner_workplace.value}
@@ -758,6 +790,12 @@ class AddClubMembership extends React.Component {
 													className='form-control'
 													name='country'
 													value={country}
+													valueType='short'
+													whitelist={[
+														'IE',
+														'US',
+														'GB',
+													]}
 													onChange={val =>
 														this.selectCountry(val)
 													}
@@ -774,6 +812,7 @@ class AddClubMembership extends React.Component {
 													name='county' //"country"
 													country={country}
 													value={region}
+													countryValueType='short'
 													onChange={val =>
 														this.selectRegion(val)
 													}
@@ -1039,79 +1078,12 @@ class AddClubMembership extends React.Component {
 											this.state.enable_manual_payment ===
 												true && (
 												<FormGroup tag='fieldset'>
-													<legend>
-														Payment Type
-													</legend>
-													<FormGroup check>
-														<Input
-															name='gateway'
-															type='radio'
-															value='stripe'
-														/>
-														<Label check>
-															Stripe Phone Payment
-														</Label>
-													</FormGroup>
-													<FormGroup check>
-														<Input
-															name='gateway'
-															type='radio'
-															value='stripe'
-														/>
-														<Label check>
-															Stripe Payment link
-														</Label>
-													</FormGroup>
-													<FormGroup check>
-														<Input
-															name='gateway'
-															type='radio'
-															value='paypal'
-														/>{' '}
-														<Label check>
-															PayPal
-														</Label>
-													</FormGroup>
-													<FormGroup check>
-														<Input
-															name='gateway'
-															type='radio'
-															value='bank transfer'
-														/>
-														<Label check>
-															Bank Transfer
-														</Label>
-													</FormGroup>
-													<FormGroup check>
-														<Input
-															name='gateway'
-															type='radio'
-															value='cheque'
-														/>
-														<Label check>
-															Cheque
-														</Label>
-													</FormGroup>
-													<FormGroup check>
-														<Input
-															name='gateway'
-															type='radio'
-															value='cash'
-														/>
-														<Label check>
-															Cash
-														</Label>
-													</FormGroup>
-													<FormGroup check>
-														<Input
-															name='gateway'
-															type='radio'
-															value='honorary'
-														/>
-														<Label check>
-															Honorary
-														</Label>
-													</FormGroup>
+													<Input
+														name='gateway'
+														value='manual'
+														type='hidden'
+													/>
+													<ManualPaymentDropdown />
 													<FormGroup row>
 														<Label sm={4}>
 															Payment date

@@ -8,6 +8,7 @@ import {
 	CardHeader,
 	CardBody,
 	CardFooter,
+	Dropdown,
 	DropdownMenu,
 	DropdownItem,
 	UncontrolledDropdown,
@@ -26,7 +27,6 @@ import {
 	NavLink,
 	Form,
 	FormGroup,
-	Dropdown,
 	Modal,
 	ModalBody,
 	ModalHeader,
@@ -511,6 +511,9 @@ class Filr extends React.Component {
 							<Card className='shadow'>
 								<CardHeader className='border-0'>
 									<h3 className='mb-0'>Filr</h3>
+									<h3 className='mb-0'>ATPI Library</h3>
+									<h4>Files shared with all club members</h4>
+
 									<Row className='d-flex flex-row-reverse '>
 										<Dropdown
 											isOpen={this.state.dropdownOpen}
