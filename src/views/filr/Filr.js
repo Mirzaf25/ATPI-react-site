@@ -247,16 +247,6 @@ class Filr extends React.Component {
 		// @todo upload to api
 	};
 
-	createFolder = async e => {
-		e.preventDefault();
-
-		if (this.props.user.token === null) return;
-
-		// @todo create folder
-
-		this.setState({ newFolderName: '' });
-	};
-
 	handleFolderNameChange = e => {
 		this.setState({ newFolderName: e.target.value });
 	};
@@ -305,6 +295,7 @@ class Filr extends React.Component {
 				},
 				body: JSON.stringify(payload),
 			});
+
 			await this.props.setFilrLoading(false);
 			onSuccess();
 		} catch (error) {
@@ -445,6 +436,10 @@ class Filr extends React.Component {
 									title: this.state.newFolderName,
 									metadata: {
 										'is-folder': true,
+										'assigned-folder': this.state
+											.newFolderId
+											? this.state.newFolderId
+											: 0,
 									},
 								},
 								() => {
