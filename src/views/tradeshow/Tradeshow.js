@@ -1,6 +1,8 @@
 import OnlyHeader from 'components/Headers/OnlyHeader';
 import React from 'react';
 
+import Editor from 'utils/Editor';
+
 // reactstrap components
 import {
 	Card,
@@ -91,6 +93,7 @@ class Tradeshow extends React.Component {
 	};
 
 	handleChange = e => {
+		console.log(e);
 		const {
 			target: {
 				name,
@@ -140,6 +143,22 @@ class Tradeshow extends React.Component {
 										<h2 className='mb-2'>Banner</h2>
 										<FormGroup row>
 											<Col>
+												<Label className='d-block'>
+													Title
+												</Label>
+												<Editor
+													fieldName='title'
+													dataName='banner'
+													onInputChange={
+														this.handleChange
+													}
+													value={
+														this.state?.tradeshow
+															?.acf?.banner
+															?.title || ''
+													}
+												/>
+												{/* 
 												<TextField
 													id='title'
 													label='Title'
@@ -162,12 +181,27 @@ class Tradeshow extends React.Component {
 																?.title !== '',
 													}}
 													onChange={this.handleChange}
-												/>
+												/> */}
 											</Col>
 										</FormGroup>
 										<FormGroup row>
 											<Col>
-												<TextField
+												<Label className='d-block'>
+													Description
+												</Label>
+												<Editor
+													fieldName='description'
+													dataName='banner'
+													onInputChange={
+														this.handleChange
+													}
+													value={
+														this.state?.tradeshow
+															?.acf?.banner
+															?.description || ''
+													}
+												/>
+												{/* <TextField
 													id='description'
 													label='Description'
 													name='description'
@@ -192,7 +226,7 @@ class Tradeshow extends React.Component {
 															'',
 													}}
 													onChange={this.handleChange}
-												/>
+												/> */}
 											</Col>
 										</FormGroup>
 										<FormGroup row>
@@ -456,7 +490,23 @@ class Tradeshow extends React.Component {
 										<h2>About Event Section</h2>
 										<FormGroup row>
 											<Col>
-												<TextField
+												<Label className='d-block'>
+													Intro
+												</Label>
+												<Editor
+													fieldName='intro'
+													dataName='about_event_section'
+													onInputChange={
+														this.handleChange
+													}
+													value={
+														this.state?.tradeshow
+															?.acf
+															?.about_event_section
+															?.intro || ''
+													}
+												/>
+												{/* <TextField
 													id='intro'
 													label='Intro'
 													name='intro'
@@ -479,7 +529,7 @@ class Tradeshow extends React.Component {
 																?.about_event_section
 																?.intro !== '',
 													}}
-												/>
+												/> */}
 											</Col>
 										</FormGroup>
 										<FormGroup row>
@@ -514,7 +564,23 @@ class Tradeshow extends React.Component {
 										</FormGroup>
 										<FormGroup row>
 											<Col>
-												<TextField
+												<Label className='d-block'>
+													First Description
+												</Label>
+												<Editor
+													fieldName='first_desc'
+													dataName='about_event_section'
+													onInputChange={
+														this.handleChange
+													}
+													value={
+														this.state?.tradeshow
+															?.acf
+															?.about_event_section
+															?.first_desc || ''
+													}
+												/>
+												{/* <TextField
 													id='first_desc'
 													label='First Description'
 													name='first_desc'
@@ -538,7 +604,7 @@ class Tradeshow extends React.Component {
 																?.first_desc !==
 															'',
 													}}
-												/>
+												/> */}
 											</Col>
 										</FormGroup>
 										<FormGroup row>
@@ -613,7 +679,23 @@ class Tradeshow extends React.Component {
 
 										<FormGroup row>
 											<Col>
-												<TextField
+												<Label className='d-block'>
+													Second Description
+												</Label>
+												<Editor
+													fieldName='second_desc'
+													dataName='about_event_section'
+													onInputChange={
+														this.handleChange
+													}
+													value={
+														this.state?.tradeshow
+															?.acf
+															?.about_event_section
+															?.second_desc || ''
+													}
+												/>
+												{/* <TextField
 													id='second_desc'
 													label='Second Description'
 													name='second_desc'
@@ -637,7 +719,7 @@ class Tradeshow extends React.Component {
 																?.second_desc !==
 															'',
 													}}
-												/>
+												/> */}
 											</Col>
 										</FormGroup>
 										<FormGroup row>
@@ -672,7 +754,23 @@ class Tradeshow extends React.Component {
 										</FormGroup>
 										<FormGroup row>
 											<Col>
-												<TextField
+												<Label className='d-block'>
+													Third Description
+												</Label>
+												<Editor
+													fieldName='third_desc'
+													dataName='about_event_section'
+													onInputChange={
+														this.handleChange
+													}
+													value={
+														this.state?.tradeshow
+															?.acf
+															?.about_event_section
+															?.third_desc || ''
+													}
+												/>
+												{/* <TextField
 													id='third_desc'
 													label='Third Description'
 													name='third_desc'
@@ -696,7 +794,7 @@ class Tradeshow extends React.Component {
 																?.third_desc !==
 															'',
 													}}
-												/>
+												/> */}
 											</Col>
 										</FormGroup>
 										<FormGroup row>
@@ -731,7 +829,23 @@ class Tradeshow extends React.Component {
 										</FormGroup>
 										<FormGroup row>
 											<Col>
-												<TextField
+												<Label className='d-block'>
+													Fourth Description
+												</Label>
+												<Editor
+													fieldName='fourth_desc'
+													dataName='about_event_section'
+													onInputChange={
+														this.handleChange
+													}
+													value={
+														this.state?.tradeshow
+															?.acf
+															?.about_event_section
+															?.fourth_desc || ''
+													}
+												/>
+												{/* <TextField
 													id='fourth_desc'
 													label='Fourth Description'
 													name='fourth_desc'
@@ -755,7 +869,7 @@ class Tradeshow extends React.Component {
 																?.fourth_desc !==
 															'',
 													}}
-												/>
+												/> */}
 											</Col>
 										</FormGroup>
 										<FormGroup row>
@@ -790,7 +904,23 @@ class Tradeshow extends React.Component {
 										</FormGroup>
 										<FormGroup row>
 											<Col>
-												<TextField
+												<Label className='d-block'>
+													Fifth Description
+												</Label>
+												<Editor
+													fieldName='fifth_desc'
+													dataName='about_event_section'
+													onInputChange={
+														this.handleChange
+													}
+													value={
+														this.state?.tradeshow
+															?.acf
+															?.about_event_section
+															?.fifth_desc || ''
+													}
+												/>
+												{/* <TextField
 													id='fifth_desc'
 													label='Fifth Description'
 													name='fifth_desc'
@@ -814,7 +944,7 @@ class Tradeshow extends React.Component {
 																?.fifth_desc !==
 															'',
 													}}
-												/>
+												/> */}
 											</Col>
 										</FormGroup>
 										<FormGroup check row>
@@ -865,7 +995,22 @@ class Tradeshow extends React.Component {
 										</FormGroup>
 										<FormGroup row>
 											<Col>
-												<TextField
+												<Label className='d-block'>
+													Description
+												</Label>
+												<Editor
+													fieldName='intro_desc'
+													dataName='tiles_section'
+													onInputChange={
+														this.handleChange
+													}
+													value={
+														this.state?.tradeshow
+															?.acf?.tiles_section
+															?.intro_desc || ''
+													}
+												/>
+												{/* <TextField
 													id='intro_desc'
 													label='Description'
 													name='intro_desc'
@@ -891,7 +1036,7 @@ class Tradeshow extends React.Component {
 																?.intro_desc !==
 															'',
 													}}
-												/>
+												/> */}
 											</Col>
 										</FormGroup>
 										<FormGroup row>
@@ -1003,7 +1148,23 @@ class Tradeshow extends React.Component {
 
 										<FormGroup row>
 											<Col>
-												<TextField
+												<Label className='d-block'>
+													Schedule Description
+												</Label>
+												<Editor
+													fieldName='schedule_desc'
+													dataName='tiles_section'
+													onInputChange={
+														this.handleChange
+													}
+													value={
+														this.state?.tradeshow
+															?.acf?.tiles_section
+															?.schedule_desc ||
+														''
+													}
+												/>
+												{/* <TextField
 													id='schedule_desc'
 													label='Schedule Description'
 													name='schedule_desc'
@@ -1028,7 +1189,7 @@ class Tradeshow extends React.Component {
 																?.schedule_desc !==
 															'',
 													}}
-												/>
+												/> */}
 											</Col>
 										</FormGroup>
 										<FormGroup row>
@@ -1071,7 +1232,23 @@ class Tradeshow extends React.Component {
 										</FormGroup>
 										<FormGroup row>
 											<Col>
-												<TextField
+												<Label className='d-block'>
+													Tradeshow Description
+												</Label>
+												<Editor
+													fieldName='trade_show_desc'
+													dataName='tiles_section'
+													onInputChange={
+														this.handleChange
+													}
+													value={
+														this.state?.tradeshow
+															?.acf?.tiles_section
+															?.trade_show_desc ||
+														''
+													}
+												/>
+												{/* <TextField
 													id='trade_show_desc'
 													label='Tradeshow Description'
 													name='trade_show_desc'
@@ -1096,7 +1273,7 @@ class Tradeshow extends React.Component {
 																?.trade_show_desc !==
 															'',
 													}}
-												/>
+												/> */}
 											</Col>
 										</FormGroup>
 										<FormGroup check row>
