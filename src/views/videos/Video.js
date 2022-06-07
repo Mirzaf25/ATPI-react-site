@@ -5,7 +5,6 @@ import React from 'react';
 import { Card, CardHeader, CardBody, Container, Row } from 'reactstrap';
 
 import { connect } from 'react-redux';
-import { setUserLoginDetails } from 'features/user/userSlice';
 import {
 	Button,
 	ImageList,
@@ -149,11 +148,10 @@ class Videos extends React.Component {
 const mapStateToProps = state => {
 	return {
 		rcp_url: state.rcp_url,
-		user: state.user,
 	};
 };
 
-const mapDispatchToProps = { setUserLoginDetails };
+const mapDispatchToProps = {};
 const style = {
 	vimeo: {
 		'& iframe': {

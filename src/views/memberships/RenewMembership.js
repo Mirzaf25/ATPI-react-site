@@ -33,7 +33,6 @@ import {
 } from 'reactstrap';
 
 import { connect } from 'react-redux';
-import { setUserLoginDetails } from 'features/user/userSlice';
 import { setMembershipLevels } from 'features/levels/levelsSlice';
 import ManualPaymentDropdown from './ManualPaymentDropdown';
 import MembershipDetails from 'views/customers/MembershipDetails';
@@ -90,12 +89,8 @@ class RenewMembership extends React.Component {
 		}
 	}
 
-	async componentDidUpdate({ user: prevUser }) {
-		if (
-			null !== this.props.user.token &&
-			prevUser.token !== this.props.user.token &&
-			null === this.state.membership
-		) {
+	async componentDidUpdate() {
+		if (null === this.state.membership) {
 			const data = await this.fetchMembership(
 				this.props.rcp_url.domain +
 					this.props.rcp_url.base_url +
@@ -126,7 +121,6 @@ class RenewMembership extends React.Component {
 			mode: 'cors',
 			headers: {
 				'Content-Type': 'application/json',
-				Authorization: 'Bearer ' + this.props.user.token,
 			},
 		});
 		const data = await response.json();
@@ -219,7 +213,6 @@ class RenewMembership extends React.Component {
 				{
 					method: 'post',
 					headers: {
-						Authorization: 'Bearer ' + this.props.user.token,
 						'Content-Type': 'application/json',
 					},
 					body: JSON.stringify(Object.fromEntries(formData)),
@@ -378,7 +371,6 @@ class RenewMembership extends React.Component {
 				method: 'post',
 				headers: {
 					'Content-Type': 'application/json',
-					Authorization: 'Bearer ' + this.props.user.token,
 				},
 				body: JSON.stringify({
 					id: membership.id,
@@ -400,7 +392,6 @@ class RenewMembership extends React.Component {
 				method: 'post',
 				headers: {
 					'Content-Type': 'application/json',
-					Authorization: 'Bearer ' + this.props.user.token,
 				},
 				body: JSON.stringify({
 					...Object.fromEntries(formData),
@@ -430,7 +421,6 @@ class RenewMembership extends React.Component {
 				method: 'post',
 				headers: {
 					'Content-Type': 'application/json',
-					Authorization: 'Bearer ' + this.props.user.token,
 				},
 				body: JSON.stringify(args),
 			}
@@ -468,7 +458,6 @@ class RenewMembership extends React.Component {
 				method: 'post',
 				headers: {
 					'Content-Type': 'application/json',
-					Authorization: 'Bearer ' + this.props.user.token,
 				},
 				body: JSON.stringify(payment_args),
 			}
@@ -1015,12 +1004,12 @@ const injectedRenewMembership = props => (
 const mapStateToProps = state => {
 	return {
 		rcp_url: state.rcp_url,
-		user: state.user,
+
 		levels: state.levels,
 	};
 };
 
-const mapDispatchToProps = { setUserLoginDetails, setMembershipLevels };
+const mapDispatchToProps = { setMembershipLevels };
 
 const styles = {
 	date: {

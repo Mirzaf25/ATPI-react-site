@@ -21,7 +21,6 @@ import {
 } from 'reactstrap';
 
 import { connect } from 'react-redux';
-import { setUserLoginDetails } from 'features/user/userSlice';
 import MatEdit from '../MatEdit';
 class Customers extends React.Component {
 	constructor(props) {
@@ -62,7 +61,7 @@ class Customers extends React.Component {
 		}
 	}
 
-	fetchCustomers = async (url, token) => {
+	fetchCustomers = async url => {
 		const urlQuery = new URL(url);
 		const paramsOptions = {
 			number: 100,
@@ -74,9 +73,7 @@ class Customers extends React.Component {
 		}
 
 		const res = await fetch(urlQuery, {
-			headers: {
-				Authorization: 'Bearer ' + token,
-			},
+			headers: {},
 		});
 		const data = await res.json();
 		this.setState({ customers: data });
@@ -89,9 +86,7 @@ class Customers extends React.Component {
 	deleteCustomer = async (url, id) => {
 		const res = await fetch(url + id, {
 			method: 'DELETE',
-			headers: {
-				Authorization: 'Bearer ' + this.props.user.token,
-			},
+			headers: {},
 		});
 		if (res.status !== 200) return this.setState({ error: 'error' });
 		const data = await res.json();
@@ -224,10 +219,9 @@ class Customers extends React.Component {
 const mapStateToProps = state => {
 	return {
 		rcp_url: state.rcp_url,
-		user: state.user,
 	};
 };
 
-const mapDispatchToProps = { setUserLoginDetails };
+const mapDispatchToProps = {};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Customers);

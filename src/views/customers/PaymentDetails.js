@@ -7,7 +7,6 @@ import { Col, Table } from 'reactstrap';
 //MUI
 
 import { connect } from 'react-redux';
-import { setUserLoginDetails } from 'features/user/userSlice';
 import { Button } from '@material-ui/core';
 
 class PaymentDetails extends React.Component {
@@ -85,6 +84,6 @@ const mappropsToProps = props => {
 	};
 };
 
-const mapDispatchToProps = { setUserLoginDetails };
+const mapDispatchToProps = {};
 
 export default connect(mappropsToProps, mapDispatchToProps)(PaymentDetails);

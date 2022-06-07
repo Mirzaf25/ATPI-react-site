@@ -21,7 +21,6 @@ import {
 import { DataGrid } from '@material-ui/data-grid';
 
 import { connect } from 'react-redux';
-import { setUserLoginDetails } from 'features/user/userSlice';
 import {
 	LinearProgress,
 	Avatar,
@@ -64,9 +63,7 @@ class CreateDiscountCode extends React.Component {
 		const formData = new FormData(form);
 		fetch(this.create_discount_code_url, {
 			method: 'POST',
-			headers: {
-				Authorization: 'Bearer ' + this.props.user.token,
-			},
+			headers: {},
 			body: formData,
 		})
 			.then(res => res.json())
@@ -296,11 +293,10 @@ class CreateDiscountCode extends React.Component {
 const mapStateToProps = state => {
 	return {
 		rcp_url: state.rcp_url,
-		user: state.user,
 	};
 };
 
-const mapDispatchToProps = { setUserLoginDetails };
+const mapDispatchToProps = {};
 
 const styles = {
 	date: {

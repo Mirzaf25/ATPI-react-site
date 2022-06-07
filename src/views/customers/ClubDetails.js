@@ -5,7 +5,6 @@ import React from 'react';
 import { Col, Table } from 'reactstrap';
 
 import { connect } from 'react-redux';
-import { setUserLoginDetails } from 'features/user/userSlice';
 import { Button, Divider, Switch } from '@material-ui/core';
 
 import MatEdit from 'views/MatEdit';
@@ -198,6 +197,6 @@ const mappropsToProps = props => {
 	};
 };
 
-const mapDispatchToProps = { setUserLoginDetails };
+const mapDispatchToProps = {};
 
 export default connect(mappropsToProps, mapDispatchToProps)(ClubDetails);

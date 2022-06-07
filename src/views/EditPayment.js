@@ -29,7 +29,6 @@ import {
 } from '@material-ui/core';
 
 import { connect } from 'react-redux';
-import { setUserLoginDetails } from 'features/user/userSlice';
 
 class EditPayment extends React.Component {
 	constructor(props) {
@@ -68,14 +67,12 @@ class EditPayment extends React.Component {
 	}
 
 	componentDidMount() {
-		if (this.state.user === null && this.props.user.token !== null)
+		if (this.state.user === null)
 			this.fetchPayment(this.current_payment_url);
 	}
 
-	componentDidUpdate({ user: prevUser }) {
-		if (prevUser !== this.props.user && this.props.user.token !== null) {
-			this.fetchPayment(this.current_payment_url);
-		}
+	componentDidUpdate() {
+		this.fetchPayment(this.current_payment_url);
 	}
 
 	fetchPayment = async url => {
@@ -87,9 +84,7 @@ class EditPayment extends React.Component {
 			queryUrl.searchParams.set(key, params[key]);
 		}
 		const res = await fetch(queryUrl, {
-			headers: {
-				Authorization: 'Bearer ' + this.props.user.token,
-			},
+			headers: {},
 		});
 		if (!res.ok) return;
 		const data = await res.json();
@@ -138,7 +133,6 @@ class EditPayment extends React.Component {
 		fetch(this.update_payment_url, {
 			method: 'PUT',
 			headers: {
-				Authorization: 'Bearer ' + this.props.user.token,
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify(Object.fromEntries(formData)),
@@ -589,11 +583,10 @@ class EditPayment extends React.Component {
 const mapStateToProps = state => {
 	return {
 		rcp_url: state.rcp_url,
-		user: state.user,
 	};
 };
 
-const mapDispatchToProps = { setUserLoginDetails };
+const mapDispatchToProps = {};
 
 const styles = {
 	date: {

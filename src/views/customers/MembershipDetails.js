@@ -19,7 +19,6 @@ import {
 import { DataGrid } from '@material-ui/data-grid';
 
 import { connect } from 'react-redux';
-import { setUserLoginDetails } from 'features/user/userSlice';
 import {
 	LinearProgress,
 	Avatar,
@@ -209,6 +208,6 @@ const mappropsToProps = props => {
 	};
 };
 
-const mapDispatchToProps = { setUserLoginDetails };
+const mapDispatchToProps = {};
 
 export default connect(mappropsToProps, mapDispatchToProps)(MembershipDetails);

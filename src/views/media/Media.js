@@ -5,7 +5,6 @@ import React from 'react';
 import { Card, CardHeader, CardBody, Container, Row, Col } from 'reactstrap';
 
 import { connect } from 'react-redux';
-import { setUserLoginDetails } from 'features/user/userSlice';
 import {
 	Button,
 	Divider,
@@ -89,9 +88,7 @@ class Media extends React.Component {
 				'media',
 			{
 				method: 'post',
-				headers: {
-					Authorization: 'Bearer ' + this.props.user.token,
-				},
+				headers: {},
 				body: formData,
 			}
 		)
@@ -491,10 +488,9 @@ class Media extends React.Component {
 const mapStateToProps = state => {
 	return {
 		rcp_url: state.rcp_url,
-		user: state.user,
 	};
 };
 
-const mapDispatchToProps = { setUserLoginDetails };
+const mapDispatchToProps = {};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Media);

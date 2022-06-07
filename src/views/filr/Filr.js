@@ -33,7 +33,6 @@ import { DataGrid } from '@material-ui/data-grid';
 import fileIcons from '../../variables/file-icons';
 
 import { connect } from 'react-redux';
-import { setUserLoginDetails } from 'features/user/userSlice';
 import {
 	Grid,
 	List,
@@ -586,11 +585,10 @@ class Filr extends React.Component {
 const mapStateToProps = state => {
 	return {
 		rcp_url: state.rcp_url,
-		user: state.user,
 	};
 };
 
-const mapDispatchToProps = { setUserLoginDetails };
+const mapDispatchToProps = {};
 
 const styles = {
 	fileViewer: {

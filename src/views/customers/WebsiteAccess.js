@@ -7,7 +7,6 @@ import { Col, Form, FormGroup } from 'reactstrap';
 //MUI
 
 import { connect } from 'react-redux';
-import { setUserLoginDetails } from 'features/user/userSlice';
 import { Button, Checkbox, FormControlLabel } from '@material-ui/core';
 
 class WebsiteAccessRole extends React.Component {
@@ -28,7 +27,6 @@ class WebsiteAccessRole extends React.Component {
 		const res = await fetch(url, {
 			method: 'PUT',
 			headers: {
-				Authorization: 'Bearer ' + this.props.user.token,
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({ roles: form.getAll('roles[]') }),
@@ -130,6 +128,6 @@ const mappropsToProps = props => {
 	};
 };
 
-const mapDispatchToProps = { setUserLoginDetails };
+const mapDispatchToProps = {};
 
 export default connect(mappropsToProps, mapDispatchToProps)(WebsiteAccessRole);

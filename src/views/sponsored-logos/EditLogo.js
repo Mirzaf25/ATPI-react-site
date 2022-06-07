@@ -20,7 +20,6 @@ import {
 import { DataGrid } from '@material-ui/data-grid';
 
 import { connect } from 'react-redux';
-import { setUserLoginDetails } from 'features/user/userSlice';
 import {
 	LinearProgress,
 	Avatar,
@@ -124,7 +123,7 @@ class EditLogo extends React.Component {
 			.then(data => this.setState({ pages_show: data }))
 			.catch(e => console.error(e));
 
-		if (this.state.logo === null && this.props.user.token !== null)
+		if (this.state.logo === null)
 			this.fetchLogo(
 				this.props.rcp_url.domain +
 					this.props.rcp_url.base_wp_url +
@@ -134,7 +133,7 @@ class EditLogo extends React.Component {
 	}
 
 	componentDidUpdate() {
-		if (this.state.logo === null && this.props.user.token !== null)
+		if (this.state.logo === null)
 			this.fetchLogo(
 				this.props.rcp_url.domain +
 					this.props.rcp_url.base_wp_url +
@@ -152,9 +151,7 @@ class EditLogo extends React.Component {
 			queryUrl.searchParams.set(key, params[key]);
 		}
 		const res = await fetch(queryUrl, {
-			headers: {
-				Authorization: 'Bearer ' + this.props.user.token,
-			},
+			headers: {},
 		});
 		if (!res.ok) return;
 		const data = await res.json();
@@ -187,7 +184,6 @@ class EditLogo extends React.Component {
 				headers: {
 					//when using FormData(), the 'Content-Type' will automatically be set to 'form/multipart'
 					//so there's no need to set it here
-					Authorization: 'Bearer ' + this.props.user.token,
 				},
 				body: formData,
 			}
@@ -204,7 +200,7 @@ class EditLogo extends React.Component {
 			headers: {
 				//when using FormData(), the 'Content-Type' will automatically be set to 'form/multipart'
 				//so there's no need to set it here
-				Authorization: 'Bearer ' + this.props.user.token,
+
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
@@ -378,10 +374,9 @@ class EditLogo extends React.Component {
 const mapStateToProps = state => {
 	return {
 		rcp_url: state.rcp_url,
-		user: state.user,
 	};
 };
 
-const mapDispatchToProps = { setUserLoginDetails };
+const mapDispatchToProps = {};
 
 export default connect(mapStateToProps, mapDispatchToProps)(EditLogo);

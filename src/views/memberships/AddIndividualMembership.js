@@ -25,7 +25,6 @@ import {
 } from 'reactstrap';
 
 import { connect } from 'react-redux';
-import { setUserLoginDetails } from 'features/user/userSlice';
 import { setMembershipLevels } from 'features/levels/levelsSlice';
 //Stripe
 import {
@@ -75,15 +74,8 @@ class AddIndividualMembership extends React.Component {
 		}
 	}
 
-	componentDidUpdate(
-		{ user: prevUser },
-		{ membership_level: prevMembershipLevel }
-	) {
-		if (
-			null !== this.props.user.token &&
-			prevUser.token !== this.props.user.token &&
-			this.props.levels?.levels?.length === 0
-		) {
+	componentDidUpdate({ membership_level: prevMembershipLevel }) {
+		if (this.props.levels?.levels?.length === 0) {
 			this.fetchMembershipLevels(
 				this.props.rcp_url.domain +
 					this.props.rcp_url.base_url +
@@ -108,7 +100,6 @@ class AddIndividualMembership extends React.Component {
 			mode: 'cors',
 			headers: {
 				'Content-Type': 'application/json',
-				Authorization: 'Bearer ' + this.props.user.token,
 			},
 		});
 		const data = await response.json();
@@ -187,7 +178,6 @@ class AddIndividualMembership extends React.Component {
 			{
 				method: 'POST',
 				headers: {
-					Authorization: 'Bearer ' + this.props.user.token,
 					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify({
@@ -246,7 +236,6 @@ class AddIndividualMembership extends React.Component {
 				{
 					method: 'post',
 					headers: {
-						Authorization: 'Bearer ' + this.props.user.token,
 						'Content-Type': 'application/json',
 					},
 					body: JSON.stringify(Object.fromEntries(formData)),
@@ -394,7 +383,6 @@ class AddIndividualMembership extends React.Component {
 				method: 'post',
 				headers: {
 					'Content-Type': 'application/json',
-					Authorization: 'Bearer ' + this.props.user.token,
 				},
 				body: JSON.stringify({ user_args: user_args }),
 			}
@@ -420,7 +408,6 @@ class AddIndividualMembership extends React.Component {
 				method: 'post',
 				headers: {
 					'Content-Type': 'application/json',
-					Authorization: 'Bearer ' + this.props.user.token,
 				},
 				body: JSON.stringify(args),
 			}
@@ -458,7 +445,6 @@ class AddIndividualMembership extends React.Component {
 				method: 'post',
 				headers: {
 					'Content-Type': 'application/json',
-					Authorization: 'Bearer ' + this.props.user.token,
 				},
 				body: JSON.stringify(payment_args),
 			}
@@ -474,7 +460,6 @@ class AddIndividualMembership extends React.Component {
 				method: 'post',
 				headers: {
 					'Content-Type': 'application/json',
-					Authorization: 'Bearer ' + this.props.user.token,
 				},
 				body: JSON.stringify({
 					customer_id: customer_id,
@@ -1074,12 +1059,12 @@ const injectedCheckoutForm = props => (
 const mapStateToProps = state => {
 	return {
 		rcp_url: state.rcp_url,
-		user: state.user,
+
 		levels: state.levels,
 	};
 };
 
-const mapDispatchToProps = { setUserLoginDetails, setMembershipLevels };
+const mapDispatchToProps = { setMembershipLevels };
 
 const styles = {
 	checkbox: {

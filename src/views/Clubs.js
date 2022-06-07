@@ -6,7 +6,6 @@ import { DataGrid } from '@material-ui/data-grid';
 import { Card, CardHeader, Container, Row } from 'reactstrap';
 
 import { connect } from 'react-redux';
-import { setUserLoginDetails } from 'features/user/userSlice';
 
 class Clubs extends React.Component {
 	constructor(props) {
@@ -19,7 +18,7 @@ class Clubs extends React.Component {
 	}
 
 	componentDidMount() {
-		if (null !== this.props.user.token && this.state.clubs.length === 0) {
+		if (this.state.clubs.length === 0) {
 			this.fetchClubs(
 				this.props.rcp_url.domain +
 					this.props.rcp_url.base_url +
@@ -29,8 +28,8 @@ class Clubs extends React.Component {
 		}
 	}
 
-	componentDidUpdate({ user: prevUser }) {
-		if (null !== this.props.user.token && this.state.clubs.length === 0) {
+	componentDidUpdate() {
+		if (this.state.clubs.length === 0) {
 			this.fetchClubs(
 				this.props.rcp_url.domain +
 					this.props.rcp_url.base_url +
@@ -40,7 +39,7 @@ class Clubs extends React.Component {
 		}
 	}
 
-	fetchClubs = async (url, token) => {
+	fetchClubs = async url => {
 		const urlQuery = new URL(url);
 		const paramsOptions = {
 			number: this.state.number,
@@ -53,9 +52,7 @@ class Clubs extends React.Component {
 		}
 
 		const res = await fetch(urlQuery, {
-			headers: {
-				Authorization: 'Bearer ' + token,
-			},
+			headers: {},
 		});
 		const data = await res.json();
 		this.setState({ clubs: data });
@@ -127,10 +124,9 @@ class Clubs extends React.Component {
 const mapStateToProps = state => {
 	return {
 		rcp_url: state.rcp_url,
-		user: state.user,
 	};
 };
 
-const mapDispatchToProps = { setUserLoginDetails };
+const mapDispatchToProps = {};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Clubs);

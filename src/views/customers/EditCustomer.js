@@ -18,7 +18,6 @@ import {
 import { DataGrid } from '@material-ui/data-grid';
 
 import { connect } from 'react-redux';
-import { setUserLoginDetails } from 'features/user/userSlice';
 import {
 	LinearProgress,
 	Avatar,
@@ -76,14 +75,12 @@ class EditCustomer extends React.Component {
 	}
 
 	componentDidMount() {
-		if (this.state.user === null && this.props.user.token !== null)
+		if (this.state.user === null)
 			this.fetchCustomer(this.current_customer_url);
 	}
 
-	componentDidUpdate({ user: prevUser }, { customer: prevCustomer }) {
-		if (prevUser !== this.props.user && this.props.user.token !== null) {
-			this.fetchCustomer(this.current_customer_url);
-		}
+	componentDidUpdate({ customer: prevCustomer }) {
+		this.fetchCustomer(this.current_customer_url);
 
 		if (
 			prevCustomer !== this.state.customer &&
@@ -109,9 +106,7 @@ class EditCustomer extends React.Component {
 			queryUrl.searchParams.set(key, params[key]);
 		}
 		const res = await fetch(queryUrl, {
-			headers: {
-				Authorization: 'Bearer ' + this.props.user.token,
-			},
+			headers: {},
 		});
 		if (!res.ok) return;
 		const data = await res.json();
@@ -137,9 +132,7 @@ class EditCustomer extends React.Component {
 
 	fetchClub = async url => {
 		const res = await fetch(url, {
-			headers: {
-				Authorization: 'Bearer ' + this.props.user.token,
-			},
+			headers: {},
 		});
 
 		if (!res.ok) return;
@@ -187,7 +180,6 @@ class EditCustomer extends React.Component {
 		fetch(this.update_customer_url, {
 			method: 'PUT',
 			headers: {
-				Authorization: 'Bearer ' + this.props.user.token,
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify(Object.fromEntries(formData)),
@@ -301,10 +293,9 @@ class EditCustomer extends React.Component {
 const mapStateToProps = state => {
 	return {
 		rcp_url: state.rcp_url,
-		user: state.user,
 	};
 };
 
-const mapDispatchToProps = { setUserLoginDetails };
+const mapDispatchToProps = {};
 
 export default connect(mapStateToProps, mapDispatchToProps)(EditCustomer);

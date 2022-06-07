@@ -16,7 +16,7 @@ import {
 	Label,
 } from 'reactstrap';
 
-//MUI
+import MediaSelect from 'utils/MediaSelect';
 
 import { connect } from 'react-redux';
 import {
@@ -141,7 +141,7 @@ class EditEvent extends React.Component {
 			.then(data => this.setState({ event_listing_category: data }))
 			.catch(e => console.error(e));
 
-		if (this.state.event === null && this.props.user.token !== null)
+		if (this.state.event === null)
 			this.fetchEvent(
 				this.props.rcp_url.domain +
 					this.props.rcp_url.base_wp_url +
@@ -151,7 +151,7 @@ class EditEvent extends React.Component {
 	}
 
 	componentDidUpdate() {
-		if (this.state.event === null && this.props.user.token !== null)
+		if (this.state.event === null)
 			this.fetchEvent(
 				this.props.rcp_url.domain +
 					this.props.rcp_url.base_wp_url +
@@ -169,9 +169,7 @@ class EditEvent extends React.Component {
 			queryUrl.searchParams.set(key, params[key]);
 		}
 		const res = await fetch(queryUrl, {
-			headers: {
-				Authorization: 'Bearer ' + this.props.user.token,
-			},
+			headers: {},
 		});
 		if (!res.ok) return;
 		const data = await res.json();
@@ -208,7 +206,7 @@ class EditEvent extends React.Component {
 	// 			headers: {
 	// 				//when using FormData(), the 'Content-Type' will automatically be set to 'form/multipart'
 	// 				//so there's no need to set it here
-	// 				Authorization: 'Bearer ' + this.props.user.token,
+	//
 	// 			},
 	// 			body: formData,
 	// 		}
@@ -224,7 +222,7 @@ class EditEvent extends React.Component {
 			headers: {
 				//when using FormData(), the 'Content-Type' will automatically be set to 'form/multipart'
 				//so there's no need to set it here
-				Authorization: 'Bearer ' + this.props.user.token,
+
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
@@ -478,7 +476,6 @@ class EditEvent extends React.Component {
 const mapStateToProps = state => {
 	return {
 		rcp_url: state.rcp_url,
-		user: state.user,
 	};
 };
 

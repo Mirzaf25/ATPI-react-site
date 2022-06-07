@@ -20,7 +20,6 @@ import {
 import { DataGrid } from '@material-ui/data-grid';
 
 import { connect } from 'react-redux';
-import { setUserLoginDetails } from 'features/user/userSlice';
 import {
 	LinearProgress,
 	Avatar,
@@ -96,7 +95,6 @@ class CreateSpeaker extends React.Component {
 				headers: {
 					//when using FormData(), the 'Content-Type' will automatically be set to 'form/multipart'
 					//so there's no need to set it here
-					Authorization: 'Bearer ' + this.props.user.token,
 				},
 				body: formData,
 			}
@@ -113,7 +111,7 @@ class CreateSpeaker extends React.Component {
 			headers: {
 				//when using FormData(), the 'Content-Type' will automatically be set to 'form/multipart'
 				//so there's no need to set it here
-				Authorization: 'Bearer ' + this.props.user.token,
+
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
@@ -252,10 +250,9 @@ class CreateSpeaker extends React.Component {
 const mapStateToProps = state => {
 	return {
 		rcp_url: state.rcp_url,
-		user: state.user,
 	};
 };
 
-const mapDispatchToProps = { setUserLoginDetails };
+const mapDispatchToProps = {};
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateSpeaker);

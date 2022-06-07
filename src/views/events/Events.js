@@ -5,7 +5,6 @@ import React from 'react';
 import { Card, CardHeader, CardBody, Container, Row } from 'reactstrap';
 
 import { connect } from 'react-redux';
-import { setUserLoginDetails } from 'features/user/userSlice';
 import { Button, ImageList } from '@material-ui/core';
 
 import EventLoopSingle from './EventLoopSingle';
@@ -19,7 +18,7 @@ class Events extends React.Component {
 	}
 
 	componentDidMount() {
-		if (this.state.events.length === 0 && this.props.user.token !== null)
+		if (this.state.events.length === 0)
 			this.fetchevents(
 				this.props.rcp_url.domain +
 					this.props.rcp_url.base_wp_url +
@@ -28,7 +27,7 @@ class Events extends React.Component {
 	}
 
 	componentDidUpdate() {
-		if (this.state.events.length === 0 && this.props.user.token !== null)
+		if (this.state.events.length === 0)
 			this.fetchevents(
 				this.props.rcp_url.domain +
 					this.props.rcp_url.base_wp_url +
@@ -47,9 +46,7 @@ class Events extends React.Component {
 			queryUrl.searchParams.set(key, params[key]);
 		}
 		const res = await fetch(queryUrl, {
-			headers: {
-				Authorization: 'Bearer ' + this.props.user.token,
-			},
+			headers: {},
 		});
 		const data = await res.json();
 		this.setState({ events: data });
@@ -64,9 +61,7 @@ class Events extends React.Component {
 	deleteEvent = async (url, id) => {
 		const res = await fetch(url, {
 			method: 'DELETE',
-			headers: {
-				Authorization: 'Bearer ' + this.props.user.token,
-			},
+			headers: {},
 		});
 
 		if (res.status > 400) {
@@ -132,10 +127,9 @@ class Events extends React.Component {
 const mapStateToProps = state => {
 	return {
 		rcp_url: state.rcp_url,
-		user: state.user,
 	};
 };
 
-const mapDispatchToProps = { setUserLoginDetails };
+const mapDispatchToProps = {};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Events);

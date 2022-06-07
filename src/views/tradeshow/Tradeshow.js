@@ -17,7 +17,6 @@ import {
 } from 'reactstrap';
 
 import { connect } from 'react-redux';
-import { setUserLoginDetails } from 'features/user/userSlice';
 import { TextField, Button, withStyles } from '@material-ui/core';
 
 import MediaSelect from 'utils/MediaSelect';
@@ -1346,11 +1345,10 @@ class Tradeshow extends React.Component {
 const mapStateToProps = state => {
 	return {
 		rcp_url: state.rcp_url,
-		user: state.user,
 	};
 };
 
-const mapDispatchToProps = { setUserLoginDetails };
+const mapDispatchToProps = {};
 
 const styles = {
 	icon_col: {

@@ -8,7 +8,6 @@ import { Card, CardHeader, CardBody, Media, Container, Row } from 'reactstrap';
 import { DataGrid } from '@material-ui/data-grid';
 
 import { connect } from 'react-redux';
-import { setUserLoginDetails } from 'features/user/userSlice';
 import {
 	LinearProgress,
 	Avatar,
@@ -37,14 +36,12 @@ class DiscountCodes extends React.Component {
 			);
 	}
 
-	componentDidUpdate({ user: prevUser }) {
-		if (prevUser !== this.props.user && this.props.user.token !== null) {
-			this.fetchDiscountCodes(
-				this.props.rcp_url.domain +
-					this.props.rcp_url.base_url +
-					'discounts'
-			);
-		}
+	componentDidUpdate() {
+		this.fetchDiscountCodes(
+			this.props.rcp_url.domain +
+				this.props.rcp_url.base_url +
+				'discounts'
+		);
 	}
 
 	fetchDiscountCodes = async url => {
@@ -58,9 +55,7 @@ class DiscountCodes extends React.Component {
 			queryUrl.searchParams.set(key, params[key]);
 		}
 		const res = await fetch(queryUrl, {
-			headers: {
-				Authorization: 'Bearer ' + this.props.user.token,
-			},
+			headers: {},
 		});
 		const data = await res.json();
 		this.setState({ discount_codes: data });
@@ -201,11 +196,10 @@ class DiscountCodes extends React.Component {
 const mapStateToProps = state => {
 	return {
 		rcp_url: state.rcp_url,
-		user: state.user,
 	};
 };
 
-const mapDispatchToProps = { setUserLoginDetails };
+const mapDispatchToProps = {};
 
 const styles = theme => ({
 	chip: {

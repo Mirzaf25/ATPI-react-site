@@ -7,7 +7,6 @@ import { Col, Form, FormGroup, Row } from 'reactstrap';
 //MUI
 
 import { connect } from 'react-redux';
-import { setUserLoginDetails } from 'features/user/userSlice';
 import {
 	List,
 	ListItem,
@@ -119,6 +118,6 @@ const mappropsToProps = props => {
 	};
 };
 
-const mapDispatchToProps = { setUserLoginDetails };
+const mapDispatchToProps = {};
 
 export default connect(mappropsToProps, mapDispatchToProps)(LogoLoopSingle);

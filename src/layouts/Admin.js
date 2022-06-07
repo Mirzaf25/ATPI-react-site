@@ -19,34 +19,11 @@ import { Elements } from '@stripe/react-stripe-js';
 const stripePromise = loadStripe('' + process.env.REACT_APP_PUBLISHABLE_KEY);
 
 class Admin extends React.Component {
-	componentDidMount() {
-		this.fetchToken(
-			this.props.rcp_url.domain + this.props.rcp_url.auth_url + 'token'
-		);
-	}
+	componentDidMount() {}
 	componentDidUpdate(e) {
 		document.documentElement.scrollTop = 0;
 		document.scrollingElement.scrollTop = 0;
 		this.refs.mainContent.scrollTop = 0;
-	}
-	/**
-	 * Fetching token url from auth endpoint
-	 * @param {string} token_url
-	 */
-	async fetchToken(token_url) {
-		const response = await fetch(token_url, {
-			method: 'post',
-			mode: 'cors',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				username: process.env.REACT_APP_ATPI_USERNAME, // Hardcoded for now.
-				password: process.env.REACT_APP_ATPI_PASSWORD, // Hardcoded for now.
-			}),
-		});
-		const data = await response.json();
-		this.props.setUserLoginDetails(data);
 	}
 
 	getRoutes = routes => {

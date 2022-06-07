@@ -24,7 +24,6 @@ import {
 } from 'reactstrap';
 
 import { connect } from 'react-redux';
-import { setUserLoginDetails } from 'features/user/userSlice';
 import MatEdit from './MatEdit';
 
 class Payments extends React.Component {
@@ -38,13 +37,7 @@ class Payments extends React.Component {
 	}
 
 	componentDidMount() {
-		if (null === this.props.user.token) {
-			this.fetchToken(
-				this.props.rcp_url.domain +
-					this.props.rcp_url.auth_url +
-					'token'
-			);
-		} else if (this.state.payments?.length === 0) {
+		if (this.state.payments?.length === 0) {
 			this.fetchPayment(
 				this.props.rcp_url.domain +
 					this.props.rcp_url.base_url +
@@ -54,12 +47,8 @@ class Payments extends React.Component {
 		}
 	}
 
-	componentDidUpdate({ user: prevUser }) {
-		if (
-			null !== this.props.user.token &&
-			prevUser.token !== this.props.user.token &&
-			this.state.payments?.length === 0
-		) {
+	componentDidUpdate() {
+		if (this.state.payments?.length === 0) {
 			this.fetchPayment(
 				this.props.rcp_url.domain +
 					this.props.rcp_url.base_url +
@@ -69,24 +58,7 @@ class Payments extends React.Component {
 		}
 	}
 
-	async fetchToken(token_url) {
-		const response = await fetch(token_url, {
-			method: 'post',
-			mode: 'cors',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				username: process.env.REACT_APP_ATPI_USERNAME, // Hardcoded for now.
-				password: process.env.REACT_APP_ATPI_PASSWORD, // Hardcoded for now.
-			}),
-		});
-
-		const data = await response.json();
-		this.props.setUserLoginDetails(data);
-	}
-
-	fetchPayment = async (url, token) => {
+	fetchPayment = async url => {
 		const urlQuery = new URL(url);
 		const paramsOptions = {
 			number: this.state.number,
@@ -99,9 +71,7 @@ class Payments extends React.Component {
 		}
 
 		const res = await fetch(urlQuery, {
-			headers: {
-				Authorization: 'Bearer ' + token,
-			},
+			headers: {},
 		});
 		const data = await res.json();
 		this.setState({ payments: data });
@@ -260,10 +230,9 @@ class Payments extends React.Component {
 const mapStateToProps = state => {
 	return {
 		rcp_url: state.rcp_url,
-		user: state.user,
 	};
 };
 
-const mapDispatchToProps = { setUserLoginDetails };
+const mapDispatchToProps = {};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Payments);

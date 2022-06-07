@@ -22,7 +22,6 @@ import {
 import { Card, CardHeader, Container, Row } from 'reactstrap';
 
 import { connect } from 'react-redux';
-import { setUserLoginDetails } from 'features/user/userSlice';
 
 import MatEdit from 'views/MatEdit';
 
@@ -53,13 +52,7 @@ class Memberships extends React.Component {
 		this.setState({
 			membershipLoading: this.state.memberships?.length === 0,
 		});
-		if (null === this.props.user.token) {
-			this.fetchToken(
-				this.props.rcp_url.domain +
-					this.props.rcp_url.auth_url +
-					'token'
-			);
-		} else if (this.state.memberships?.length === 0) {
+		if (this.state.memberships?.length === 0) {
 			this.fetchMemberships(
 				this.props.rcp_url.domain +
 					this.props.rcp_url.base_url +
@@ -70,13 +63,8 @@ class Memberships extends React.Component {
 		}
 	}
 
-	componentDidUpdate(
-		{ user: prevUser },
-		{ page: prevPage, searchFilter: prevSearchFilter }
-	) {
+	componentDidUpdate({ page: prevPage, searchFilter: prevSearchFilter }) {
 		if (
-			null !== this.props.user.token &&
-			prevUser.token !== this.props.user.token &&
 			this.state.memberships?.length === 0 &&
 			this.state.searchFilter === null &&
 			this.state.search === ''
@@ -92,7 +80,7 @@ class Memberships extends React.Component {
 			);
 		}
 
-		if (null !== this.props.user.token && prevPage !== this.state.page) {
+		if (prevPage !== this.state.page) {
 			this.setState({ membershipLoading: true });
 			this.fetchMemberships(
 				this.props.rcp_url.domain +
@@ -217,7 +205,6 @@ class Memberships extends React.Component {
 			{
 				method: 'post',
 				headers: {
-					Authorization: 'Bearer ' + this.props.user.token,
 					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify({ type: 'memberships' }),
@@ -282,7 +269,7 @@ class Memberships extends React.Component {
 		this.props.setUserLoginDetails(data);
 	}
 
-	fetchMemberships = async (url, token, page, filter, search) => {
+	fetchMemberships = async (url, page, filter, search) => {
 		const urlQuery = new URL(url);
 		const paramsOptions = {
 			number: this.state.number,
@@ -308,9 +295,7 @@ class Memberships extends React.Component {
 		}
 
 		const res = await fetch(urlQuery, {
-			headers: {
-				Authorization: 'Bearer ' + token,
-			},
+			headers: {},
 		});
 
 		if (res.status !== 200) {
@@ -324,9 +309,7 @@ class Memberships extends React.Component {
 	deleteMembership = async (url, id) => {
 		const res = await fetch(url + id, {
 			method: 'DELETE',
-			headers: {
-				Authorization: 'Bearer ' + this.props.user.token,
-			},
+			headers: {},
 		});
 		if (res.status !== 200) return this.setState({ error: 'error' });
 		const data = await res.json();
@@ -518,10 +501,9 @@ class Memberships extends React.Component {
 const mapStateToProps = state => {
 	return {
 		rcp_url: state.rcp_url,
-		user: state.user,
 	};
 };
 
-const mapDispatchToProps = { setUserLoginDetails };
+const mapDispatchToProps = {};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Memberships);

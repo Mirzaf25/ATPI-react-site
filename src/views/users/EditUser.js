@@ -18,7 +18,6 @@ import {
 import { DataGrid } from '@material-ui/data-grid';
 
 import { connect } from 'react-redux';
-import { setUserLoginDetails } from 'features/user/userSlice';
 import {
 	LinearProgress,
 	Avatar,
@@ -56,7 +55,7 @@ class EditUser extends React.Component {
 	}
 
 	componentDidMount() {
-		if (this.state.user === null && this.props.user.token !== null)
+		if (this.state.user === null)
 			this.fetchUser(
 				this.props.rcp_url.domain +
 					this.props.rcp_url.base_wp_url +
@@ -65,15 +64,13 @@ class EditUser extends React.Component {
 			);
 	}
 
-	componentDidUpdate({ user: prevUser }) {
-		if (prevUser !== this.props.user && this.props.user.token !== null) {
-			this.fetchUser(
-				this.props.rcp_url.domain +
-					this.props.rcp_url.base_wp_url +
-					'users/' +
-					this.props.match.params.id
-			);
-		}
+	componentDidUpdate() {
+		this.fetchUser(
+			this.props.rcp_url.domain +
+				this.props.rcp_url.base_wp_url +
+				'users/' +
+				this.props.match.params.id
+		);
 	}
 
 	fetchUser = async url => {
@@ -86,9 +83,7 @@ class EditUser extends React.Component {
 			queryUrl.searchParams.set(key, params[key]);
 		}
 		const res = await fetch(queryUrl, {
-			headers: {
-				Authorization: 'Bearer ' + this.props.user.token,
-			},
+			headers: {},
 		});
 		const data = await res.json();
 		this.setState(prevState => ({
@@ -148,7 +143,6 @@ class EditUser extends React.Component {
 				headers: {
 					//when using FormData(), the 'Content-Type' will automatically be set to 'form/multipart'
 					//so there's no need to set it here
-					Authorization: 'Bearer ' + this.props.user.token,
 				},
 				body: formData,
 			}
@@ -182,7 +176,6 @@ class EditUser extends React.Component {
 		return fetch(url, {
 			method: 'PUT',
 			headers: {
-				Authorization: 'Bearer ' + this.props.user.token,
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
@@ -207,7 +200,6 @@ class EditUser extends React.Component {
 			{
 				method: 'PUT',
 				headers: {
-					Authorization: 'Bearer ' + this.props.user.token,
 					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify(Object.fromEntries(formData)),
@@ -563,10 +555,9 @@ class EditUser extends React.Component {
 const mapStateToProps = state => {
 	return {
 		rcp_url: state.rcp_url,
-		user: state.user,
 	};
 };
 
-const mapDispatchToProps = { setUserLoginDetails };
+const mapDispatchToProps = {};
 
 export default connect(mapStateToProps, mapDispatchToProps)(EditUser);

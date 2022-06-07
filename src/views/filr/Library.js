@@ -34,7 +34,6 @@ import { DataGrid } from '@material-ui/data-grid';
 import fileIcons from '../../variables/file-icons';
 
 import { connect } from 'react-redux';
-import { setUserLoginDetails } from 'features/user/userSlice';
 import {
 	Grid,
 	List,
@@ -108,7 +107,6 @@ class Library extends React.Component {
 			{
 				method: 'post',
 				headers: {
-					Authorization: 'Bearer ' + this.props.user.token,
 					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify({
@@ -275,10 +273,9 @@ class Library extends React.Component {
 const mapStateToProps = state => {
 	return {
 		rcp_url: state.rcp_url,
-		user: state.user,
 	};
 };
 
-const mapDispatchToProps = { setUserLoginDetails };
+const mapDispatchToProps = {};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Library);

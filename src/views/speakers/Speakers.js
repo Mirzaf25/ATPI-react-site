@@ -8,7 +8,6 @@ import { Card, CardHeader, CardBody, Media, Container, Row } from 'reactstrap';
 import { DataGrid } from '@material-ui/data-grid';
 
 import { connect } from 'react-redux';
-import { setUserLoginDetails } from 'features/user/userSlice';
 import { LinearProgress, Avatar, Button } from '@material-ui/core';
 
 class Speakers extends React.Component {
@@ -156,10 +155,9 @@ class Speakers extends React.Component {
 const mapStateToProps = state => {
 	return {
 		rcp_url: state.rcp_url,
-		user: state.user,
 	};
 };
 
-const mapDispatchToProps = { setUserLoginDetails };
+const mapDispatchToProps = {};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Speakers);
