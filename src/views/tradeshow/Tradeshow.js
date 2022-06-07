@@ -55,7 +55,27 @@ class Tradeshow extends React.Component {
 				acf: { ...prevState.acf, [key]: data?.acf[key] },
 			}));
 		}
-		this.setState({ tradeshow: data });
+		this.setState({ tradeshow: data, slug: data?.slug });
+	};
+
+	changeSlug = async () => {
+		const res = await fetch(this.tradeshow_url, {
+			method: 'PUT',
+			headers: {
+				Authorization:
+					'Basic ZmFyaGFuYW53YXI1NjJAZ21haWwuY29tOk5leHRwYWtAMTIz',
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				slug: this.state.slug,
+			}),
+		});
+
+		if (res.status >= 400) return;
+
+		const data = await res.json();
+
+		this.setState({ tradeshow: data, slug: data?.slug });
 	};
 
 	submitForm = async e => {
@@ -93,7 +113,6 @@ class Tradeshow extends React.Component {
 	};
 
 	handleChange = e => {
-		console.log(e);
 		const {
 			target: {
 				name,
@@ -446,6 +465,27 @@ class Tradeshow extends React.Component {
 												/>
 											</Col>
 										</FormGroup>
+										<FormGroup row>
+											<Col>
+												<TextField
+													id='vimeo_video_url'
+													label='Vimeo Video URL'
+													name='vimeo_video_url'
+													variant='outlined'
+													value={
+														this.state?.acf
+															?.vimeo_video_url ||
+														''
+													}
+													InputLabelProps={{
+														shrink:
+															this.state?.acf
+																?.vimeo_video_url !==
+															'',
+													}}
+												/>
+											</Col>
+										</FormGroup>
 
 										<FormGroup check row>
 											<Col>
@@ -458,30 +498,30 @@ class Tradeshow extends React.Component {
 											</Col>
 										</FormGroup>
 									</Form>
-									<Col className='mb-4'>
-										<TextField
-											id='vimeo_video_url'
-											label='Vimeo Video URL'
-											name='vimeo_video_url'
-											variant='outlined'
-											value={
-												this.state?.acf
-													?.vimeo_video_url || ''
-											}
-											InputLabelProps={{
-												shrink:
-													this.state?.acf
-														?.vimeo_video_url !==
-													'',
-											}}
-										/>
-										<Button
-											className='ml-4'
-											variant='contained'
-										>
-											Change
-										</Button>
-									</Col>
+									<FormGroup row>
+										<Col className='mb-4'>
+											<TextField
+												className='d-block mt-4 mb-4'
+												id='slug'
+												label='Page slug'
+												name='slug'
+												variant='outlined'
+												value={this.state?.slug || ''}
+												InputLabelProps={{
+													shrink:
+														this.state?.slug !== '',
+												}}
+											/>
+											<Button
+												className='ml-4'
+												variant='contained'
+												onClick={this.changeSlug}
+											>
+												Change
+											</Button>
+										</Col>
+									</FormGroup>
+
 									<Form
 										data-id='about_event_section'
 										onSubmit={this.submitForm}
