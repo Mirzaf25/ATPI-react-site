@@ -45,8 +45,8 @@ class Clubs extends React.Component {
 		const paramsOptions = {
 			number: this.state.number,
 			offset: (this.state.page - 1) * this.state.number,
-			orderby: 'ID',
-			order: 'ASC',
+			orderby: 'created_date',
+			order: 'DESC',
 		};
 		for (let key in paramsOptions) {
 			urlQuery.searchParams.set(key, paramsOptions[key]);
@@ -62,8 +62,6 @@ class Clubs extends React.Component {
 	};
 
 	render() {
-		console.table('Clubs => ', this.state.clubs);
-
 		const columns = [
 			{ field: 'id', headerName: 'ID', width: 90 },
 			{ field: 'name', headerName: 'Club Name', width: 180 },
