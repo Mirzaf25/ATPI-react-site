@@ -19,7 +19,10 @@ ReactDOM.render(
 					path='/admin'
 					render={props => <AdminLayout {...props} />}
 				/>
-				<Redirect from='/' to='/admin/users/me' />
+				{(window.location.pathname === '/' ||
+					window.location.pathname === '/admin') && (
+					<Redirect from='/' to='/admin/index' />
+				)}
 			</Provider>
 		</Switch>
 	</BrowserRouter>,
