@@ -93,10 +93,7 @@ class Memberships extends React.Component {
 			);
 		}
 
-		if (
-			null !== this.props.user.token &&
-			prevSearchFilter !== this.state.searchFilter
-		) {
+		if (prevSearchFilter !== this.state.searchFilter) {
 			this.setState({ membershipLoading: true });
 			this.fetchMemberships(
 				this.props.rcp_url.domain +

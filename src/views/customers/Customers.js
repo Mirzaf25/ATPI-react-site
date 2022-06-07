@@ -34,29 +34,21 @@ class Customers extends React.Component {
 		};
 	}
 	componentDidMount() {
-		if (
-			null !== this.props.user.token &&
-			this.state.customers.length === 0
-		) {
+		if (this.state.customers.length === 0) {
 			this.fetchCustomers(
 				this.props.rcp_url.domain +
 					this.props.rcp_url.base_url +
-					'customers',
-				this.props.user.token
+					'customers'
 			);
 		}
 	}
 
 	componentDidUpdate() {
-		if (
-			null !== this.props.user.token &&
-			this.state.customers.length === 0
-		) {
+		if (this.state.customers.length === 0) {
 			this.fetchCustomers(
 				this.props.rcp_url.domain +
 					this.props.rcp_url.base_url +
-					'customers',
-				this.props.user.token
+					'customers'
 			);
 		}
 	}

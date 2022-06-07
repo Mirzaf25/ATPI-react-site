@@ -69,10 +69,7 @@ class AddClubMembership extends React.Component {
 	}
 
 	componentDidMount() {
-		if (
-			null !== this.props.user.token &&
-			this.props.levels?.levels?.length === 0
-		) {
+		if (this.props.levels?.levels?.length === 0) {
 			this.fetchMembershipLevels(
 				this.props.rcp_url.domain +
 					this.props.rcp_url.base_url +
