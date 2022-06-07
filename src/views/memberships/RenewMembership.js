@@ -74,7 +74,7 @@ class RenewMembership extends React.Component {
 	async componentDidMount() {
 		if (null === this.state.membership && null !== this.props.user.token) {
 			const data = await this.fetchMembership(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'memberships',
 				this.props.match.params.id
@@ -97,7 +97,7 @@ class RenewMembership extends React.Component {
 			null === this.state.membership
 		) {
 			const data = await this.fetchMembership(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'memberships',
 				this.props.match.params.id
@@ -208,24 +208,26 @@ class RenewMembership extends React.Component {
 		const cardElement = elements.getElement('card');
 		try {
 			const membership = this.props.levels.levels.find(
-				el => el.id === parseInt(this.state.membership.object_id)
+				el => el.id === parseInt(event.target.membership_level.value)
 			);
 			const formData = new FormData();
-			formData.append('object_id', membership.id);
+			formData.append('action', 'stripe_payment_intent');
+			formData.append('price', membership.recurring_amount);
+			formData.append('currency_symbol', membership.currency_symbol);
 			const res = await fetch(
-				this.props.rcp_url.domain +
-					this.props.rcp_url.base_url +
-					'payments/payment_intent',
+				this.props.rcp_url.proxy_domain +
+					'/wp-admin/admin-ajax.php?action=stripe_payment_intent',
 				{
 					method: 'post',
 					headers: {
-						Authorization: 'Bearer ' + this.props.user.token,
-						'Content-Type': 'application/json',
+						'Content-Type': 'multipart/form-data',
 					},
-					body: JSON.stringify(Object.fromEntries(formData)),
+					body: formData,
 				}
 			);
-			const { client_secret } = await res.json();
+			const {
+				data: { client_secret },
+			} = await res.json();
 			const paymentMethodReq = await stripe.createPaymentMethod({
 				type: 'card',
 				card: cardElement,
@@ -235,7 +237,7 @@ class RenewMembership extends React.Component {
 			});
 
 			if (paymentMethodReq.error) {
-				throw paymentMethodReq.error;
+				return;
 			}
 
 			const { error, ...transaction } = await stripe.confirmCardPayment(
@@ -246,10 +248,10 @@ class RenewMembership extends React.Component {
 			);
 
 			if (error) {
-				throw error;
+				return;
 			}
 
-			return Promise.resolve(transaction.paymentIntent);
+			return transaction;
 		} catch (err) {
 			return Promise.reject(err);
 		}
@@ -258,12 +260,11 @@ class RenewMembership extends React.Component {
 	/**
 	 * Submit the form.
 	 */
-	async submit_edit_membership(event) {
+	submit_edit_membership(event) {
 		event.persist();
 		event.preventDefault();
 		if (this.state.enable_payment) {
-			const transaction = await this.handlePayment(event);
-			console.log(transaction);
+			const transaction = this.handlePayment(event);
 			this.addPayment(this.state.selectedMembership, transaction)
 				.then(res => {
 					if (res.status > 400) return Promise.reject(res);
@@ -369,7 +370,7 @@ class RenewMembership extends React.Component {
 
 	renew_membership(event, membership) {
 		return fetch(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_url +
 				'memberships/' +
 				this.state.membership.id +
@@ -392,7 +393,7 @@ class RenewMembership extends React.Component {
 	updateMembership(event) {
 		const formData = new FormData(event.target);
 		return fetch(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_url +
 				'memberships/update/' +
 				this.props.match.params.id,
@@ -415,7 +416,7 @@ class RenewMembership extends React.Component {
 		const args = {
 			subscription: membership.name,
 			object_id: membership.id,
-			user_id: this.state.membership.user_id,
+			user_id: this.state.membership.price,
 			amount: transaction.amount,
 			transaction_id: transaction.id,
 			status: transaction.status === 'succeeded' ? 'complete' : 'failed',
@@ -423,7 +424,7 @@ class RenewMembership extends React.Component {
 		};
 
 		return fetch(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_url +
 				'payments/new',
 			{
@@ -461,7 +462,7 @@ class RenewMembership extends React.Component {
 			}
 		});
 		return fetch(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_url +
 				'payments/new',
 			{

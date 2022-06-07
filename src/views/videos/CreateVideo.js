@@ -52,7 +52,7 @@ class CreateVideo extends React.Component {
 		this.handleChange = this.handleChange.bind(this);
 
 		this.create_video_url =
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 			this.props.rcp_url.base_wp_url +
 			'webinar';
 	}
@@ -78,7 +78,7 @@ class CreateVideo extends React.Component {
 
 	componentDidMount() {
 		const url = new URL(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_wp_url +
 				'event_organizer'
 		);

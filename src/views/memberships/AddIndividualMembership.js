@@ -68,7 +68,7 @@ class AddIndividualMembership extends React.Component {
 			this.props.levels?.levels?.length === 0
 		) {
 			this.fetchMembershipLevels(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'levels'
 			);
@@ -85,7 +85,7 @@ class AddIndividualMembership extends React.Component {
 			this.props.levels?.levels?.length === 0
 		) {
 			this.fetchMembershipLevels(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'levels'
 			);
@@ -181,7 +181,7 @@ class AddIndividualMembership extends React.Component {
 		const code = document.getElementById('discount_code').value;
 		//@todo check res.ok on all fetch calls.
 		fetch(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_url +
 				'discounts/validate',
 			{
@@ -240,7 +240,7 @@ class AddIndividualMembership extends React.Component {
 			//@todo remove payment if discount is 100%.
 
 			const res = await fetch(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'payments/payment_intent',
 				{
@@ -329,10 +329,6 @@ class AddIndividualMembership extends React.Component {
 			if (user_additional_fields.includes(key)) user_args[key] = val;
 		});
 
-		if (user_args['country']) {
-			user_args['country'] = this.state.country;
-		}
-
 		this.onSuccessfullCheckout(
 			event,
 			user_args,
@@ -387,7 +383,7 @@ class AddIndividualMembership extends React.Component {
 
 	addCustomer(user_args) {
 		return fetch(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_url +
 				'customers/new',
 			{
@@ -413,7 +409,7 @@ class AddIndividualMembership extends React.Component {
 		};
 
 		return fetch(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_url +
 				'payments/new',
 			{
@@ -451,7 +447,7 @@ class AddIndividualMembership extends React.Component {
 			}
 		});
 		return fetch(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_url +
 				'payments/new',
 			{
@@ -467,7 +463,7 @@ class AddIndividualMembership extends React.Component {
 
 	addMembership(event, customer_id, membership) {
 		return fetch(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_url +
 				'memberships/new',
 			{

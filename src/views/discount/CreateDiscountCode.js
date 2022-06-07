@@ -53,7 +53,7 @@ class CreateDiscountCode extends React.Component {
 		};
 
 		this.create_discount_code_url =
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 			this.props.rcp_url.base_url +
 			'discounts/new';
 	}

@@ -7,12 +7,10 @@ import {
 	getGridNumericColumnOperators,
 	GridToolbarExport,
 } from '@material-ui/data-grid';
-
 import {
 	FormControlLabel,
 	IconButton,
 	Button,
-	CircularProgress,
 	InputAdornment,
 	LinearProgress,
 	TextField,
@@ -55,13 +53,13 @@ class Memberships extends React.Component {
 		});
 		if (null === this.props.user.token) {
 			this.fetchToken(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.auth_url +
 					'token'
 			);
 		} else if (this.state.memberships?.length === 0) {
 			this.fetchMemberships(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'memberships',
 				this.props.user.token,
@@ -82,7 +80,7 @@ class Memberships extends React.Component {
 			this.state.search === ''
 		) {
 			this.fetchMemberships(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'memberships',
 				this.props.user.token,
@@ -95,7 +93,7 @@ class Memberships extends React.Component {
 		if (null !== this.props.user.token && prevPage !== this.state.page) {
 			this.setState({ membershipLoading: true });
 			this.fetchMemberships(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'memberships',
 				this.props.user.token,
@@ -111,7 +109,7 @@ class Memberships extends React.Component {
 		) {
 			this.setState({ membershipLoading: true });
 			this.fetchMemberships(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'memberships',
 				this.props.user.token,
@@ -119,9 +117,7 @@ class Memberships extends React.Component {
 				this.state.searchFilter.value !== undefined
 					? this.state.searchFilter
 					: null,
-				this.state.search === '' || this.state.search === undefined
-					? null
-					: this.state.search
+				this.state.search === '' ? null : this.state.search
 			);
 		}
 	}
@@ -136,11 +132,7 @@ class Memberships extends React.Component {
 				color='primary'
 				onClick={this.getExportCsvFile}
 			>
-				{this.state.exportLoading ? (
-					<CircularProgress size='1.3rem' />
-				) : (
-					'Export'
-				)}
+				Export
 			</Button>
 			<GridToolbarFilterButton />
 			<TextField
@@ -159,7 +151,7 @@ class Memberships extends React.Component {
 										searched: true,
 									});
 									this.fetchMemberships(
-										this.props.rcp_url.domain +
+										this.props.rcp_url.proxy_domain +
 											this.props.rcp_url.base_url +
 											'memberships',
 										this.props.user.token,
@@ -182,7 +174,7 @@ class Memberships extends React.Component {
 										});
 
 										this.fetchMemberships(
-											this.props.rcp_url.domain +
+											this.props.rcp_url.proxy_domain +
 												this.props.rcp_url.base_url +
 												'memberships',
 											this.props.user.token,
@@ -211,7 +203,7 @@ class Memberships extends React.Component {
 
 	getExportCsvFile = async () => {
 		const res = await fetch(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_url +
 				'exports/new',
 			{
@@ -290,6 +282,7 @@ class Memberships extends React.Component {
 			order_by: 'created_date',
 			order: 'DESC',
 		};
+
 		if (filter !== null && filter !== undefined) {
 			switch (filter.operatorValue) {
 				case '=':
@@ -354,7 +347,7 @@ class Memberships extends React.Component {
 				e.preventDefault();
 				if (null !== this.props.user.token) {
 					this.deleteMembership(
-						this.props.rcp_url.domain +
+						this.props.rcp_url.proxy_domain +
 							this.props.rcp_url.base_url +
 							'memberships/delete/',
 						index
@@ -397,20 +390,32 @@ class Memberships extends React.Component {
 				filterOperators: this.gridOperators,
 			},
 			{
-				field: 'name',
-				headerName: 'Name',
+				field: 'membership_number',
+				headerName: 'Membership Number',
 				width: 180,
 				filterable: false,
 			},
 			{
-				field: 'customer_name',
-				headerName: 'Customer Name',
+				field: 'first_name',
+				headerName: 'First Name',
 				width: 180,
 				filterable: false,
 			},
 			{
-				field: 'status',
-				headerName: 'Status',
+				field: 'last_name',
+				headerName: 'Last Name',
+				width: 180,
+				filterable: false,
+			},
+			{
+				field: 'subscription',
+				headerName: 'Subscription',
+				width: 180,
+				filterable: false,
+			},
+			{
+				field: 'amount',
+				headerName: 'Amount',
 				width: 180,
 				filterable: false,
 			},
@@ -422,7 +427,19 @@ class Memberships extends React.Component {
 			},
 			{
 				field: 'created',
-				headerName: 'Created',
+				headerName: 'Creation Date',
+				width: 180,
+				filterable: false,
+			},
+			{
+				field: 'renewal_date',
+				headerName: 'Renewal Date',
+				width: 180,
+				filterable: false,
+			},
+			{
+				field: 'expiration_date',
+				headerName: 'Expiration Date',
 				width: 180,
 				filterable: false,
 			},
@@ -446,19 +463,18 @@ class Memberships extends React.Component {
 		];
 
 		const rows = this.state.memberships.map((item, key) => {
-			const date = new Date(item.created_date);
 			return {
 				id: item.id,
-				name: item.membership_name,
-				customer_name: item.customer_name,
+				membership_number: item.user_login,
+				first_name: item.first_name,
+				last_name: item.last_name,
+				subscription: item.membership_name,
 				status: item.status,
+				amount: item.amount,
 				recurring: item.recurring_amount,
-				created:
-					date.getUTCDate() +
-					'-' +
-					date.getUTCMonth() +
-					'-' +
-					date.getUTCFullYear(),
+				created: item.created_date,
+				renewal_date: item.renewal_date,
+				expiration_date: item.expiration_date,
 			};
 		});
 

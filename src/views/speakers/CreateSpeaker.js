@@ -45,7 +45,7 @@ class CreateSpeaker extends React.Component {
 		};
 
 		this.create_logo_url =
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 			this.props.rcp_url.base_wp_url +
 			'speakers';
 	}
@@ -88,7 +88,7 @@ class CreateSpeaker extends React.Component {
 		}
 
 		return fetch(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_wp_url +
 				'media',
 			{

@@ -38,7 +38,7 @@ class Media extends React.Component {
 	componentDidMount() {
 		if (this.state.media.length === 0)
 			this.fetchMedia(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_wp_url +
 					'media'
 			);
@@ -84,7 +84,7 @@ class Media extends React.Component {
 		formData.append('title', file.name);
 
 		fetch(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_wp_url +
 				'media',
 			{

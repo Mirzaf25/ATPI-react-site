@@ -24,7 +24,7 @@ class Users extends React.Component {
 	componentDidMount() {
 		if (this.state.users.length === 0 && this.props.user.token !== null)
 			this.fetchUsers(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_wp_url +
 					'users'
 			);
@@ -33,7 +33,7 @@ class Users extends React.Component {
 	componentDidUpdate({ user: prevUser }) {
 		if (prevUser !== this.props.user && this.props.user.token !== null) {
 			this.fetchUsers(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_wp_url +
 					'users'
 			);
@@ -137,7 +137,7 @@ class Users extends React.Component {
 
 					const handleDeleteClick = e => {
 						return this.deleteUser(
-							this.props.rcp_url.domain +
+							this.props.rcp_url.proxy_domain +
 								this.props.rcp_url.base_wp_url +
 								'users',
 							params.row.id
