@@ -12,8 +12,12 @@ import {
 	Modal,
 	ImageListItem,
 	withStyles,
+	InputAdornment,
+	IconButton,
+	TextField,
 } from '@material-ui/core';
 import { Card, CardHeader, CardBody } from 'reactstrap';
+import DropAreaUpload from '../utils/DropAreaUpload';
 
 class MediaSelect extends React.Component {
 	constructor(props) {
@@ -23,6 +27,10 @@ class MediaSelect extends React.Component {
 			loading: false,
 			[this.props.fieldName]: this.props.initialVal || 0,
 			open: false,
+			search:'',
+			membershipLoading: false,
+			searched: false,
+			showUpload:false,
 		};
 	}
 
@@ -50,8 +58,13 @@ class MediaSelect extends React.Component {
 
 	onClose = () => this.setState({ open: false });
 
+
+	
 	fetchMedia() {
+
+
 		this.setState({ loading: true });
+		
 		const url = new URL(
 			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_wp_url +
@@ -68,7 +81,7 @@ class MediaSelect extends React.Component {
 				if (!res.ok) return;
 				return res.json();
 			})
-			.then(data => {
+			.then(data => {				
 				this.props.setMedia(this.props.media.concat(data));
 				this.setState({ loading: false });
 			})
@@ -95,6 +108,8 @@ class MediaSelect extends React.Component {
 	};
 
 	render() {
+
+
 		return (
 			<React.Fragment>
 				{this.state[this.props.fieldName] !== 0 && (
@@ -147,6 +162,37 @@ class MediaSelect extends React.Component {
 						<Card>
 							<CardHeader className='border-0 d-flex justify-content-between'>
 								<h3 className='mb-0'>Select Media</h3>
+								
+
+							<TextField
+										id='search_membership'
+										placeholder='Search ...'
+										InputProps={{
+											endAdornment: (
+												<InputAdornment
+													style={{ color: '#3f51b5' }}
+													position='start'
+												>
+												</InputAdornment>
+											),
+								}}
+								variant='standard'
+								value={this.state.search}
+								onChange={e => this.setState({ search: e.target.value })}
+							/>
+
+								<Button
+									onClick={() => {
+										this.setState({showUpload:!this.state.showUpload});
+									}}
+
+									className="btn btn-primary"
+								>
+									{this.state.showUpload ? 'Close':'Upload'}
+								</Button>
+
+								
+								
 								<Button
 									onClick={() => {
 										this.onClose();
@@ -158,12 +204,23 @@ class MediaSelect extends React.Component {
 								>
 									<i className='fa fa-times' />
 								</Button>
+
 							</CardHeader>
 							<CardBody>
+
+									{
+									this.state.showUpload && 
+									<DropAreaUpload/>
+									}	
+										
 								<ImageList gap={8}>
 									{this.props.media &&
 										this.props.media.length !== 0 &&
-										this.props.media.map(
+										this.props.media.filter(el=>{
+											if(el.title.rendered.includes(this.state.search)){
+												return el
+											}
+										}).map(
 											({ id, title, source_url }) => (
 												<ImageListItem
 													key={id}

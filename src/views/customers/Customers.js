@@ -47,7 +47,7 @@ class Customers extends React.Component {
 			);
 		}
 	}
-
+	
 	componentDidUpdate() {
 		if (
 			null !== this.props.user.token &&
