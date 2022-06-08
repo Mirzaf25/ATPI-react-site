@@ -10,12 +10,13 @@ import { DataGrid } from '@material-ui/data-grid';
 import { connect } from 'react-redux';
 import { setUserLoginDetails } from 'features/user/userSlice';
 import {
-	LinearProgress,
-	Avatar,
-	Chip,
-	withStyles,
-	Button,
-} from '@material-ui/core';
+  LinearProgress,
+  Avatar,
+  Chip,
+  withStyles,
+  Button,
+} from "@material-ui/core";
+import MatEdit from '../MatEdit';
 
 class DiscountCodes extends React.Component {
 	constructor(props) {
@@ -66,63 +67,77 @@ class DiscountCodes extends React.Component {
 		this.setState({ discount_codes: data });
 	};
 
-	render() {
-		const columns = [
-			{
-				field: 'id',
-				headerName: 'ID',
-				width: 100,
-			},
-			{
-				field: 'name',
-				headerName: 'Name',
-				width: 180,
-			},
-			{
-				field: 'code',
-				headerName: 'Discount Code',
-				width: 180,
-				renderCell({ row, ...params }) {
-					return <Chip className={row?.class} label={row?.code} />;
-				},
-			},
-			{
-				field: 'amount',
-				headerName: 'Amount',
-				width: 180,
-				renderCell({ row }) {
-					return (
-						<span
-							dangerouslySetInnerHTML={{ __html: row?.amount }}
-						/>
-					);
-				},
-			},
-			{
-				field: 'status',
-				type: 'status',
-				headerName: 'Status',
-				width: 100,
-			},
-			{
-				field: 'expiration',
-				type: 'expiration',
-				headerName: 'Expiration',
-				width: 180,
-			},
-			{
-				field: 'is_expired',
-				type: 'is_expired',
-				headerName: 'Expired',
-				width: 100,
-			},
-			{
-				field: 'used',
-				type: 'used',
-				headerName: 'Used',
-				width: 100,
-			},
-		];
+  render() {
+    const columns = [
+      {
+        field: "id",
+        headerName: "ID",
+        width: 100,
+      },
+      {
+        field: "name",
+        headerName: "Name",
+        width: 180,
+      },
+      {
+        field: "code",
+        headerName: "Discount Code",
+        width: 180,
+        renderCell({ row, ...params }) {
+          return <Chip className={row?.class} label={row?.code} />;
+        },
+      },
+      {
+        field: "amount",
+        headerName: "Amount",
+        width: 180,
+        renderCell({ row }) {
+          return <span dangerouslySetInnerHTML={{ __html: row?.amount }} />;
+        },
+      },
+      {
+        field: "status",
+        type: "status",
+        headerName: "Status",
+        width: 100,
+      },
+      {
+        field: "expiration",
+        type: "expiration",
+        headerName: "Expiration",
+        width: 180,
+      },
+      {
+        field: "is_expired",
+        type: "is_expired",
+        headerName: "Expired",
+        width: 100,
+      },
+      {
+        field: "used",
+        type: "used",
+        headerName: "Used",
+        width: 100,
+      },
+
+      {
+        field: "actions",
+        type: "actions",
+        headerName: "Actions",
+        width: 100,
+        cellClassName: "actions",
+        renderCell: (params) => {
+          return (
+            <div
+              className="d-flex justify-content-between align-items-center"
+              style={{ cursor: "pointer" }}
+            >
+              <MatEdit index={params.row.id} handleClick={() => this.props.history.push({pathname:"discount/edit",state:{id:params.row}})} />
+            </div>
+          );
+        },
+      },
+    ];
 
 		const rows =
 			this.state.discount_codes.length !== 0
