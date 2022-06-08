@@ -16,11 +16,44 @@
 
 */
 import React from 'react';
+import { connect } from 'react-redux';
 
 // reactstrap components
 import { Card, CardBody, CardTitle, Container, Row, Col } from 'reactstrap';
 
 class Header extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			count: null,
+		};
+	}
+
+	componentDidMount() {
+		if (this.state.count === null) {
+			this.fetchCountMemberships();
+		}
+	}
+	componentDidUpdate(props, { count: prevCount }) {
+		console.log(this);
+		if (this.state.count === null) {
+			this.fetchCountMemberships();
+		}
+	}
+
+	fetchCountMemberships = async () => {
+		const res = await fetch(
+			this.props.rcp_url.proxy_domain +
+				this.props.rcp_url.base_url +
+				'memberships/count'
+		);
+
+		if (!res.ok) return;
+
+		const data = await res.json();
+
+		this.setState({ count: data });
+	};
 	render() {
 		return (
 			<>
@@ -38,11 +71,11 @@ class Header extends React.Component {
 														tag='h5'
 														className='text-uppercase text-muted mb-0'
 													>
-														Numbers of Active
-														Individual Memberships
+														Numbers of Memberships
 													</CardTitle>
 													<span className='h2 font-weight-bold mb-0'>
-														350,897
+														{this.state?.count
+															?.total || 0}
 													</span>
 												</div>
 												<Col className='col-auto'>
@@ -51,15 +84,6 @@ class Header extends React.Component {
 													</div>
 												</Col>
 											</Row>
-											<p className='mt-3 mb-0 text-muted text-sm'>
-												<span className='text-success mr-2'>
-													<i className='fa fa-arrow-up' />{' '}
-													3.48%
-												</span>{' '}
-												<span className='text-nowrap'>
-													Since last month
-												</span>
-											</p>
 										</CardBody>
 									</Card>
 								</Col>
@@ -72,10 +96,12 @@ class Header extends React.Component {
 														tag='h5'
 														className='text-uppercase text-muted mb-0'
 													>
-														Number of New Membership
+														Number of Active
+														Membership
 													</CardTitle>
 													<span className='h2 font-weight-bold mb-0'>
-														2,356
+														{this.state?.count
+															?.active || 0}
 													</span>
 												</div>
 												<Col className='col-auto'>
@@ -84,15 +110,6 @@ class Header extends React.Component {
 													</div>
 												</Col>
 											</Row>
-											<p className='mt-3 mb-0 text-muted text-sm'>
-												<span className='text-danger mr-2'>
-													<i className='fas fa-arrow-down' />{' '}
-													3.48%
-												</span>{' '}
-												<span className='text-nowrap'>
-													Since last week
-												</span>
-											</p>
 										</CardBody>
 									</Card>
 								</Col>
@@ -105,11 +122,12 @@ class Header extends React.Component {
 														tag='h5'
 														className='text-uppercase text-muted mb-0'
 													>
-														Number of membership
-														renewals
+														Number of Expired
+														Memberships
 													</CardTitle>
 													<span className='h2 font-weight-bold mb-0'>
-														924
+														{this.state?.count
+															?.expired || 0}
 													</span>
 												</div>
 												<Col className='col-auto'>
@@ -118,19 +136,10 @@ class Header extends React.Component {
 													</div>
 												</Col>
 											</Row>
-											<p className='mt-3 mb-0 text-muted text-sm'>
-												<span className='text-warning mr-2'>
-													<i className='fas fa-arrow-down' />{' '}
-													1.10%
-												</span>{' '}
-												<span className='text-nowrap'>
-													Since yesterday
-												</span>
-											</p>
 										</CardBody>
 									</Card>
 								</Col>
-								<Col lg='6' xl='3'>
+								{/* <Col lg='6' xl='3'>
 									<Card className='card-stats mb-4 mb-xl-0'>
 										<CardBody>
 											<Row>
@@ -163,7 +172,7 @@ class Header extends React.Component {
 											</p>
 										</CardBody>
 									</Card>
-								</Col>
+								</Col> */}
 							</Row>
 						</div>
 					</Container>
@@ -173,4 +182,11 @@ class Header extends React.Component {
 	}
 }
 
-export default Header;
+const mapStateToProps = state => {
+	return {
+		rcp_url: state.rcp_url,
+		user: state.user,
+	};
+};
+
+export default connect(mapStateToProps)(Header);
