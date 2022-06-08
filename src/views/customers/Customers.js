@@ -119,11 +119,12 @@ class Customers extends React.Component {
 
 	render() {
 		const columns = [
-			{ field: 'id', headerName: 'ID', width: 100 },
+			{ field: 'id', headerName: 'ID', width: 100, hide: true },
 			{
 				field: 'membership_number',
 				headerName: 'Membership Number',
 				width: 180,
+				hide: true,
 			},
 			{ field: 'first_name', headerName: 'First Name', width: 180 },
 			{ field: 'last_name', headerName: 'Last Name', width: 180 },

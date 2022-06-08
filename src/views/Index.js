@@ -73,6 +73,17 @@ class Index extends React.Component {
 				<Header />
 				{/* Page content */}
 				<Container className='mt--7' fluid>
+					<h1>Welcome !!!</h1>
+				</Container>
+			</>
+		);
+	}
+}
+
+export default Index;
+
+{
+	/* <Container className='mt--7' fluid>
 					<Row>
 						<Col className='mb-5 mb-xl-0' xl='8'>
 							<Card className='bg-gradient-default shadow'>
@@ -151,7 +162,7 @@ class Index extends React.Component {
 									</Row>
 								</CardHeader>
 								<CardBody>
-									{/* Chart */}
+									{/* Chart
 									<div className='chart'>
 										<Line
 											data={
@@ -183,7 +194,7 @@ class Index extends React.Component {
 									</Row>
 								</CardHeader>
 								<CardBody>
-									{/* Chart */}
+									{/* Chart 
 									<div className='chart'>
 										<Bar
 											data={chartExample2.data}
@@ -417,10 +428,5 @@ class Index extends React.Component {
 							</Card>
 						</Col>
 					</Row>
-				</Container>
-			</>
-		);
-	}
+				</Container> */
 }
-
-export default Index;

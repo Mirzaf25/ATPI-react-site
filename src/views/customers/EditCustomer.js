@@ -46,8 +46,11 @@ class EditCustomer extends React.Component {
 				email: true,
 			},
 			form: {
-				first_name: '',
-				last_name: '',
+				user_args: {
+					first_name: '',
+					last_name: '',
+					user_email: '',
+				},
 				email_verification: '',
 				address_one: '',
 				address_two: '',
@@ -76,7 +79,7 @@ class EditCustomer extends React.Component {
 	}
 
 	componentDidMount() {
-		if (this.state.user === null && this.props.user.token !== null)
+		if (this.state.customer === null && this.props.user.token !== null)
 			this.fetchCustomer(this.current_customer_url);
 	}
 
@@ -119,8 +122,11 @@ class EditCustomer extends React.Component {
 			customer: data,
 			form: {
 				...prevState.form,
-				first_name: data?.first_name,
-				last_name: data?.last_name,
+				user_args: {
+					first_name: data?.first_name,
+					last_name: data?.last_name,
+					user_email: data?.email,
+				},
 				email_verification: data?.email_verification,
 				address_one: data?.address_one,
 				address_two: data?.address_two,
@@ -155,7 +161,20 @@ class EditCustomer extends React.Component {
 		const { target } = event;
 		const value =
 			target.type === 'checkbox' ? target.checked : target.value;
-		const { name } = target;
+		const { name, dataset = null } = target;
+
+		if (dataset !== null && dataset.field === 'user_args') {
+			this.setState(prevState => ({
+				...prevState,
+				form: {
+					...prevState.form,
+					user_args: {
+						...prevState.form.user_args,
+						[name]: value,
+					},
+				},
+			}));
+		}
 
 		this.setState(prevState => ({
 			...prevState,
@@ -190,16 +209,27 @@ class EditCustomer extends React.Component {
 				Authorization: 'Bearer ' + this.props.user.token,
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify(Object.fromEntries(formData)),
+			body: JSON.stringify({
+				...Object.fromEntries(formData),
+				user_args: {
+					first_name: formData.get('first_name'),
+					last_name: formData.get('last_name'),
+					user_email: formData.get('user_email'),
+				},
+			}),
 		})
 			.then(res => res.ok && res.json())
 			.then(data =>
 				this.setState(prevState => ({
-					user: data,
+					customer: data,
 					form: {
 						...prevState.form,
-						first_name: data?.first_name,
-						last_name: data?.last_name,
+						user_args: {
+							ID: data?.user_id,
+							first_name: data?.first_name,
+							last_name: data?.last_name,
+							user_email: data?.email,
+						},
 						email_verification: data?.email_verification,
 						address_one: data?.address_one,
 						address_two: data?.address_two,
