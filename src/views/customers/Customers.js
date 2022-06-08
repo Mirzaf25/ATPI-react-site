@@ -30,7 +30,7 @@ class Customers extends React.Component {
 			memberships: [],
 			customers: [],
 			page: 1,
-			number: 5,
+			number: 20,
 			toggle: false,
 		};
 	}
@@ -48,7 +48,7 @@ class Customers extends React.Component {
 		}
 	}
 
-	componentDidUpdate() {
+	componentDidUpdate(props, { page: prevPage }) {
 		if (
 			null !== this.props.user.token &&
 			this.state.customers.length === 0
@@ -60,14 +60,25 @@ class Customers extends React.Component {
 				this.props.user.token
 			);
 		}
+
+		if (null !== this.props.user.token && prevPage !== this.state.page) {
+			this.fetchCustomers(
+				this.props.rcp_url.proxy_domain +
+					this.props.rcp_url.base_url +
+					'customers',
+				this.props.user.token,
+				this.state.page
+			);
+		}
 	}
 
-	fetchCustomers = async (url, token) => {
+	fetchCustomers = async (url, token, page = this.state.page) => {
 		const urlQuery = new URL(url);
 		const paramsOptions = {
-			number: 100,
-			orderby: 'ID',
-			order: 'ASC',
+			number: this.state.number,
+			offset: (page - 1) * this.state.number,
+			order_by: 'created_date',
+			order: 'DESC',
 		};
 		for (let key in paramsOptions) {
 			urlQuery.searchParams.set(key, paramsOptions[key]);
@@ -84,6 +95,10 @@ class Customers extends React.Component {
 
 	toggleModal = () => {
 		this.setState({ toggle: !this.state.toggle });
+	};
+
+	handlePageChange = params => {
+		this.setState({ page: params + 1 });
 	};
 
 	deleteCustomer = async (url, id) => {
@@ -126,7 +141,6 @@ class Customers extends React.Component {
 				width: 180,
 			},
 			{ field: 'renewal_date', headerName: 'Renewal date', width: 180 },
-			{ field: 'date', headerName: 'Date', width: 180 },
 			{ field: 'club_member', headerName: 'Club Member', width: 180 },
 			{
 				field: 'actions',
@@ -163,7 +177,6 @@ class Customers extends React.Component {
 		];
 
 		const rows = this.state.customers.map((item, key) => {
-			const date = new Date(item.date_registered);
 			return {
 				id: item.id,
 				membership_number: item.user_login,
@@ -191,12 +204,6 @@ class Customers extends React.Component {
 					item.memberships_data.length === 0
 						? 'No Renewal Date'
 						: item.memberships_data[0].expired_date,
-				date:
-					date.getDay() +
-					'-' +
-					date.getMonth() +
-					'-' +
-					date.getFullYear(),
 			};
 		});
 
@@ -215,6 +222,17 @@ class Customers extends React.Component {
 									autoHeight
 									rows={rows}
 									columns={columns}
+									onPageChange={this.handlePageChange.bind(
+										this
+									)}
+									pageSize={
+										this.state.customers.length > 20
+											? 20
+											: this.state.customers.length
+									}
+									rowCount={1000}
+									paginationMode='server'
+									page={this.state.page - 1}
 									pagination
 									components={{
 										Toolbar: GridToolbar,
