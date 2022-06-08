@@ -7,13 +7,14 @@ import { Col, Form, FormGroup, Input, Label } from 'reactstrap';
 import { connect } from 'react-redux';
 import { setUserLoginDetails } from 'features/user/userSlice';
 import {
-	LinearProgress,
-	Avatar,
-	Grid,
 	TextField,
-	Chip,
 	Button,
-	ButtonGroup,
+	Select,
+	InputLabel,
+	MenuItem,
+	OutlinedInput,
+	ListItem,
+	ListItemText,
 } from '@material-ui/core';
 
 import MatEdit from 'views/MatEdit';
@@ -225,6 +226,66 @@ class UpdateCustomer extends React.Component {
 						/>
 					</Col>
 				</FormGroup>
+				{this.props.user.is_admin && (
+					<FormGroup row>
+						<Col>
+							<InputLabel id='region_label'>Region</InputLabel>
+							<Select
+								style={{ width: '225px' }}
+								labelId='region_label'
+								id='region'
+								name='region'
+								value={''}
+								onChange={this.handleChange}
+								input={<OutlinedInput />}
+								MenuProps={{
+									PaperProps: {
+										style: {
+											maxHeight: 48 * 4.5 + 8,
+											width: 250,
+										},
+									},
+								}}
+							>
+								<MenuItem value={'NW'}>
+									<ListItemText primary={'NW'} />
+								</MenuItem>
+								<MenuItem value={'SW'}>
+									<ListItemText primary={'SW'} />
+								</MenuItem>
+								<MenuItem value={'SE'}>
+									<ListItemText primary={'SE'} />
+								</MenuItem>
+								<MenuItem value={'NE'}>
+									<ListItemText primary={'NE'} />
+								</MenuItem>
+								<MenuItem value={'NI'}>
+									<ListItemText primary={'NI'} />
+								</MenuItem>
+								<MenuItem value={'INT'}>
+									<ListItemText primary={'INT'} />
+								</MenuItem>
+							</Select>
+						</Col>
+					</FormGroup>
+				)}
+				{/* {this.props.user.is_admin && (
+					<FormGroup row>
+						<Label sm={4} for='region'>
+							Region
+						</Label>
+						<Col md={6}>
+							<Input name='region' type='select'>
+								<option value='NW'>NW</option>
+								<option value='SW'>SW</option>
+								<option value='SE'>SE</option>
+								<option value='NE'>NE</option>
+								<option value='NI'>NI</option>
+								<option value='INT'>INT</option>
+							</Input>
+						</Col>
+					</FormGroup>
+				)} */}
 				<FormGroup row>
 					<Col>
 						<TextField
