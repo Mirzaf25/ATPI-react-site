@@ -85,7 +85,7 @@ class WebsiteAccessRole extends React.Component {
 							}
 							label='Individual Member'
 						/>
-						<FormControlLabel
+						{/* <FormControlLabel
 							control={
 								<Checkbox
 									name='roles[]'
@@ -108,7 +108,7 @@ class WebsiteAccessRole extends React.Component {
 								/>
 							}
 							label='Administrator'
-						/>
+						/> */}
 					</FormGroup>
 					<FormGroup>
 						<Col>
