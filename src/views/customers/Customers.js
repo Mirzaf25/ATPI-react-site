@@ -234,6 +234,7 @@ class Customers extends React.Component {
 									paginationMode='server'
 									page={this.state.page - 1}
 									pagination
+									pageSize={this.state.number}
 									components={{
 										Toolbar: GridToolbar,
 									}}

@@ -61,6 +61,7 @@ class Filr extends React.Component {
 			viewFiles: [],
 			viewLoading: false,
 			currentFolder: null,
+			number : 20,
 		};
 		this.breadcrumbs = [
 			<Link
@@ -468,6 +469,7 @@ class Filr extends React.Component {
 													}}
 													checkboxSelection
 													autoHeight
+													pageSize={this.state.number}
 													rows={rows}
 													columns={columns}
 												/>

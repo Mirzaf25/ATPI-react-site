@@ -16,6 +16,7 @@ class Speakers extends React.Component {
 		super(props);
 		this.state = {
 			speakers: [],
+			number:20,
 		};
 	}
 
@@ -140,6 +141,7 @@ class Speakers extends React.Component {
 											LoadingOverlay: LinearProgress,
 										}}
 										autoHeight
+										pageSize={this.state.number}
 										rows={rows}
 										columns={columns}
 									/>

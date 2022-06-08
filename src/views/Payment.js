@@ -32,8 +32,8 @@ class Payments extends React.Component {
 		super(props);
 		this.state = {
 			payments: [],
-			page: 1,
-			number: 20,
+			page: 3,
+			number : 20,
 		};
 	}
 
@@ -195,6 +195,8 @@ class Payments extends React.Component {
 			},
 		];
 
+
+		console.log('this.state.payments ==>> ',this.state.payments);
 		const rows = this.state.payments.map((item, key) => {
 			const date = new Date(item.date);
 			return {
@@ -269,6 +271,7 @@ class Payments extends React.Component {
 									}
 									rowCount={1000}
 									pagination
+									pageSize = {this.state.number}
 									paginationMode='server'
 								/>
 								{/* Add Pagination */}

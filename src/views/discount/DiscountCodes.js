@@ -22,6 +22,7 @@ class DiscountCodes extends React.Component {
 		super(props);
 		this.state = {
 			discount_codes: [],
+			number : 20,
 		};
 	}
 
@@ -185,6 +186,7 @@ class DiscountCodes extends React.Component {
 											LoadingOverlay: LinearProgress,
 										}}
 										autoHeight
+										pageSize={this.state.number}
 										rows={rows}
 										columns={columns}
 									/>
