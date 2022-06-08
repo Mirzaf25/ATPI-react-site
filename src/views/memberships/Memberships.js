@@ -397,20 +397,32 @@ class Memberships extends React.Component {
 				filterOperators: this.gridOperators,
 			},
 			{
-				field: 'name',
-				headerName: 'Name',
+				field: 'membership_number',
+				headerName: 'Membership Number',
 				width: 180,
 				filterable: false,
 			},
 			{
-				field: 'customer_name',
-				headerName: 'Customer Name',
+				field: 'first_name',
+				headerName: 'First Name',
 				width: 180,
 				filterable: false,
 			},
 			{
-				field: 'status',
-				headerName: 'Status',
+				field: 'last_name',
+				headerName: 'Last Name',
+				width: 180,
+				filterable: false,
+			},
+			{
+				field: 'subscription',
+				headerName: 'Subscription',
+				width: 180,
+				filterable: false,
+			},
+			{
+				field: 'amount',
+				headerName: 'Amount',
 				width: 180,
 				filterable: false,
 			},
@@ -422,7 +434,19 @@ class Memberships extends React.Component {
 			},
 			{
 				field: 'created',
-				headerName: 'Created',
+				headerName: 'Creation Date',
+				width: 180,
+				filterable: false,
+			},
+			{
+				field: 'renewal_date',
+				headerName: 'Renewal Date',
+				width: 180,
+				filterable: false,
+			},
+			{
+				field: 'expiration_date',
+				headerName: 'Expiration Date',
 				width: 180,
 				filterable: false,
 			},
@@ -446,19 +470,18 @@ class Memberships extends React.Component {
 		];
 
 		const rows = this.state.memberships.map((item, key) => {
-			const date = new Date(item.created_date);
 			return {
 				id: item.id,
-				name: item.membership_name,
-				customer_name: item.customer_name,
+				membership_number: item.user_login,
+				first_name: item.first_name,
+				last_name: item.last_name,
+				subscription: item.membership_name,
 				status: item.status,
+				amount: item.amount,
 				recurring: item.recurring_amount,
-				created:
-					date.getUTCDate() +
-					'-' +
-					date.getUTCMonth() +
-					'-' +
-					date.getUTCFullYear(),
+				created: item.created_date,
+				renewal_date: item.renewal_date,
+				expiration_date: item.expiration_date,
 			};
 		});
 
