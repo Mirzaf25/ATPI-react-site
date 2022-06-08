@@ -28,10 +28,15 @@ import {
 	Chip,
 	Button,
 	ButtonGroup,
-	Snackbar,
+	Snackbar
 } from '@material-ui/core';
 
 import MatEdit from 'views/MatEdit';
+import UpdateCustomer from './UpdateCustomer';
+import MembershipDetails from './MembershipDetails';
+import PaymentDetails from './PaymentDetails';
+import WebsiteAccess from './WebsiteAccess';
+import ClubDetails from './ClubDetails';
 
 class EditCustomer extends React.Component {
 	constructor(props) {
@@ -43,9 +48,10 @@ class EditCustomer extends React.Component {
 				email: true,
 			},
 			form: {
-				name: '',
+				first_name: '',
+				last_name: '',
 				email_verification: '',
-				address: '',
+				address_one: '',
 				address_two: '',
 				county: '',
 				country: '',
@@ -56,7 +62,6 @@ class EditCustomer extends React.Component {
 				phone: '',
 			},
 			profileImageChanged: false,
-
 			error: null,
 			openSnackbar: false,
 			errorSnackbar: false,
@@ -80,9 +85,23 @@ class EditCustomer extends React.Component {
 			this.fetchCustomer(this.current_customer_url);
 	}
 
-	componentDidUpdate({ user: prevUser }) {
+	componentDidUpdate({ user: prevUser }, { customer: prevCustomer }) {
 		if (prevUser !== this.props.user && this.props.user.token !== null) {
 			this.fetchCustomer(this.current_customer_url);
+		}
+
+		if (
+			prevCustomer !== this.state.customer &&
+			this.state.customer.memberships_data[0].club &&
+			this.props.user.token !== null
+		) {
+			console.log(this.state.customer.memberships_data[0].club);
+			this.fetchClub(
+				this.props.rcp_url.domain +
+					this.props.rcp_url.base_url +
+					`groups/${this.state.customer.memberships_data[0].club}`,
+				this.props.user.token
+			);
 		}
 	}
 
@@ -99,15 +118,17 @@ class EditCustomer extends React.Component {
 				Authorization: 'Bearer ' + this.props.user.token,
 			},
 		});
+		if (!res.ok) return;
 		const data = await res.json();
 		this.setState(prevState => ({
 			customer: data,
 			form: {
 				...prevState.form,
-				name: data?.name,
+				first_name: data?.first_name,
+				last_name: data?.last_name,
 				email_verification: data?.email_verification,
-				address: data?.address,
-				address_two: data?.address_secondary,
+				address_one: data?.address_one,
+				address_two: data?.address_two,
 				county: data?.county,
 				country: data?.country,
 				workplace: data?.workplace,
@@ -117,6 +138,22 @@ class EditCustomer extends React.Component {
 				phone: data?.phone,
 			},
 		}));
+	};
+
+	fetchClub = async url => {
+		const res = await fetch(url, {
+			headers: {
+				Authorization: 'Bearer ' + this.props.user.token,
+			},
+		});
+
+		if (!res.ok) return;
+
+		const { errors, ...data } = await res.json();
+
+		if (!errors) {
+			this.setState({ club: data });
+		}
 	};
 
 	handleChange = event => {
@@ -160,16 +197,17 @@ class EditCustomer extends React.Component {
 			},
 			body: JSON.stringify(Object.fromEntries(formData)),
 		})
-			.then(res => res.json())
+			.then(res => res.ok && res.json())
 			.then(data =>
 				this.setState(prevState => ({
 					user: data,
 					form: {
 						...prevState.form,
-						name: data?.name,
+						first_name: data?.first_name,
+						last_name: data?.last_name,
 						email_verification: data?.email_verification,
-						address: data?.address,
-						address_two: data?.address_secondary,
+						address_one: data?.address_one,
+						address_two: data?.address_two,
 						county: data?.county,
 						country: data?.country,
 						workplace: data?.workplace,
@@ -190,6 +228,12 @@ class EditCustomer extends React.Component {
 				console.error(err);
 			});
 	};
+
+	updateStateUserRole = roles => {
+		const customer = { ...this.state.customer, roles: roles };
+		this.setState({ customer: customer });
+	};
+
 
 	render() {
 		const action = (
@@ -218,335 +262,62 @@ class EditCustomer extends React.Component {
 						<div className='col'>
 							<Card className='shadow'>
 								<CardHeader className='border-0'>
-									<h3 className='mb-0'>Customer</h3>
+									<h3 className='mb-0'>Member</h3>
 								</CardHeader>
 								<CardBody>
-									<Form
-										name='update_customer'
-										id='update_customer'
-										onSubmit={this.updateCustomer}
-									>
-										<FormGroup row>
-											<Col>
-												<TextField
-													id='outlined-basic'
-													label='Customer ID'
-													name='customer_id'
-													variant='outlined'
-													helperText={
-														'You cannot change this.'
-													}
-													required
-													value={
-														this.state.customer
-															?.id || ''
-													}
-													InputLabelProps={{
-														shrink:
-															this.state.customer
-																?.id !==
-															undefined,
-													}}
-													disabled
-												/>
-											</Col>
-											<Col>
-												<TextField
-													id='outlined-basic'
-													label='User ID'
-													name='user_id'
-													variant='outlined'
-													helperText={
-														'You cannot change this.'
-													}
-													required
-													value={
-														this.state.customer
-															?.user_id || ''
-													}
-													InputLabelProps={{
-														shrink:
-															this.state.customer
-																?.user_id !==
-															undefined,
-													}}
-													disabled
-												/>
-											</Col>
-										</FormGroup>
-										<FormGroup row>
-											<Col>
-												<TextField
-													id='outlined-basic'
-													label='ATPI Username'
-													name='user_login'
-													variant='outlined'
-													helperText={
-														'You cannot change this.'
-													}
-													required
-													value={
-														this.state.customer
-															?.user_login || ''
-													}
-													InputLabelProps={{
-														shrink:
-															this.state.customer
-																?.user_login !==
-															undefined,
-													}}
-													disabled
-												/>
-											</Col>
-										</FormGroup>
-										<FormGroup row>
-											<Col>
-												<TextField
-													id='outlined-basic'
-													label='Name'
-													name='name'
-													variant='outlined'
-													required
-													onChange={e =>
-														this.handleChange(e)
-													}
-													value={
-														this.state.form?.name ||
-														''
-													}
-													InputLabelProps={{
-														shrink:
-															this.state.customer
-																?.name !==
-															undefined,
-													}}
-												/>
-											</Col>
-										</FormGroup>
-										<FormGroup row>
-											<Col sm={8}>
-												<TextField
-													className='w-100'
-													id='outlined-basic'
-													label='Address'
-													name='address'
-													variant='outlined'
-													onChange={e =>
-														this.handleChange(e)
-													}
-													value={
-														this.state.form
-															?.address || ''
-													}
-													InputLabelProps={{
-														shrink:
-															this.state.customer
-																?.address !==
-															undefined,
-													}}
-												/>
-											</Col>
-										</FormGroup>
-										<FormGroup row>
-											<Col sm={8}>
-												<TextField
-													className='w-100'
-													id='outlined-basic'
-													label='Address Secondary'
-													name='address_two'
-													variant='outlined'
-													onChange={e =>
-														this.handleChange(e)
-													}
-													value={
-														this.state.form
-															?.address_two || ''
-													}
-													InputLabelProps={{
-														shrink:
-															this.state.customer
-																?.address_secondary !==
-															undefined,
-													}}
-												/>
-											</Col>
-										</FormGroup>
-										<FormGroup row>
-											<Col>
-												<TextField
-													id='outlined-basic'
-													label='County'
-													name='county'
-													variant='outlined'
-													onChange={e =>
-														this.handleChange(e)
-													}
-													value={
-														this.state.form
-															?.county || ''
-													}
-													InputLabelProps={{
-														shrink:
-															this.state.customer
-																?.county !==
-															undefined,
-													}}
-												/>
-											</Col>
-										</FormGroup>
-										<FormGroup row>
-											<Col>
-												<TextField
-													id='outlined-basic'
-													label='Country'
-													name='country'
-													variant='outlined'
-													onChange={e =>
-														this.handleChange(e)
-													}
-													value={
-														this.state.form
-															?.country || ''
-													}
-													InputLabelProps={{
-														shrink:
-															this.state.customer
-																?.country !==
-															undefined,
-													}}
-												/>
-											</Col>
-										</FormGroup>
-										<FormGroup row>
-											<Col>
-												<TextField
-													id='outlined-basic'
-													label='Workplace'
-													name='workplace'
-													variant='outlined'
-													onChange={e =>
-														this.handleChange(e)
-													}
-													value={
-														this.state.form
-															?.workplace || ''
-													}
-													InputLabelProps={{
-														shrink:
-															this.state.customer
-																?.workplace !==
-															undefined,
-													}}
-												/>
-											</Col>
-										</FormGroup>
-										<FormGroup row>
-											<Col>
-												<TextField
-													id='outlined-basic'
-													label='Reference Club'
-													name='reference_club'
-													variant='outlined'
-													onChange={e =>
-														this.handleChange(e)
-													}
-													value={
-														this.state.form
-															?.reference_club ||
-														''
-													}
-													InputLabelProps={{
-														shrink:
-															this.state.customer
-																?.reference_club !==
-															undefined,
-													}}
-												/>
-											</Col>
-										</FormGroup>
-										<FormGroup row>
-											<Col>
-												<TextField
-													id='outlined-basic'
-													label='Town'
-													name='town'
-													variant='outlined'
-													onChange={e =>
-														this.handleChange(e)
-													}
-													value={
-														this.state.form?.town ||
-														''
-													}
-													InputLabelProps={{
-														shrink:
-															this.state.customer
-																?.town !==
-															undefined,
-													}}
-												/>
-											</Col>
-										</FormGroup>
-										<FormGroup row>
-											<Col>
-												<TextField
-													id='outlined-basic'
-													label='Eircode'
-													name='eircode'
-													variant='outlined'
-													onChange={e =>
-														this.handleChange(e)
-													}
-													value={
-														this.state.form
-															?.eircode || ''
-													}
-													InputLabelProps={{
-														shrink:
-															this.state.customer
-																?.eircode !==
-															undefined,
-													}}
-												/>
-											</Col>
-										</FormGroup>
-										<FormGroup row>
-											<Col>
-												<TextField
-													id='outlined-basic'
-													label='Phone'
-													name='phone'
-													variant='outlined'
-													onChange={e =>
-														this.handleChange(e)
-													}
-													value={
-														this.state.form
-															?.phone || ''
-													}
-													InputLabelProps={{
-														shrink:
-															this.state.customer
-																?.phone !==
-															undefined,
-													}}
-												/>
-											</Col>
-										</FormGroup>
-										<FormGroup row>
-											<Col xs={12}></Col>
-										</FormGroup>
-										<FormGroup>
-											<Col>
-												<Button
-													variant='contained'
-													type='submit'
-												>
-													Update User
-												</Button>
-											</Col>
-										</FormGroup>
-									</Form>
+									<UpdateCustomer
+										updateCustomer={this.updateCustomer}
+										form={this.state.form}
+										handleChange={this.handleChange}
+										customer={this.state.customer}
+									/>
+									<MembershipDetails
+										className='mb-4'
+										membership={
+											this.state.customer &&
+											this.state.customer.memberships_data
+												.length !== 0
+												? this.state.customer
+														?.memberships_data[0]
+												: null
+										}
+									/>
+									{this.state.customer && this.state.club && (
+										<ClubDetails club={this.state.club} />
+									)}
+									{this.state.customer &&
+										this.state.customer.payments.length !==
+											0 && (
+											<>
+												<h2 className='mb-4'>
+													Payments:
+												</h2>
+												{this.state.customer?.payments.map(
+													(payment, key) => (
+														<PaymentDetails
+															key={key}
+															payment={payment}
+															className='mb-4'
+														/>
+													)
+												)}
+											</>
+										)}
+									{this.state.customer &&
+										this.state.customer.user_id &&
+										this.state.customer.roles && (
+											<WebsiteAccess
+												user_id={
+													this.state.customer.user_id
+												}
+												user_roles={
+													this.state.customer.roles
+												}
+												updateStateUserRole={
+													this.updateStateUserRole
+												}
+											/>
+										)}
 								</CardBody>
 							</Card>
 						</div>
