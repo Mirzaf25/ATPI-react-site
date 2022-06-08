@@ -128,6 +128,24 @@ class AddClubMembership extends React.Component {
 			target.type === 'checkbox' ? target.checked : target.value;
 		const { name } = target;
 
+		if (name === 'country') {
+			let country;
+			switch (value) {
+				case 'IE':
+					country = 'Ireland';
+					break;
+				case 'GB':
+					country = 'UK';
+					break;
+				case 'US':
+					country = 'US';
+					break;
+			}
+			this.setState({
+				[name]: country,
+			});
+			return;
+		}
 		this.setState({
 			[name]: value,
 		});
@@ -305,6 +323,10 @@ class AddClubMembership extends React.Component {
 		formData.forEach((val, key) => {
 			if (user_additional_fields.includes(key)) user_args[key] = val;
 		});
+
+		if (user_args['country']) {
+			user_args['country'] = this.state.country;
+		}
 		this.onSuccessfullCheckout(
 			event,
 			user_args,
@@ -768,6 +790,12 @@ class AddClubMembership extends React.Component {
 													className='form-control'
 													name='country'
 													value={country}
+													valueType='short'
+													whitelist={[
+														'IE',
+														'US',
+														'GB',
+													]}
 													onChange={val =>
 														this.selectCountry(val)
 													}
@@ -784,6 +812,7 @@ class AddClubMembership extends React.Component {
 													name='county' //"country"
 													country={country}
 													value={region}
+													countryValueType='short'
 													onChange={val =>
 														this.selectRegion(val)
 													}
