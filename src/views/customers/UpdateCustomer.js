@@ -2,20 +2,7 @@ import OnlyHeader from 'components/Headers/OnlyHeader';
 import React from 'react';
 
 // reactstrap components
-import {
-	Card,
-	CardHeader,
-	CardBody,
-	Media,
-	Container,
-	Row,
-	Col,
-	Form,
-	FormGroup,
-} from 'reactstrap';
-
-//MUI
-import { DataGrid } from '@material-ui/data-grid';
+import { Col, Form, FormGroup, Input, Label } from 'reactstrap';
 
 import { connect } from 'react-redux';
 import { setUserLoginDetails } from 'features/user/userSlice';
@@ -37,7 +24,6 @@ class UpdateCustomer extends React.Component {
 	}
 
 	render() {
-		console.log(this.props.customer?.address_two);
 		return (
 			<Form
 				name='update_customer'
@@ -51,9 +37,12 @@ class UpdateCustomer extends React.Component {
 							label='First Name'
 							name='first_name'
 							variant='outlined'
+							inputRef={node => {
+								if (node) node.dataset.field = 'user_args';
+							}}
 							required
 							onChange={e => this.props.handleChange(e)}
-							value={this.props.form?.first_name || ''}
+							value={this.props.form?.user_args?.first_name || ''}
 							InputLabelProps={{
 								shrink: this.props.customer?.first_name !== '',
 							}}
@@ -65,13 +54,35 @@ class UpdateCustomer extends React.Component {
 						<TextField
 							id='outlined-basic'
 							label='Last Name'
+							inputRef={node => {
+								if (node) node.dataset.field = 'user_args';
+							}}
 							name='last_name'
 							variant='outlined'
 							required
 							onChange={e => this.props.handleChange(e)}
-							value={this.props.form?.last_name || ''}
+							value={this.props.form?.user_args?.last_name || ''}
 							InputLabelProps={{
 								shrink: this.props.customer?.last_name !== '',
+							}}
+						/>
+					</Col>
+				</FormGroup>
+				<FormGroup row>
+					<Col>
+						<TextField
+							id='outlined-basic'
+							label='Email'
+							inputRef={node => {
+								if (node) node.dataset.field = 'user_args';
+							}}
+							name='user_email'
+							variant='outlined'
+							required
+							onChange={e => this.props.handleChange(e)}
+							value={this.props.form?.user_args?.user_email || ''}
+							InputLabelProps={{
+								shrink: this.props.customer?.email !== '',
 							}}
 						/>
 					</Col>
@@ -223,6 +234,8 @@ class UpdateCustomer extends React.Component {
 							variant='outlined'
 							helperText={'You cannot change this.'}
 							required
+							className='d-none'
+							type='hidden'
 							value={this.props.customer?.id || ''}
 							InputLabelProps={{
 								shrink: this.props.customer?.id !== '',
@@ -235,6 +248,8 @@ class UpdateCustomer extends React.Component {
 							id='outlined-basic'
 							label='User ID'
 							name='user_id'
+							type='hidden'
+							className='d-none'
 							variant='outlined'
 							helperText={'You cannot change this.'}
 							required
@@ -255,6 +270,8 @@ class UpdateCustomer extends React.Component {
 							variant='outlined'
 							helperText={'You cannot change this.'}
 							required
+							type='hidden'
+							className='d-none'
 							value={this.props.customer?.user_login || ''}
 							InputLabelProps={{
 								shrink:
@@ -264,9 +281,6 @@ class UpdateCustomer extends React.Component {
 							disabled
 						/>
 					</Col>
-				</FormGroup>
-				<FormGroup row>
-					<Col xs={12}></Col>
 				</FormGroup>
 				<FormGroup>
 					<Col>
