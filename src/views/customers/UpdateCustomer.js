@@ -235,8 +235,8 @@ class UpdateCustomer extends React.Component {
 								labelId='region_label'
 								id='region'
 								name='region'
-								value={''}
-								onChange={this.handleChange}
+								value={this.props.form?.region || ''}
+								onChange={this.props.handleChange}
 								input={<OutlinedInput />}
 								MenuProps={{
 									PaperProps: {
