@@ -96,7 +96,7 @@ class Customers extends React.Component {
 								size='small'
 								onClick={() => {
 									this.setState({
-										membershipLoading: true,
+										customersLoading: true,
 										searched: true,
 									});
 									this.fetchCustomers(
@@ -173,10 +173,10 @@ class Customers extends React.Component {
 		const { errors } = data;
 
 		if (errors) {
-			this.setState({ customers: [] });
+			this.setState({ customers: [], customersLoading: false });
 			return;
 		}
-		this.setState({ customers: data });
+		this.setState({ customers: data, customersLoading: false });
 	};
 
 	toggleModal = () => {
@@ -184,7 +184,7 @@ class Customers extends React.Component {
 	};
 
 	handlePageChange = params => {
-		this.setState({ page: params + 1 });
+		this.setState({ page: params + 1, customersLoading: true });
 	};
 
 	deleteCustomer = async (url, id) => {

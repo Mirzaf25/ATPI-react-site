@@ -32,6 +32,7 @@ class Payments extends React.Component {
 		super(props);
 		this.state = {
 			payments: [],
+			paymentLoading: false,
 			page: 1,
 			number: 20,
 		};
@@ -80,7 +81,7 @@ class Payments extends React.Component {
 	}
 
 	handlePageChange = params => {
-		this.setState({ page: params + 1 });
+		this.setState({ page: params + 1, paymentLoading: true });
 	};
 
 	async fetchToken(token_url) {
@@ -118,7 +119,7 @@ class Payments extends React.Component {
 			},
 		});
 		const data = await res.json();
-		this.setState({ payments: data });
+		this.setState({ payments: data, paymentLoading: false });
 	};
 
 	render() {
@@ -255,7 +256,7 @@ class Payments extends React.Component {
                 </Table>
                     */}
 								<DataGrid
-									loading={this.state.payments.length === 0}
+									loading={this.state.paymentLoading}
 									autoHeight
 									rows={rows}
 									columns={columns}
