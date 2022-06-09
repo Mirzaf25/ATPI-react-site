@@ -90,7 +90,8 @@ class EditCustomer extends React.Component {
 
 		if (
 			prevCustomer !== this.state.customer &&
-			this.state.customer.memberships_data[0].club &&
+			this.state.customer?.memberships_data.length !== 0 &&
+			'club' in this.state.customer?.memberships_data[0] &&
 			this.props.user.token !== null
 		) {
 			console.log(this.state.customer.memberships_data[0].club);
