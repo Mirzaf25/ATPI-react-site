@@ -1,6 +1,10 @@
 import OnlyHeader from 'components/Headers/OnlyHeader';
 import React from 'react';
-import { DataGrid, GridToolbar } from '@material-ui/data-grid';
+import {
+	DataGrid,
+	GridToolbar,
+	GridToolbarContainer,
+} from '@material-ui/data-grid';
 
 // reactstrap components
 import {
@@ -20,6 +24,8 @@ import {
 	FormGroup,
 } from 'reactstrap';
 
+import { TextField, InputAdornment, IconButton } from '@material-ui/core';
+
 import { connect } from 'react-redux';
 import { setUserLoginDetails } from 'features/user/userSlice';
 import MatEdit from '../MatEdit';
@@ -30,6 +36,9 @@ class Customers extends React.Component {
 			memberships: [],
 			customers: [],
 			page: 1,
+			search: '',
+			customersLoading: false,
+			searched: false,
 			number: 20,
 			toggle: false,
 		};
@@ -72,6 +81,68 @@ class Customers extends React.Component {
 		}
 	}
 
+	CustomToolbar = () => (
+		<GridToolbarContainer className='justify-content-between'>
+			<GridToolbar />
+			<TextField
+				id='search_membership'
+				InputProps={{
+					endAdornment: (
+						<InputAdornment
+							style={{ color: '#3f51b5' }}
+							position='start'
+						>
+							<IconButton
+								size='small'
+								onClick={() => {
+									this.setState({
+										membershipLoading: true,
+										searched: true,
+									});
+									this.fetchCustomers(
+										this.props.rcp_url.proxy_domain +
+											this.props.rcp_url.base_url +
+											'customers',
+										this.props.user.token,
+										this.state.page,
+										this.state.search
+									);
+								}}
+							>
+								<i className='fa fa-search' />
+							</IconButton>
+							{this.state.searched && (
+								<IconButton
+									size='small'
+									onClick={() => {
+										this.setState({
+											searched: false,
+											search: '',
+										});
+
+										this.fetchCustomers(
+											this.props.rcp_url.proxy_domain +
+												this.props.rcp_url.base_url +
+												'customers',
+											this.props.user.token,
+											this.state.page,
+											''
+										);
+									}}
+								>
+									<i className='fa fa-times' />
+								</IconButton>
+							)}
+						</InputAdornment>
+					),
+				}}
+				variant='standard'
+				value={this.state.search}
+				onChange={e => this.setState({ search: e.target.value })}
+			/>
+		</GridToolbarContainer>
+	);
+
 	fetchCustomers = async (url, token, page = this.state.page) => {
 		const urlQuery = new URL(url);
 		const paramsOptions = {
@@ -80,16 +151,31 @@ class Customers extends React.Component {
 			order_by: 'created_date',
 			order: 'DESC',
 		};
+
+		if (this.state.search.length !== 0) {
+			paramsOptions.search = this.state.search;
+		}
 		for (let key in paramsOptions) {
 			urlQuery.searchParams.set(key, paramsOptions[key]);
 		}
-
 		const res = await fetch(urlQuery, {
 			headers: {
 				Authorization: 'Bearer ' + token,
 			},
 		});
+
+		if (res.status !== 200) {
+			this.setState({ customers: [] });
+			return;
+		}
 		const data = await res.json();
+
+		const { errors } = data;
+
+		if (errors) {
+			this.setState({ customers: [] });
+			return;
+		}
 		this.setState({ customers: data });
 	};
 
@@ -177,36 +263,39 @@ class Customers extends React.Component {
 			},
 		];
 
-		const rows = this.state.customers.map((item, key) => {
-			return {
-				id: item.id,
-				membership_number: item.user_login,
-				workplace: item.workplace,
-				reference_club: item.reference_club,
-				membership_id:
-					item.memberships.length === 0
-						? 'No Memberhsip'
-						: item.memberships[0],
-				first_name: item.first_name,
-				last_name: item.last_name,
-				email: item.email,
-				membership_type:
-					item.memberships_data.length === 0
-						? 'No Memberhsip'
-						: item.memberships_data[0].type,
-				membership_status:
-					item.memberships_data.length === 0
-						? 'No Membership'
-						: item.memberships_data[0].status,
-				club_member: item.is_club_member
-					? item.club_member
-					: 'Not a club member',
-				renewal_date:
-					item.memberships_data.length === 0
-						? 'No Renewal Date'
-						: item.memberships_data[0].expired_date,
-			};
-		});
+		const rows =
+			this.state.customers.length !== 0
+				? this.state.customers.map((item, key) => {
+						return {
+							id: item.id,
+							membership_number: item.user_login,
+							workplace: item.workplace,
+							reference_club: item.reference_club,
+							membership_id:
+								item.memberships.length === 0
+									? 'No Memberhsip'
+									: item.memberships[0],
+							first_name: item.first_name,
+							last_name: item.last_name,
+							email: item.email,
+							membership_type:
+								item.memberships_data.length === 0
+									? 'No Memberhsip'
+									: item.memberships_data[0].type,
+							membership_status:
+								item.memberships_data.length === 0
+									? 'No Membership'
+									: item.memberships_data[0].status,
+							club_member: item.is_club_member
+								? item.club_member
+								: 'Not a club member',
+							renewal_date:
+								item.memberships_data.length === 0
+									? 'No Renewal Date'
+									: item.memberships_data[0].expired_date,
+						};
+				  })
+				: [];
 
 		return (
 			<>
@@ -219,7 +308,7 @@ class Customers extends React.Component {
 									<h3 className='mb-0'>Members</h3>
 								</CardHeader>
 								<DataGrid
-									loading={this.state.customers.length === 0}
+									loading={this.state.customersLoading}
 									autoHeight
 									rows={rows}
 									columns={columns}
@@ -236,7 +325,16 @@ class Customers extends React.Component {
 									page={this.state.page - 1}
 									pagination
 									components={{
-										Toolbar: GridToolbar,
+										Toolbar: this.CustomToolbar,
+										NoRowsOverlay: () => (
+											<div
+												height='100%'
+												alignItems='center'
+												justifyContent='center'
+											>
+												No rows found.
+											</div>
+										),
 									}}
 								/>
 							</Card>
