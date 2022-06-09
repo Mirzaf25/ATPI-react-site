@@ -35,6 +35,25 @@ class UpdateCustomer extends React.Component {
 					<Col>
 						<TextField
 							id='outlined-basic'
+							label='ATPI Membership number'
+							name='user_login'
+							variant='outlined'
+							helperText={'You cannot change this.'}
+							required
+							value={this.props.customer?.user_login || ''}
+							InputLabelProps={{
+								shrink:
+									this.props.customer?.user_login !==
+									undefined,
+							}}
+							disabled
+						/>
+					</Col>
+				</FormGroup>
+				<FormGroup row>
+					<Col>
+						<TextField
+							id='outlined-basic'
 							label='First Name'
 							name='first_name'
 							variant='outlined'
@@ -317,27 +336,6 @@ class UpdateCustomer extends React.Component {
 							value={this.props.customer?.user_id || ''}
 							InputLabelProps={{
 								shrink: this.props.customer?.user_id !== '',
-							}}
-							disabled
-						/>
-					</Col>
-				</FormGroup>
-				<FormGroup row>
-					<Col>
-						<TextField
-							id='outlined-basic'
-							label='ATPI Membership number'
-							name='user_login'
-							variant='outlined'
-							helperText={'You cannot change this.'}
-							required
-							type='hidden'
-							className='d-none'
-							value={this.props.customer?.user_login || ''}
-							InputLabelProps={{
-								shrink:
-									this.props.customer?.user_login !==
-									undefined,
 							}}
 							disabled
 						/>
