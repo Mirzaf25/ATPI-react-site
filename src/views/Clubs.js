@@ -89,7 +89,8 @@ class Clubs extends React.Component {
 				name: item.name,
 				membership_id: item.membership_id,
 				membership_name: item.membership_name,
-				owner_name: item.owner_name,
+				owner_name:
+					item.owner?.first_name + ' ' + item.owner?.last_name,
 				member_count: item.member_count,
 				seats: item.seats,
 				created_date:
