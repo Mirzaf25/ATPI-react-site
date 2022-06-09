@@ -71,7 +71,7 @@ class Payments extends React.Component {
 
 		if (null !== this.props.user.token && prevPage !== this.state.page) {
 			this.fetchPayment(
-				this.props.rcp_url.proxy_domain +
+				this.props.rcp_url.domain +
 					this.props.rcp_url.base_url +
 					'payments',
 				this.props.user.token,

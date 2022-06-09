@@ -72,7 +72,7 @@ class Customers extends React.Component {
 
 		if (null !== this.props.user.token && prevPage !== this.state.page) {
 			this.fetchCustomers(
-				this.props.rcp_url.proxy_domain +
+				this.props.rcp_url.domain +
 					this.props.rcp_url.base_url +
 					'customers',
 				this.props.user.token,
@@ -100,7 +100,7 @@ class Customers extends React.Component {
 										searched: true,
 									});
 									this.fetchCustomers(
-										this.props.rcp_url.proxy_domain +
+										this.props.rcp_url.domain +
 											this.props.rcp_url.base_url +
 											'customers',
 										this.props.user.token,
@@ -121,7 +121,7 @@ class Customers extends React.Component {
 										});
 
 										this.fetchCustomers(
-											this.props.rcp_url.proxy_domain +
+											this.props.rcp_url.domain +
 												this.props.rcp_url.base_url +
 												'customers',
 											this.props.user.token,

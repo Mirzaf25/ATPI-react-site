@@ -43,7 +43,7 @@ class Header extends React.Component {
 
 	fetchCountMemberships = async () => {
 		const res = await fetch(
-			this.props.rcp_url.proxy_domain +
+			this.props.rcp_url.domain +
 				this.props.rcp_url.base_url +
 				'memberships/count'
 		);
