@@ -143,7 +143,7 @@ class UpdateCustomer extends React.Component {
 						<TextField
 							className='w-100'
 							id='outlined-basic'
-							label='Address'
+							label='Address 1'
 							name='address_one'
 							variant='outlined'
 							onChange={e => this.props.handleChange(e)}
@@ -159,7 +159,7 @@ class UpdateCustomer extends React.Component {
 						<TextField
 							className='w-100'
 							id='outlined-basic'
-							label='Address Secondary'
+							label='Address 2'
 							name='address_two'
 							variant='outlined'
 							onChange={e => this.props.handleChange(e)}
