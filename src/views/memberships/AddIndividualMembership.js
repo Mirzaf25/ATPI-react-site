@@ -4,6 +4,7 @@ import React from 'react';
 import { Switch, withStyles } from '@material-ui/core';
 
 import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 
 // reactstrap components
 import {
@@ -145,8 +146,7 @@ class AddIndividualMembership extends React.Component {
 	};
 
 	validateEmail(e) {
-		const emailRegex =
-			/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+		const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 		const { validate } = this.state;
 
@@ -761,8 +761,11 @@ class AddIndividualMembership extends React.Component {
 											<Col md={6}>
 												<PhoneInput
 													name='phone'
-													specialLabel={''}
-													country={'ir'}
+													country='ie'
+													enableAreaCodes={['ie']}
+													enableSearch
+													disableSearchIcon
+													inputClass='w-100'
 												/>
 											</Col>
 										</FormGroup>

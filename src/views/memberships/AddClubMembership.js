@@ -24,6 +24,7 @@ import {
 } from 'reactstrap';
 
 import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 
 import Cart from './Cart';
 
@@ -724,8 +725,7 @@ class AddClubMembership extends React.Component {
 													name='workplace'
 													type='text'
 													innerRef={el =>
-														(this.state.owner_workplace =
-															el)
+														(this.state.owner_workplace = el)
 													}
 												/>
 											</Col>
@@ -834,8 +834,11 @@ class AddClubMembership extends React.Component {
 											<Col md={6}>
 												<PhoneInput
 													name='phone'
-													specialLabel={''}
-													country={'ir'}
+													country='ie'
+													enableAreaCodes={['ie']}
+													enableSearch
+													disableSearchIcon
+													inputClass='w-100'
 												/>
 											</Col>
 										</FormGroup>
