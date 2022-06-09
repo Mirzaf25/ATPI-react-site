@@ -57,10 +57,11 @@ class Customers extends React.Component {
 		}
 	}
 
-	componentDidUpdate(props, { page: prevPage }) {
+	componentDidUpdate(props, { page: prevPage, customers: prevCustomers }) {
 		if (
 			null !== this.props.user.token &&
-			this.state.customers.length === 0
+			this.state.customers.length === 0 &&
+			!this.state.searched
 		) {
 			this.fetchCustomers(
 				this.props.rcp_url.domain +
@@ -153,7 +154,7 @@ class Customers extends React.Component {
 		};
 
 		if (this.state.search.length !== 0) {
-			paramsOptions.search = this.state.search;
+			paramsOptions.search_user = this.state.search;
 		}
 		for (let key in paramsOptions) {
 			urlQuery.searchParams.set(key, paramsOptions[key]);
