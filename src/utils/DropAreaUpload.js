@@ -32,30 +32,6 @@ class DropAreaUpload extends React.Component {
   }
   
 
-  componentDidMount() {
-    if (this.state.media.length === 0)
-      this.fetchMedia(
-        this.props.rcp_url.domain + this.props.rcp_url.base_wp_url + "media"
-      );
-  }
-
-  componentDidUpdate() {}
-
-  fetchMedia = async (url) => {
-    const queryUrl = new URL(url);
-    const params = {
-      per_page: 100,
-      _embed: true,
-    };
-    for (let key in params) {
-      queryUrl.searchParams.set(key, params[key]);
-    }
-    const res = await fetch(queryUrl);
-    const data = await res.json();
-    this.setState({ media: data });
-  };
-
-
   handleFiles(e) {
     var files = e.dataTransfer == undefined ?  e.target.files : e.dataTransfer.files ;
 

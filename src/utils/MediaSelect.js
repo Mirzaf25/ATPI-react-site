@@ -31,11 +31,20 @@ class MediaSelect extends React.Component {
 			membershipLoading: false,
 			searched: false,
 			showUpload:false,
+			imageList:[]
 		};
 	}
 
 	componentDidMount() {
-		if (!this.props.media || this.props.media.length === 0) {
+		
+		if(this.state.imageList.length ==0){
+		this.fetchUrlData(
+			this.props.rcp_url.proxy_domain +
+			this.props.rcp_url.base_wp_url +
+			'media'
+			)	
+		}
+		/*if (!this.props.media || this.props.media.length === 0) {
 			fetch(
 				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_wp_url +
@@ -47,7 +56,7 @@ class MediaSelect extends React.Component {
 				})
 				.then(data => this.props.setMedia(data))
 				.catch(e => console.error(e));
-		}
+		}*/
 	}
 
 	componentDidUpdate({ initialVal: prevInitialVal }) {
@@ -60,11 +69,29 @@ class MediaSelect extends React.Component {
 
 
 	
-	fetchMedia() {
-
+	async fetchMedia() {
 
 		this.setState({ loading: true });
 		
+		await this.fetchUrlData(
+			this.props.rcp_url.proxy_domain +
+			this.props.rcp_url.base_wp_url +
+			'media'
+			);
+	
+	if(this.state.search.length != 0){
+		const result = this.state.imageList.filter(e=>{
+		if('title' in e){
+			return (e.title.rendered.includes(this.state.search))
+		}
+		});
+		this.setState({imageList:result, loading: false});
+		}else{
+			this.setState({loading: false});
+
+		}
+
+/*
 		const url = new URL(
 			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_wp_url +
@@ -76,17 +103,38 @@ class MediaSelect extends React.Component {
 		for (let key in params) {
 			url.searchParams.set(key, params[key]);
 		}
-		fetch(url)
+		await fetch(url)
 			.then(res => {
 				if (!res.ok) return;
 				return res.json();
 			})
 			.then(data => {				
-				this.props.setMedia(this.props.media.concat(data));
+
+				let obj;
+
+				if(this.state.search){
+					const newData = Object.values(data);
+					newData.forEach((e) => {
+						if('title' in e ){
+							obj.push(e);
+						}else{
+							console.log( Object.keys(e) );
+						} 
+					})
+				}else{
+					obj = data;
+				}
+
+	
+				
+				//this.props.setMedia(this.props.media.concat(obj));
+
 				this.setState({ loading: false });
 			})
 			.catch(e => console.error(e));
-	}
+	*/
+	
+		}
 
 	fetchSingleMedia = async () => {
 		if (
@@ -107,10 +155,16 @@ class MediaSelect extends React.Component {
 		}
 	};
 
-	render() {
 
+	fetchUrlData = async url => {
+		const queryUrl = new URL(url);
+		const res = await fetch(queryUrl);
+		const data = await res.json();
+		this.setState({ imageList: data });
+	};
 
-		return (
+	render() {		
+			return (
 			<React.Fragment>
 				{this.state[this.props.fieldName] !== 0 && (
 					<Box
@@ -173,6 +227,34 @@ class MediaSelect extends React.Component {
 													style={{ color: '#3f51b5' }}
 													position='start'
 												>
+										<IconButton
+												size='small'
+												onClick={() => {
+													this.setState({
+														searched: true,
+													});
+													this.fetchMedia()
+												}}
+											>
+												<i className='fa fa-search' />
+											</IconButton>
+
+											{this.state.searched && (
+												<IconButton
+													size='small'
+													onClick={() => {
+														this.setState({
+															searched: false,
+															search: '',
+														});
+
+														this.fetchMedia()
+													}}
+												>
+													<i className='fa fa-times' />
+												</IconButton>
+											)}
+
 												</InputAdornment>
 											),
 								}}
@@ -182,11 +264,10 @@ class MediaSelect extends React.Component {
 							/>
 
 								<Button
+									color='success'
 									onClick={() => {
 										this.setState({showUpload:!this.state.showUpload});
 									}}
-
-									className="btn btn-primary"
 								>
 									{this.state.showUpload ? 'Close':'Upload'}
 								</Button>
@@ -210,17 +291,15 @@ class MediaSelect extends React.Component {
 
 									{
 									this.state.showUpload && 
-									<DropAreaUpload/>
+									<DropAreaUpload completedFunction = {this.fetchUrlData(this.props.rcp_url.proxy_domain +this.props.rcp_url.base_wp_url +'media')}/>
 									}	
 										
 								<ImageList gap={8}>
-									{this.props.media &&
-										this.props.media.length !== 0 &&
-										this.props.media.filter(el=>{
-											if(el.title.rendered.includes(this.state.search)){
-												return el
-											}
-										}).map(
+									{
+									this.state.imageList &&
+									this.state.imageList.length !== 0 &&
+									this.state.imageList
+										.map(
 											({ id, title, source_url }) => (
 												<ImageListItem
 													key={id}
