@@ -284,7 +284,10 @@ class EditCustomer extends React.Component {
 										}
 									/>
 									{this.state.customer && this.state.club && (
-										<ClubDetails club={this.state.club} />
+										<ClubDetails
+											club={this.state.club}
+											roles={this.state.customer?.roles}
+										/>
 									)}
 									{this.state.customer &&
 										this.state.customer.payments.length !==
