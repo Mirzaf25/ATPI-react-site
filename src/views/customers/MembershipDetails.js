@@ -66,7 +66,7 @@ class MembershipDetails extends React.Component {
 					<thead>
 						<tr>
 							<th className='border-right-0'>
-								<h2>Memberhsip Details</h2>
+								<h2>Membership Details</h2>
 							</th>
 						</tr>
 					</thead>
