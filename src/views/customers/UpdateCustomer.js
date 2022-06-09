@@ -108,6 +108,37 @@ class UpdateCustomer extends React.Component {
 					</Col>
 				</FormGroup>
 				<FormGroup row>
+					<Col>
+						<TextField
+							id='outlined-basic'
+							label='Workplace'
+							name='workplace'
+							variant='outlined'
+							onChange={e => this.props.handleChange(e)}
+							value={this.props.form?.workplace || ''}
+							InputLabelProps={{
+								shrink: this.props.customer?.workplace !== '',
+							}}
+						/>
+					</Col>
+				</FormGroup>
+				<FormGroup row>
+					<Col>
+						<TextField
+							id='outlined-basic'
+							label='Job Title'
+							name='reference_club'
+							variant='outlined'
+							onChange={e => this.props.handleChange(e)}
+							value={this.props.form?.reference_club || ''}
+							InputLabelProps={{
+								shrink:
+									this.props.customer?.reference_club !== '',
+							}}
+						/>
+					</Col>
+				</FormGroup>
+				<FormGroup row>
 					<Col sm={8}>
 						<TextField
 							className='w-100'
@@ -143,67 +174,6 @@ class UpdateCustomer extends React.Component {
 					<Col>
 						<TextField
 							id='outlined-basic'
-							label='County'
-							name='county'
-							variant='outlined'
-							onChange={e => this.props.handleChange(e)}
-							value={this.props.form?.county || ''}
-							InputLabelProps={{
-								shrink: this.props.customer?.county !== '',
-							}}
-						/>
-					</Col>
-				</FormGroup>
-				<FormGroup row>
-					<Col>
-						<TextField
-							id='outlined-basic'
-							label='Country'
-							name='country'
-							variant='outlined'
-							onChange={e => this.props.handleChange(e)}
-							value={this.props.form?.country || ''}
-							InputLabelProps={{
-								shrink: this.props.customer?.country !== '',
-							}}
-						/>
-					</Col>
-				</FormGroup>
-				<FormGroup row>
-					<Col>
-						<TextField
-							id='outlined-basic'
-							label='Workplace'
-							name='workplace'
-							variant='outlined'
-							onChange={e => this.props.handleChange(e)}
-							value={this.props.form?.workplace || ''}
-							InputLabelProps={{
-								shrink: this.props.customer?.workplace !== '',
-							}}
-						/>
-					</Col>
-				</FormGroup>
-				<FormGroup row>
-					<Col>
-						<TextField
-							id='outlined-basic'
-							label='Job Title'
-							name='reference_club'
-							variant='outlined'
-							onChange={e => this.props.handleChange(e)}
-							value={this.props.form?.reference_club || ''}
-							InputLabelProps={{
-								shrink:
-									this.props.customer?.reference_club !== '',
-							}}
-						/>
-					</Col>
-				</FormGroup>
-				<FormGroup row>
-					<Col>
-						<TextField
-							id='outlined-basic'
 							label='Town'
 							name='town'
 							variant='outlined'
@@ -219,6 +189,21 @@ class UpdateCustomer extends React.Component {
 					<Col>
 						<TextField
 							id='outlined-basic'
+							label='County'
+							name='county'
+							variant='outlined'
+							onChange={e => this.props.handleChange(e)}
+							value={this.props.form?.county || ''}
+							InputLabelProps={{
+								shrink: this.props.customer?.county !== '',
+							}}
+						/>
+					</Col>
+				</FormGroup>
+				<FormGroup row>
+					<Col>
+						<TextField
+							id='outlined-basic'
 							label='Eircode'
 							name='eircode'
 							variant='outlined'
@@ -226,6 +211,21 @@ class UpdateCustomer extends React.Component {
 							value={this.props.form?.eircode || ''}
 							InputLabelProps={{
 								shrink: this.props.customer?.eircode !== '',
+							}}
+						/>
+					</Col>
+				</FormGroup>
+				<FormGroup row>
+					<Col>
+						<TextField
+							id='outlined-basic'
+							label='Country'
+							name='country'
+							variant='outlined'
+							onChange={e => this.props.handleChange(e)}
+							value={this.props.form?.country || ''}
+							InputLabelProps={{
+								shrink: this.props.customer?.country !== '',
 							}}
 						/>
 					</Col>
