@@ -15,11 +15,13 @@ class Clubs extends React.Component {
 			clubs: [],
 			page: 1,
 			number: 5,
+			loading: false,
 		};
 	}
 
 	componentDidMount() {
 		if (null !== this.props.user.token && this.state.clubs.length === 0) {
+			this.setState({ loading: true });
 			this.fetchClubs(
 				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
@@ -29,8 +31,23 @@ class Clubs extends React.Component {
 		}
 	}
 
-	componentDidUpdate({ user: prevUser }) {
-		if (null !== this.props.user.token && this.state.clubs.length === 0) {
+	componentDidUpdate({ user: prevUser }, { page: prevPage }) {
+		if (
+			null !== this.props.user.token &&
+			this.props.user !== prevUser &&
+			this.state.clubs.length === 0
+		) {
+			this.setState({ loading: true });
+			this.fetchClubs(
+				this.props.rcp_url.proxy_domain +
+					this.props.rcp_url.base_url +
+					'groups',
+				this.props.user.token
+			);
+		}
+
+		if (null !== this.props.user.token && this.state.page !== prevPage) {
+			this.setState({ loading: true });
 			this.fetchClubs(
 				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
@@ -58,7 +75,11 @@ class Clubs extends React.Component {
 			},
 		});
 		const data = await res.json();
-		this.setState({ clubs: data });
+		this.setState({ clubs: data, loading: false });
+	};
+
+	handlePageChange = params => {
+		this.setState({ page: params + 1 });
 	};
 
 	render() {
@@ -87,7 +108,7 @@ class Clubs extends React.Component {
 				membership_name: item.membership_name,
 				owner_name: `${item?.owner.first_name} ${item?.owner.last_name}`,
 				members:
-					item?.members.length !== 0 &&
+					item?.members?.length !== 0 &&
 					item?.members
 						.map(el => `${el.first_name} ${el.last_name}`)
 						.join(', '),
@@ -113,11 +134,22 @@ class Clubs extends React.Component {
 									<h3 className='mb-0'>Clubs</h3>
 								</CardHeader>
 								<DataGrid
-									loading={this.state.clubs.length === 0}
+									loading={this.state.loading}
 									autoHeight
 									rows={rows}
 									columns={columns}
+									onPageChange={this.handlePageChange.bind(
+										this
+									)}
+									pageSize={
+										this.state.clubs.length > 20
+											? 20
+											: this.state.clubs.length
+									}
+									page={this.state.page - 1}
+									rowCount={1000}
 									pagination
+									paginationMode='server'
 								/>
 							</Card>
 						</div>
