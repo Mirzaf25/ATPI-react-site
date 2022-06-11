@@ -23,6 +23,7 @@ import CreateVideo from 'views/videos/CreateVideo';
 import Media from 'views/media/Media';
 import DiscountCodes from 'views/discount/DiscountCodes';
 import CreateDiscountCode from 'views/discount/CreateDiscountCode';
+import EditDiscountCode from 'views/discount/EditDiscountCode';
 import EditPayment from 'views/EditPayment';
 import EditLogo from 'views/sponsored-logos/EditLogo';
 import Events from 'views/events/Events';
@@ -60,16 +61,6 @@ var routes = [
 		icon: 'ni ni-credit-card text-black',
 		component: Payment,
 		layout: '/admin',
-		children: [
-			{
-				path: '/payment/edit/:id',
-				name: 'Edit Payment',
-				icon: 'ni ni-credit-card text-black', // redundant
-				component: EditPayment,
-				layout: '/admin',
-				showInSidebar: false,
-			},
-		],
 	},
 	{
 		path: '/clubs',
@@ -102,7 +93,7 @@ var routes = [
 				showInSidebar: true,
 			},
 			{
-				path: '/membership/edit/:id',
+				path: '/membership/renew-membership/:id',
 				name: 'Renew or change a Membership',
 				icon: 'ni ni-bullet-list-67 text-blue', // redundant
 				component: RenewMembership,
@@ -131,6 +122,14 @@ var routes = [
 				name: 'Create Speaker',
 				icon: 'fa  fa-book text-green', // redundant
 				component: CreateDiscountCode,
+				layout: '/admin',
+				showInSidebar: false,
+			},
+			{
+				path: '/discount/edit',
+				name: 'Edit Speaker',
+				icon: 'fa  fa-book text-green', // redundant
+				component: EditDiscountCode,
 				layout: '/admin',
 				showInSidebar: false,
 			},

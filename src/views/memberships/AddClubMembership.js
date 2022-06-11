@@ -2,10 +2,13 @@ import OnlyHeader from 'components/Headers/OnlyHeader';
 import React from 'react';
 
 //@mui
-import { Switch, withStyles } from '@material-ui/core';
+import { Switch } from '@material-ui/core';
 
 // reactstrap components
+import { Switch, withStyles } from '@material-ui/core';
+
 import {
+	Alert,
 	Button,
 	Card,
 	CardHeader,
@@ -59,6 +62,10 @@ class AddClubMembership extends React.Component {
 			country: '',
 			region: '',
 			error_message: [],
+
+			error: null,
+			openSnackbar: false,
+			errorSnackbar: false,
 			progress: 0,
 			totalProgress: 5,
 			discountDetails: {},
@@ -1173,6 +1180,40 @@ class AddClubMembership extends React.Component {
 							</Card>
 						</div>
 					</Row>
+
+					<Snackbar
+						open={this.state.openSnackbar}
+						autoHideDuration={4000}
+						onClose={this.handleClose}
+						action={
+							<React.Fragment>
+								<Button
+									size='small'
+									aria-label='close'
+									color='inherit'
+									onClick={this.handleClose}
+								>
+									<i
+										className='fa fa-plus'
+										style={{ transform: 'rotate(-45deg)' }}
+									/>
+								</Button>
+							</React.Fragment>
+						}
+					>
+						<Alert
+							onClose={this.handleClose}
+							color={
+								this.state.errorSnackbar ? 'danger' : 'success'
+							}
+							style={{ width: '100%' }}
+						>
+							{this.state.error !== null &&
+							this.state.errorSnackbar
+								? this.state.error
+								: 'User Added'}
+						</Alert>
+					</Snackbar>
 				</Container>
 			</>
 		);

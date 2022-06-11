@@ -1,5 +1,6 @@
 import OnlyHeader from 'components/Headers/OnlyHeader';
 import React from 'react';
+import MatEdit from 'views/MatEdit';
 
 // reactstrap components
 import { Card, CardHeader, CardBody, Media, Container, Row } from 'reactstrap';
@@ -121,6 +122,31 @@ class DiscountCodes extends React.Component {
 				type: 'used',
 				headerName: 'Used',
 				width: 100,
+			},
+			{
+				field: 'actions',
+				type: 'actions',
+				headerName: 'Actions',
+				width: 100,
+				cellClassName: 'actions',
+				renderCell: params => {
+					return (
+						<div
+							className='d-flex justify-content-between align-items-center'
+							style={{ cursor: 'pointer' }}
+						>
+							<MatEdit
+								index={params.row.id}
+								handleClick={() =>
+									this.props.history.push({
+										pathname: 'discount/edit',
+										state: { id: params.row },
+									})
+								}
+							/>
+						</div>
+					);
+				},
 			},
 		];
 
