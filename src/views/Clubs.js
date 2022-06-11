@@ -72,6 +72,7 @@ class Clubs extends React.Component {
 				width: 180,
 			},
 			{ field: 'owner_name', headerName: 'Owner', width: 180 },
+			{ field: 'members', headerName: 'Members', width: 180 },
 			{ field: 'member_count', headerName: 'Member Count', width: 180 },
 			{ field: 'seats', headerName: 'Seats', width: 180 },
 			{ field: 'created_date', headerName: 'Created At', width: 180 },
@@ -84,7 +85,12 @@ class Clubs extends React.Component {
 				name: item.name,
 				membership_id: item.membership_id,
 				membership_name: item.membership_name,
-				owner_name: item.owner_name,
+				owner_name: `${item?.owner.first_name} ${item?.owner.last_name}`,
+				members:
+					item?.members.length !== 0 &&
+					item?.members
+						.map(el => `${el.first_name} ${el.last_name}`)
+						.join(', '),
 				member_count: item.member_count,
 				seats: item.seats,
 				created_date:
