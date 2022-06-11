@@ -206,10 +206,15 @@ class AddIndividualMembership extends React.Component {
 	}
 
 	/**
-	 * Handle Payment
+	 * Handling Stripe Payment
+	 *
 	 * @param {*} event
+	 * @param {integer} membership_id
+	 * @param {integer} user_id
+	 * @param {strin} subscription_key
+	 * @returns object
 	 */
-	async handlePayment(event) {
+	async handlePayment(event, membership_id, user_id, subscription_key) {
 		const { stripe, elements } = this.props.stripe;
 		if (!stripe || !elements) {
 			// Stripe.js has not yet loaded.
@@ -236,6 +241,9 @@ class AddIndividualMembership extends React.Component {
 					: event.target.discount_code.value
 			);
 			formData.append('object_id', membership.id);
+			formData.append('membership_id', membership_id);
+			formData.append('user_id', user_id);
+			formData.append('subscription_key', subscription_key);
 
 			//@todo remove payment if discount is 100%.
 
@@ -256,7 +264,11 @@ class AddIndividualMembership extends React.Component {
 			/* UPDATE PROGRESS */
 			console.log('3');
 			this.updateProgress(1);
-			const { client_secret } = await res.json();
+			const {
+				stripe_client_secret,
+				stripe_intent_type,
+				payment_id,
+			} = await res.json();
 
 			/* UPDATE PROGRESS */
 			console.log('4');
@@ -283,7 +295,7 @@ class AddIndividualMembership extends React.Component {
 			}
 
 			const { error, ...transaction } = await stripe.confirmCardPayment(
-				client_secret,
+				stripe_client_secret,
 				{
 					payment_method: paymentMethodReq.paymentMethod.id,
 				}
@@ -294,7 +306,13 @@ class AddIndividualMembership extends React.Component {
 				this.resetProgress();
 				return;
 			}
-			return Promise.resolve(transaction.paymentIntent);
+
+			const ret = {
+				transaction: transaction.paymentIntent,
+				payment_id: payment_id,
+			};
+
+			return Promise.resolve(ret);
 		} catch (err) {
 			this.resetProgress();
 			return Promise.reject(err);
@@ -357,13 +375,25 @@ class AddIndividualMembership extends React.Component {
 				return res.json();
 			})
 			.then(async data_memership => {
-				const { errors, user_id, object_id } = data_memership;
+				const {
+					errors,
+					user_id,
+					membership_id,
+					subscription_key,
+				} = data_memership;
 				if (errors) return Promise.reject(errors);
 				if (this.state.enable_stripe_payment) {
-					const transaction = await this.handlePayment(event);
-
+					const {
+						transaction,
+						payment_id,
+					} = await this.handlePayment(
+						event,
+						membership_id,
+						user_id,
+						subscription_key
+					);
 					console.log(transaction);
-					return this.addPayment(user_id, membership, transaction);
+					return this.updatePayment(payment_id, transaction);
 					// return this.addPayment(user_id, membership, transaction);
 				}
 				if (this.state.enable_manual_payment) {
@@ -401,21 +431,17 @@ class AddIndividualMembership extends React.Component {
 		);
 	}
 
-	addPayment(user_id, membership, transaction) {
+	updatePayment(payment_id, transaction) {
 		const args = {
-			subscription: membership.name,
-			object_id: membership.id,
-			user_id: user_id,
-			amount: transaction.amount,
 			transaction_id: transaction.id,
 			status: transaction.status === 'succeeded' ? 'complete' : 'failed',
-			gateway: 'stripe',
 		};
 
 		return fetch(
 			this.props.rcp_url.domain +
 				this.props.rcp_url.base_url +
-				'payments/new',
+				'payments/update/' +
+				payment_id,
 			{
 				method: 'post',
 				headers: {
