@@ -3,6 +3,7 @@ import React from 'react';
 
 // reactstrap components
 import {
+	Alert,
 	Card,
 	CardHeader,
 	CardBody,
@@ -18,6 +19,7 @@ import {
 
 //MUI
 import { DataGrid } from '@material-ui/data-grid';
+import { Snackbar } from '@material-ui/core';
 
 import { connect } from 'react-redux';
 import { setUserLoginDetails } from 'features/user/userSlice';
@@ -42,6 +44,10 @@ class CreateSpeaker extends React.Component {
 		this.state = {
 			validate: {},
 			logoCreated: false,
+
+			error: null,
+			openSnackbar: false,
+			errorSnackbar: false,
 		};
 
 		this.create_logo_url =
@@ -62,10 +68,20 @@ class CreateSpeaker extends React.Component {
 				return this.createSpeaker(image_id);
 			})
 			.then(res => res.json())
-			.then(data => console.log(data))
+			.then(this.setState({ openSnackbar: true, errorSnackbar: false }))
+			.catch(err => {
+				this.setState({
+					openSnackbar: true,
+					errorSnackbar: true,
+					error: err,
+				});
+			});
+		/*
+      .then(data => console.log(data))
 			.catch(err => {
 				console.error(err);
 			});
+*/
 	}
 
 	handleChange = event => {
@@ -243,6 +259,40 @@ class CreateSpeaker extends React.Component {
 							</Card>
 						</div>
 					</Row>
+
+					<Snackbar
+						open={this.state.openSnackbar}
+						autoHideDuration={4000}
+						onClose={this.handleClose}
+						action={
+							<React.Fragment>
+								<Button
+									size='small'
+									aria-label='close'
+									color='inherit'
+									onClick={this.handleClose}
+								>
+									<i
+										className='fa fa-plus'
+										style={{ transform: 'rotate(-45deg)' }}
+									/>
+								</Button>
+							</React.Fragment>
+						}
+					>
+						<Alert
+							onClose={this.handleClose}
+							color={
+								this.state.errorSnackbar ? 'danger' : 'success'
+							}
+							style={{ width: '100%' }}
+						>
+							{this.state.error !== null &&
+							this.state.errorSnackbar
+								? this.state.error
+								: 'Created Speaker'}
+						</Alert>
+					</Snackbar>
 				</Container>
 			</>
 		);

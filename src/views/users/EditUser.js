@@ -3,6 +3,7 @@ import React from 'react';
 
 // reactstrap components
 import {
+	Alert,
 	Card,
 	CardHeader,
 	CardBody,
@@ -27,6 +28,7 @@ import {
 	Chip,
 	Button,
 	ButtonGroup,
+	Snackbar,
 } from '@material-ui/core';
 
 import MatEdit from 'views/MatEdit';
@@ -46,6 +48,9 @@ class EditUser extends React.Component {
 				email: '',
 			},
 			profileImageChanged: false,
+			error: null,
+			openSnackbar: false,
+			errorSnackbar: false,
 		};
 
 		this.current_user_url =
@@ -554,6 +559,40 @@ class EditUser extends React.Component {
 							</Card>
 						</div>
 					</Row>
+
+					<Snackbar
+						open={this.state.openSnackbar}
+						autoHideDuration={4000}
+						onClose={this.handleClose}
+						action={
+							<React.Fragment>
+								<Button
+									size='small'
+									aria-label='close'
+									color='inherit'
+									onClick={this.handleClose}
+								>
+									<i
+										className='fa fa-plus'
+										style={{ transform: 'rotate(-45deg)' }}
+									/>
+								</Button>
+							</React.Fragment>
+						}
+					>
+						<Alert
+							onClose={this.handleClose}
+							color={
+								this.state.errorSnackbar ? 'danger' : 'success'
+							}
+							style={{ width: '100%' }}
+						>
+							{this.state.error !== null &&
+							this.state.errorSnackbar
+								? this.state.error
+								: 'Created Speaker'}
+						</Alert>
+					</Snackbar>
 				</Container>
 			</>
 		);
