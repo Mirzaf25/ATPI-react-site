@@ -39,7 +39,7 @@ class Clubs extends React.Component {
 		) {
 			this.setState({ loading: true });
 			this.fetchClubs(
-				this.props.rcp_url.proxy_domain +
+				this.props.rcp_url.domain +
 					this.props.rcp_url.base_url +
 					'groups',
 				this.props.user.token
