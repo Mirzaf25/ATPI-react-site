@@ -45,6 +45,14 @@ class ClubDetails extends React.Component {
 						<td>{this.props.club?.seats}</td>
 					</tr>
 					<tr>
+						<td className='font-weight-bold'>Role</td>
+						<td className='text-capitalize'>
+							{this.props.roles
+								.map(el => el.split('_').join(' '))
+								.join(', ')}
+						</td>
+					</tr>
+					<tr>
 						<td className='font-weight-bold'>Club Owner</td>
 						<td>
 							<ul className='ni-ul ml-0'>

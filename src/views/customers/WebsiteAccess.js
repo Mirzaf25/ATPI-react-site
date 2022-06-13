@@ -8,7 +8,7 @@ import { Col, Form, FormGroup } from 'reactstrap';
 
 import { connect } from 'react-redux';
 import { setUserLoginDetails } from 'features/user/userSlice';
-import { Button, Checkbox, FormControlLabel } from '@material-ui/core';
+import { Button, Checkbox, FormControlLabel, Tooltip } from '@material-ui/core';
 
 class WebsiteAccessRole extends React.Component {
 	constructor(props) {
@@ -49,43 +49,49 @@ class WebsiteAccessRole extends React.Component {
 					onSubmit={this.updateUserRole}
 				>
 					<FormGroup>
-						<FormControlLabel
-							control={
-								<Checkbox
-									name='roles[]'
-									defaultChecked={this.props.user_roles.includes(
-										'club_owner'
-									)}
-									value='club_owner'
-								/>
-							}
-							label='Club Owner'
-						/>
-						<FormControlLabel
-							control={
-								<Checkbox
-									name='roles[]'
-									defaultChecked={this.props.user_roles.includes(
-										'club_member'
-									)}
-									value='club_member'
-								/>
-							}
-							label='Club Member'
-						/>
-						<FormControlLabel
-							control={
-								<Checkbox
-									name='roles[]'
-									defaultChecked={this.props.user_roles.includes(
-										'individual_member'
-									)}
-									value='individual_member'
-								/>
-							}
-							label='Individual Member'
-						/>
-						<FormControlLabel
+						<Tooltip title='Club member view + access to club invoices'>
+							<FormControlLabel
+								control={
+									<Checkbox
+										name='roles[]'
+										defaultChecked={this.props.user_roles.includes(
+											'club_owner'
+										)}
+										value='club_owner'
+									/>
+								}
+								label='Club Owner'
+							/>
+						</Tooltip>
+						<Tooltip title='Club member view'>
+							<FormControlLabel
+								control={
+									<Checkbox
+										name='roles[]'
+										defaultChecked={this.props.user_roles.includes(
+											'club_member'
+										)}
+										value='club_member'
+									/>
+								}
+								label='Club Member'
+							/>
+						</Tooltip>
+						<Tooltip title='Individual Member view'>
+							<FormControlLabel
+								control={
+									<Checkbox
+										name='roles[]'
+										defaultChecked={this.props.user_roles.includes(
+											'individual_member'
+										)}
+										value='individual_member'
+									/>
+								}
+								label='Individual Member'
+							/>
+						</Tooltip>
+						{/* <FormControlLabel
 							control={
 								<Checkbox
 									name='roles[]'
@@ -108,7 +114,7 @@ class WebsiteAccessRole extends React.Component {
 								/>
 							}
 							label='Administrator'
-						/>
+						/> */}
 					</FormGroup>
 					<FormGroup>
 						<Col>

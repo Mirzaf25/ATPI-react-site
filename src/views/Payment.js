@@ -32,8 +32,9 @@ class Payments extends React.Component {
 		super(props);
 		this.state = {
 			payments: [],
+			paymentLoading: false,
 			page: 1,
-			number: 5,
+			number: 20,
 		};
 	}
 
@@ -54,7 +55,7 @@ class Payments extends React.Component {
 		}
 	}
 
-	componentDidUpdate({ user: prevUser }) {
+	componentDidUpdate({ user: prevUser }, { page: prevPage }) {
 		if (
 			null !== this.props.user.token &&
 			prevUser.token !== this.props.user.token &&
@@ -67,7 +68,21 @@ class Payments extends React.Component {
 				this.props.user.token
 			);
 		}
+
+		if (null !== this.props.user.token && prevPage !== this.state.page) {
+			this.fetchPayment(
+				this.props.rcp_url.domain +
+					this.props.rcp_url.base_url +
+					'payments',
+				this.props.user.token,
+				this.state.page
+			);
+		}
 	}
+
+	handlePageChange = params => {
+		this.setState({ page: params + 1, paymentLoading: true });
+	};
 
 	async fetchToken(token_url) {
 		const response = await fetch(token_url, {
@@ -86,13 +101,13 @@ class Payments extends React.Component {
 		this.props.setUserLoginDetails(data);
 	}
 
-	fetchPayment = async (url, token) => {
+	fetchPayment = async (url, token, page = this.state.page) => {
 		const urlQuery = new URL(url);
 		const paramsOptions = {
 			number: this.state.number,
-			offset: (this.state.page - 1) * this.state.number,
-			orderby: 'ID',
-			order: 'ASC',
+			offset: (page - 1) * this.state.number,
+			order_by: 'created_date',
+			order: 'DESC',
 		};
 		for (let key in paramsOptions) {
 			urlQuery.searchParams.set(key, paramsOptions[key]);
@@ -104,7 +119,7 @@ class Payments extends React.Component {
 			},
 		});
 		const data = await res.json();
-		this.setState({ payments: data });
+		this.setState({ payments: data, paymentLoading: false });
 	};
 
 	render() {
@@ -241,11 +256,21 @@ class Payments extends React.Component {
                 </Table>
                     */}
 								<DataGrid
-									loading={this.state.payments.length === 0}
+									loading={this.state.paymentLoading}
 									autoHeight
 									rows={rows}
 									columns={columns}
+									onPageChange={this.handlePageChange.bind(
+										this
+									)}
+									pageSize={
+										this.state.payments.length > 20
+											? 20
+											: this.state.payments.length
+									}
+									rowCount={1000}
 									pagination
+									paginationMode='server'
 								/>
 								{/* Add Pagination */}
 							</Card>

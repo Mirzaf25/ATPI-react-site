@@ -66,7 +66,7 @@ class MembershipDetails extends React.Component {
 					<thead>
 						<tr>
 							<th className='border-right-0'>
-								<h2>Memberhsip Details</h2>
+								<h2>Membership Details</h2>
 							</th>
 						</tr>
 					</thead>
@@ -88,6 +88,15 @@ class MembershipDetails extends React.Component {
 								Expiration Date
 							</td>
 							<td>{this.props.membership?.expired_date}</td>
+						</tr>
+						<tr>
+							<td className='font-weight-bold'>Billing Cycle</td>
+							<td
+								dangerouslySetInnerHTML={{
+									__html: this.props.membership
+										?.billing_cycle,
+								}}
+							/>
 						</tr>
 						<tr>
 							<td className='font-weight-bold'>Auto Renew</td>
