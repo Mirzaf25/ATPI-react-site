@@ -25,10 +25,19 @@ import {
 	UncontrolledTooltip,
 	Navbar,
 	NavLink,
+	Form,
+	FormGroup,
+	Modal,
+	ModalBody,
+	ModalHeader,
+	ModalFooter,
+	ButtonGroup,
+	Spinner,
 } from 'reactstrap';
 
 //MUI
 import { DataGrid } from '@material-ui/data-grid';
+import { setFilrLoading } from '../../features/filr/filrSlice';
 
 import fileIcons from '../../variables/file-icons';
 
@@ -45,6 +54,9 @@ import {
 	Link,
 	LinearProgress,
 	Breadcrumbs,
+	Grow,
+	TextField,
+	Snackbar,
 	withStyles,
 } from '@material-ui/core';
 import ListItemButton from '@material-ui/core/Button';
@@ -61,6 +73,14 @@ class Filr extends React.Component {
 			viewFiles: [],
 			viewLoading: false,
 			currentFolder: null,
+			dropdownOpen: false,
+			createFolderModalStatus: false,
+			uploadFileModalStatus: false,
+			uploadType: '',
+			newFolderName: '',
+			newFolderId: '',
+			selectedFile: Object,
+			showFolderNav: true,
 		};
 		this.breadcrumbs = [
 			<Link
@@ -215,6 +235,100 @@ class Filr extends React.Component {
 		}, 2000);
 	};
 
+	dropdownToggle = () => {
+		this.setState({ dropdownOpen: !this.state.dropdownOpen });
+	};
+
+	fileChangedHandler = event => {
+		this.setState({ selectedFile: event.target.files[0] });
+	};
+
+	uploadHandler = () => {
+		// @todo upload to api
+	};
+
+	handleFolderNameChange = e => {
+		this.setState({ newFolderName: e.target.value });
+	};
+
+	handleFolderIdChange = e => {
+		this.setState({ newFolderId: e.target.value });
+	};
+
+	toggleCreateFolderModal = () => {
+		this.setState({
+			createFolderModalStatus: !this.state.createFolderModalStatus,
+		});
+	};
+	clearFields = () => {
+		this.setState({
+			newFolderId: '',
+			newFolderName: '',
+		});
+	};
+	toggleUploadFileModal = () => {
+		this.setState({
+			uploadFileModalStatus: !this.state.uploadFileModalStatus,
+		});
+	};
+	dropdownToggle = () => {
+		this.setState({ dropdownOpen: !this.state.dropdownOpen });
+	};
+
+	clearFields = () => {
+		this.setState({
+			newFolderId: '',
+			newFolderName: '',
+		});
+	};
+
+	createNewFolder = async (url, payload, onSuccess = () => {}) => {
+		this.props.setFilrLoading(true);
+
+		try {
+			const response = await fetch(url, {
+				method: 'post',
+				mode: 'cors',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${this.props.user.token}`,
+				},
+				body: JSON.stringify(payload),
+			});
+			this.setState({ viewFiles: [payload, ...this.state.viewFiles] });
+			await this.props.setFilrLoading(false);
+			onSuccess();
+		} catch (error) {
+			this.props.setFilrLoading(false);
+		}
+	};
+
+	openFolder = item => {
+		this.setState({
+			viewLoading: true,
+			currentFolder: item.id,
+			viewFiles: this.state.files.filter(el => {
+				return (
+					el.metadata.hasOwnProperty('assigned-folder') &&
+					el.metadata['assigned-folder'] == item.id
+				);
+			}),
+		});
+		document.querySelectorAll('.folder-icon').forEach(el => {
+			if (
+				el.classList.contains('fa-folder-open') ||
+				el.dataset.id == item.id
+			) {
+				el.classList.toggle('fa-folder-open');
+			}
+		});
+
+		// @todo fetch from api
+		setTimeout(() => {
+			this.setState({ viewLoading: false });
+		}, 2000);
+	};
+
 	render() {
 		const columns = [
 			{
@@ -265,14 +379,138 @@ class Filr extends React.Component {
 			},
 		];
 		const rows = [];
+		const folder = this.state.files.find(
+			el => el.id == this.state.currentFolder
+		);
+
 		return (
 			<>
+				<Modal
+					isOpen={this.state.uploadFileModalStatus}
+					toggle={this.toggleUploadFileModal}
+				>
+					<ModalHeader>
+						Upload File
+						{folder?.title.rendered == undefined
+							? ' to root'
+							: ' to ' + folder?.title.rendered}
+					</ModalHeader>
+					<ModalBody>
+						<input type='file' onChange={this.fileChangedHandler} />
+						<Button
+							variant='contained'
+							onClick={this.uploadHandler}
+						>
+							Upload
+						</Button>
+					</ModalBody>
+					<ModalFooter></ModalFooter>
+				</Modal>
+
+				<Modal
+					isOpen={this.state.createFolderModalStatus}
+					toggle={() => {
+						this.clearFields();
+						this.toggleCreateFolderModal();
+					}}
+				>
+					<ModalHeader
+						toggle={() => {
+							this.clearFields();
+							this.toggleCreateFolderModal();
+						}}
+					>
+						Create Folder
+						{folder?.title.rendered == undefined
+							? ' in root'
+							: ' in ' + folder?.title.rendered}{' '}
+					</ModalHeader>
+					<Form
+						onSubmit={e => {
+							e.preventDefault();
+							this.createNewFolder(
+								this.props.rcp_url.proxy_domain +
+									this.props.rcp_url.base_wp_url +
+									'filr',
+								{
+									title: this.state.newFolderName,
+									metadata: {
+										'is-folder': true,
+										'assigned-folder': this.state
+											.newFolderId
+											? this.state.newFolderId
+											: this.state.currentFolder,
+									},
+								},
+								() => {
+									alert('Folder added successfully!');
+									this.fetchFiles(
+										this.props.rcp_url.proxy_domain +
+											this.props.rcp_url.base_wp_url +
+											'filr'
+									);
+									this.clearFields();
+									this.toggleCreateFolderModal();
+								}
+							);
+						}}
+					>
+						<ModalBody>
+							<Col>
+								<FormGroup>
+									<TextField
+										onChange={e =>
+											this.handleFolderNameChange(e)
+										}
+										value={this.state.newFolderName}
+										required
+										name='folder_name'
+										id='folder_name'
+										label='Name'
+										variant='outlined'
+										size='small'
+										className='w-100'
+									/>
+								</FormGroup>
+								<FormGroup>
+									<TextField
+										onChange={e =>
+											this.handleFolderIdChange(e)
+										}
+										value={this.state.newFolderId}
+										name='folder_id'
+										id='folder_id'
+										label='Folder Id (Optional)'
+										variant='outlined'
+										className='w-100'
+										size='small'
+									/>
+								</FormGroup>
+							</Col>
+						</ModalBody>
+						<ModalFooter>
+							{' '}
+							<Button
+								type='submit'
+								variant='contained'
+								disabled={this.props.filr.loading}
+							>
+								{this.props.filr.loading ? (
+									<Spinner size='sm' />
+								) : (
+									'Submit'
+								)}
+							</Button>
+						</ModalFooter>
+					</Form>
+				</Modal>
 				<OnlyHeader />
 				<Container className='mt--8' fluid>
 					<Row>
 						<div className='col'>
 							<Card className='shadow'>
 								<CardHeader className='border-0'>
+									<h3 className='mb-0'>Filr</h3>
 									<h3 className='mb-0'>ATPI Library</h3>
 									<h4>Files shared with all club members</h4>
 
@@ -587,10 +825,11 @@ const mapStateToProps = state => {
 	return {
 		rcp_url: state.rcp_url,
 		user: state.user,
+		filr: state.filr,
 	};
 };
 
-const mapDispatchToProps = { setUserLoginDetails };
+const mapDispatchToProps = { setUserLoginDetails, setFilrLoading };
 
 const styles = {
 	fileViewer: {
