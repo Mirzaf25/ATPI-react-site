@@ -17,8 +17,10 @@ import {
 } from 'reactstrap';
 
 //MUI
+import { DataGrid } from '@material-ui/data-grid';
 
 import { connect } from 'react-redux';
+import { setMedia } from 'features/media/mediaSlice';
 import {
 	LinearProgress,
 	Avatar,
@@ -35,6 +37,9 @@ import {
 	OutlinedInput,
 	withStyles,
 } from '@material-ui/core';
+
+import MatEdit from 'views/MatEdit';
+import MediaSelect from 'utils/MediaSelect';
 
 class EditEvent extends React.Component {
 	constructor(props) {
@@ -58,7 +63,7 @@ class EditEvent extends React.Component {
 		this.handleChange = this.handleChange.bind(this);
 
 		this.create_event_url =
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 			this.props.rcp_url.base_wp_url +
 			'event_listing/' +
 			this.props.match.params.id;
@@ -131,7 +136,7 @@ class EditEvent extends React.Component {
 
 	componentDidMount() {
 		const url = new URL(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_wp_url +
 				'event_listing_category'
 		);
@@ -143,7 +148,7 @@ class EditEvent extends React.Component {
 
 		if (this.state.event === null && this.props.user.token !== null)
 			this.fetchEvent(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_wp_url +
 					'event_listing/' +
 					this.props.match.params.id
@@ -153,7 +158,7 @@ class EditEvent extends React.Component {
 	componentDidUpdate() {
 		if (this.state.event === null && this.props.user.token !== null)
 			this.fetchEvent(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_wp_url +
 					'event_listing/' +
 					this.props.match.params.id
@@ -200,7 +205,7 @@ class EditEvent extends React.Component {
 	// 	}
 
 	// 	return fetch(
-	// 		this.props.rcp_url.domain +
+	// 		this.props.rcp_url.proxy_domain +
 	// 			this.props.rcp_url.base_wp_url +
 	// 			'media',
 	// 		{
@@ -406,7 +411,27 @@ class EditEvent extends React.Component {
 												/>
 											</Col>
 										</FormGroup>
-
+										<FormGroup row>
+											<Col>
+												<Button
+													onClick={this.handleOpen.bind(
+														this
+													)}
+												>
+													Media
+												</Button>
+												<MediaSelect
+													open={this.state.mediaOpen}
+													onClose={this.handleClose.bind(
+														this
+													)}
+													setValue={val =>
+														console.log(val)
+													}
+													fieldName='something'
+												/>
+											</Col>
+										</FormGroup>
 										{/* <FormGroup row>
 											<Col>
 												{this.state.event !== null &&
@@ -459,10 +484,11 @@ const mapStateToProps = state => {
 	return {
 		rcp_url: state.rcp_url,
 		user: state.user,
+		media: state.media,
 	};
 };
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = { setMedia };
 
 const styles = {
 	date: {

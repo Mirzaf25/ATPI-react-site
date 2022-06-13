@@ -25,6 +25,7 @@ import DiscountCodes from 'views/discount/DiscountCodes';
 import CreateDiscountCode from 'views/discount/CreateDiscountCode';
 import EditPayment from 'views/EditPayment';
 import EditLogo from 'views/sponsored-logos/EditLogo';
+import EditVideo from 'views/videos/EditVideo';
 import Events from 'views/events/Events';
 import EditEvent from 'views/events/EditEvent';
 import Tradeshow from 'views/tradeshow/Tradeshow';
@@ -207,6 +208,14 @@ var routes = [
 				name: 'Create Video',
 				icon: 'fa  fa-book text-green', // redundant
 				component: CreateVideo,
+				layout: '/admin',
+				showInSidebar: false,
+			},
+			{
+				path: '/videos/edit/:id',
+				name: 'Edit Video',
+				icon: 'fa  fa-book text-green', // redundant
+				component: EditVideo,
 				layout: '/admin',
 				showInSidebar: false,
 			},

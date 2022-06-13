@@ -8,7 +8,6 @@ import {
 	CardHeader,
 	CardBody,
 	CardFooter,
-	Dropdown,
 	DropdownMenu,
 	DropdownItem,
 	UncontrolledDropdown,
@@ -25,6 +24,13 @@ import {
 	UncontrolledTooltip,
 	Navbar,
 	NavLink,
+	Form,
+	FormGroup,
+	Dropdown,
+	Modal,
+	ModalBody,
+	ModalHeader,
+	ModalFooter,
 } from 'reactstrap';
 
 //MUI
@@ -45,6 +51,8 @@ import {
 	Link,
 	LinearProgress,
 	Breadcrumbs,
+	Grow,
+	TextField,
 	withStyles,
 } from '@material-ui/core';
 import ListItemButton from '@material-ui/core/Button';
@@ -61,6 +69,12 @@ class Filr extends React.Component {
 			viewFiles: [],
 			viewLoading: false,
 			currentFolder: null,
+			dropdownOpen: false,
+			createFolderModalStatus: false,
+			uploadFileModalStatus: false,
+			uploadType: '',
+			newFolderName: '',
+			newFolderId: '',
 		};
 		this.breadcrumbs = [
 			<Link
@@ -84,10 +98,95 @@ class Filr extends React.Component {
 		];
 	}
 
+	fileChangedHandler = event => {};
+
+	uploadHandler = async event => {
+		// @todo upload to api
+		event.preventDefault();
+		const formData = new FormData(event.target);
+		console.log(formData);
+		this.uploadToMedia(formData)
+			.then(res => res.json())
+			.then(data => {
+				console.log(data);
+				return fetch(
+					this.props.rcp_url.proxy_domain +
+						this.props.rcp_url.base_wp_url +
+						'filr',
+					{
+						method: 'POST',
+						headers: {
+							Authorization: 'Bearer ' + this.props.user.token,
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({
+							title: formData.get('title'),
+							metadata: {
+								'file-download': data.source_url,
+								'assigned-folder': this.state.currentFolder
+									? this.state.currentFolder
+									: 0,
+							},
+						}),
+					}
+				);
+			})
+			.then(res => res.json())
+			.then(data => console.log(data))
+			.catch(err => {
+				console.error(err);
+			});
+	};
+
+	uploadToMedia(form) {
+		return fetch(
+			this.props.rcp_url.proxy_domain +
+				this.props.rcp_url.base_wp_url +
+				'media',
+			{
+				method: 'POST',
+				headers: {
+					Authorization: 'Bearer ' + this.props.user.token,
+				},
+				body: form,
+			}
+		);
+	}
+
+	createFolder = async e => {
+		e.preventDefault();
+
+		if (this.props.user.token === null) return;
+
+		// @todo create folder
+
+		this.setState({ newFolderName: '' });
+	};
+
+	handleFolderNameChange = e => {
+		this.setState({ newFolderName: e });
+	};
+
+	handleFolderIdChange = e => {
+		this.setState({ newFolderId: e });
+	};
+	toggleCreateFolderModal = () => {
+		this.setState({
+			createFolderModalStatus: !this.state.createFolderModalStatus,
+		});
+	};
+	toggleUploadFileModal = () => {
+		this.setState({
+			uploadFileModalStatus: !this.state.uploadFileModalStatus,
+		});
+	};
+	dropdownToggle = () => {
+		this.setState({ dropdownOpen: !this.state.dropdownOpen });
+	};
 	componentDidMount() {
 		if (this.state.files.length === 0)
 			this.fetchFiles(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_wp_url +
 					'filr'
 			);
@@ -104,6 +203,7 @@ class Filr extends React.Component {
 				),
 			});
 		}
+
 		if (prevViewFiles !== this.state.viewFiles) {
 			const index = this.breadcrumbs.findIndex(
 				item => item.key == this.state.currentFolder
@@ -115,6 +215,7 @@ class Filr extends React.Component {
 				const folder = this.state.files.find(
 					el => el.id == this.state.currentFolder
 				);
+
 				//use indexes to clear up breadcrumbs.
 				if (
 					folder !== undefined &&
@@ -190,7 +291,6 @@ class Filr extends React.Component {
 	};
 
 	openFolder = item => {
-		console.log(item);
 		this.setState({
 			viewLoading: true,
 			currentFolder: item.id,
@@ -209,6 +309,11 @@ class Filr extends React.Component {
 				el.classList.toggle('fa-folder-open');
 			}
 		});
+
+		// this.setState({
+		//   breadcrumbObjectList: [...this.state.breadcrumbObjectList, item],
+		// });
+
 		// @todo fetch from api
 		setTimeout(() => {
 			this.setState({ viewLoading: false });
@@ -265,8 +370,80 @@ class Filr extends React.Component {
 			},
 		];
 		const rows = [];
+
 		return (
 			<>
+				<Modal
+					isOpen={this.state.uploadFileModalStatus}
+					toggle={this.toggleUploadFileModal}
+				>
+					<ModalHeader>Upload File</ModalHeader>
+					<ModalBody>
+						<Form onSubmit={this.uploadHandler}>
+							<Col className='mb-2'>
+								<input
+									type='file'
+									name='file'
+									onChange={this.fileChangedHandler}
+								/>
+							</Col>
+							<Col className='mb-2'>
+								<TextField
+									label='Title'
+									name='title'
+									variant='outlined'
+								/>
+							</Col>
+							<Col>
+								<Button type='submit' variant='contained'>
+									Upload
+								</Button>
+							</Col>
+						</Form>
+					</ModalBody>
+					<ModalFooter></ModalFooter>
+				</Modal>
+
+				<Modal
+					isOpen={this.state.createFolderModalStatus}
+					toggle={this.toggleCreateFolderModal}
+				>
+					<ModalHeader>Create Folder</ModalHeader>
+					<ModalBody>
+						<Form onSubmit={this.createFolder.bind(this)}>
+							<Col className='mb-2'>
+								<TextField
+									onChange={e =>
+										this.handleFolderNameChange(e)
+									}
+									required
+									name='folder_name'
+									id='folder_name'
+									label='Name'
+									variant='outlined'
+									size='small'
+								/>
+							</Col>
+							<Col className='mb-2'>
+								<TextField
+									onChange={e => this.handleFolderIdChange(e)}
+									name='folder_id'
+									id='folder_id'
+									label='Folder Id (Optional)'
+									variant='outlined'
+									size='small'
+								/>
+							</Col>
+							<Col>
+								<Button type='submit' variant='contained'>
+									Submit
+								</Button>
+							</Col>
+						</Form>
+					</ModalBody>
+					<ModalFooter></ModalFooter>
+				</Modal>
+
 				<OnlyHeader />
 				<Container className='mt--8' fluid>
 					<Row>
@@ -305,6 +482,7 @@ class Filr extends React.Component {
 										</Dropdown>
 									</Row>
 								</CardHeader>
+
 								<CardBody>
 									<Breadcrumbs maxItems={3}>
 										{this.breadcrumbs}
@@ -345,10 +523,13 @@ class Filr extends React.Component {
 																					/>
 																				}
 																				className='w-100 justify-content-start text-capitalize folder-buttons'
-																				onClick={this.openFolder.bind(
-																					this,
-																					item
-																				)}
+																				onClick={
+																					//()=>{console.log(item)}
+																					this.openFolder.bind(
+																						this,
+																						item
+																					)
+																				}
 																			>
 																				{item.title.rendered.slice(
 																					0,
@@ -466,7 +647,6 @@ class Filr extends React.Component {
 														LoadingOverlay:
 															LinearProgress,
 													}}
-													checkboxSelection
 													autoHeight
 													rows={rows}
 													columns={columns}
@@ -484,12 +664,7 @@ class Filr extends React.Component {
 								{Object.keys(this.state.selectedFile).length !==
 									0 && (
 									<>
-										<Row
-											style={{
-												width: window.innerWidth * 0.75,
-											}}
-											className='pt-3 pl-3'
-										>
+										<Row className='pt-3 pl-3 '>
 											<Col xs={8}>
 												<h2>
 													{

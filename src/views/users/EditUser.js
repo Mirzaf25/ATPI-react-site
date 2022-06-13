@@ -49,7 +49,7 @@ class EditUser extends React.Component {
 		};
 
 		this.current_user_url =
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 			this.props.rcp_url.base_wp_url +
 			'users/' +
 			this.props.match.params.id;
@@ -58,7 +58,7 @@ class EditUser extends React.Component {
 	componentDidMount() {
 		if (this.state.user === null && this.props.user.token !== null)
 			this.fetchUser(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_wp_url +
 					'users/' +
 					this.props.match.params.id
@@ -68,7 +68,7 @@ class EditUser extends React.Component {
 	componentDidUpdate({ user: prevUser }) {
 		if (prevUser !== this.props.user && this.props.user.token !== null) {
 			this.fetchUser(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_wp_url +
 					'users/' +
 					this.props.match.params.id
@@ -140,7 +140,7 @@ class EditUser extends React.Component {
 		formData.append('file', file);
 		formData.append('title', this.state.user?.name);
 		fetch(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_wp_url +
 				'media',
 			{
@@ -200,7 +200,7 @@ class EditUser extends React.Component {
 			if (this.state.user[key] === value) formData.delete(key);
 		}
 		fetch(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_wp_url +
 				'users/' +
 				this.props.match.params.id,

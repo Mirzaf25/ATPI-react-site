@@ -51,7 +51,7 @@ class CreateLogo extends React.Component {
 		this.handleChange = this.handleChange.bind(this);
 
 		this.create_logo_url =
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 			this.props.rcp_url.base_wp_url +
 			'sponsored_logos';
 	}
@@ -86,7 +86,7 @@ class CreateLogo extends React.Component {
 
 	componentDidMount() {
 		const url = new URL(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_wp_url +
 				'page_show'
 		);
@@ -108,7 +108,7 @@ class CreateLogo extends React.Component {
 		}
 
 		return fetch(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_wp_url +
 				'media',
 			{

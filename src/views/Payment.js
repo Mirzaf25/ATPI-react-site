@@ -41,13 +41,13 @@ class Payments extends React.Component {
 	componentDidMount() {
 		if (null === this.props.user.token) {
 			this.fetchToken(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.auth_url +
 					'token'
 			);
 		} else if (this.state.payments?.length === 0) {
 			this.fetchPayment(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'payments',
 				this.props.user.token
@@ -62,7 +62,7 @@ class Payments extends React.Component {
 			this.state.payments?.length === 0
 		) {
 			this.fetchPayment(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'payments',
 				this.props.user.token
@@ -183,7 +183,7 @@ class Payments extends React.Component {
 								}
 								handleDeleteClick={() => {
 									this.deleteCustomer(
-										this.props.rcp_url.domain +
+										this.props.rcp_url.proxy_domain +
 											this.props.rcp_url.base_url +
 											'payments/delete/',
 										params.row.id

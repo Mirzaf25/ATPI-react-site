@@ -12,8 +12,12 @@ import {
 	Modal,
 	ImageListItem,
 	withStyles,
+	InputAdornment,
+	IconButton,
+	TextField,
 } from '@material-ui/core';
 import { Card, CardHeader, CardBody } from 'reactstrap';
+import DropAreaUpload from '../utils/DropAreaUpload';
 
 class MediaSelect extends React.Component {
 	constructor(props) {
@@ -23,11 +27,24 @@ class MediaSelect extends React.Component {
 			loading: false,
 			[this.props.fieldName]: this.props.initialVal || 0,
 			open: false,
+			search:'',
+			membershipLoading: false,
+			searched: false,
+			showUpload:false,
+			imageList:[]
 		};
 	}
 
 	componentDidMount() {
-		if (!this.props.media || this.props.media.length === 0) {
+		
+		if(this.state.imageList.length ==0){
+		this.fetchUrlData(
+			this.props.rcp_url.proxy_domain +
+			this.props.rcp_url.base_wp_url +
+			'media'
+			)	
+		}
+		/*if (!this.props.media || this.props.media.length === 0) {
 			fetch(
 				this.props.rcp_url.domain +
 					this.props.rcp_url.base_wp_url +
@@ -39,7 +56,7 @@ class MediaSelect extends React.Component {
 				})
 				.then(data => this.props.setMedia(data))
 				.catch(e => console.error(e));
-		}
+		}*/
 	}
 
 	componentDidUpdate({ initialVal: prevInitialVal }) {
@@ -50,8 +67,31 @@ class MediaSelect extends React.Component {
 
 	onClose = () => this.setState({ open: false });
 
-	fetchMedia() {
+
+	
+	async fetchMedia() {
+
 		this.setState({ loading: true });
+		
+		await this.fetchUrlData(
+			this.props.rcp_url.proxy_domain +
+			this.props.rcp_url.base_wp_url +
+			'media'
+			);
+	
+	if(this.state.search.length != 0){
+		const result = this.state.imageList.filter(e=>{
+		if('title' in e){
+			return (e.title.rendered.includes(this.state.search))
+		}
+		});
+		this.setState({imageList:result, loading: false});
+		}else{
+			this.setState({loading: false});
+
+		}
+
+/*
 		const url = new URL(
 			this.props.rcp_url.domain + this.props.rcp_url.base_wp_url + 'media'
 		);
@@ -61,17 +101,38 @@ class MediaSelect extends React.Component {
 		for (let key in params) {
 			url.searchParams.set(key, params[key]);
 		}
-		fetch(url)
+		await fetch(url)
 			.then(res => {
 				if (!res.ok) return;
 				return res.json();
 			})
-			.then(data => {
-				this.props.setMedia(this.props.media.concat(data));
+			.then(data => {				
+
+				let obj;
+
+				if(this.state.search){
+					const newData = Object.values(data);
+					newData.forEach((e) => {
+						if('title' in e ){
+							obj.push(e);
+						}else{
+							console.log( Object.keys(e) );
+						} 
+					})
+				}else{
+					obj = data;
+				}
+
+	
+				
+				//this.props.setMedia(this.props.media.concat(obj));
+
 				this.setState({ loading: false });
 			})
 			.catch(e => console.error(e));
-	}
+	*/
+	
+		}
 
 	fetchSingleMedia = async () => {
 		if (
@@ -92,8 +153,16 @@ class MediaSelect extends React.Component {
 		}
 	};
 
-	render() {
-		return (
+
+	fetchUrlData = async url => {
+		const queryUrl = new URL(url);
+		const res = await fetch(queryUrl);
+		const data = await res.json();
+		this.setState({ imageList: data });
+	};
+
+	render() {		
+			return (
 			<React.Fragment>
 				{this.state[this.props.fieldName] !== 0 && (
 					<Box
@@ -145,6 +214,64 @@ class MediaSelect extends React.Component {
 						<Card>
 							<CardHeader className='border-0 d-flex justify-content-between'>
 								<h3 className='mb-0'>Select Media</h3>
+								
+
+							<TextField
+										id='search_membership'
+										placeholder='Search ...'
+										InputProps={{
+											endAdornment: (
+												<InputAdornment
+													style={{ color: '#3f51b5' }}
+													position='start'
+												>
+										<IconButton
+												size='small'
+												onClick={() => {
+													this.setState({
+														searched: true,
+													});
+													this.fetchMedia()
+												}}
+											>
+												<i className='fa fa-search' />
+											</IconButton>
+
+											{this.state.searched && (
+												<IconButton
+													size='small'
+													onClick={() => {
+														this.setState({
+															searched: false,
+															search: '',
+														});
+
+														this.fetchMedia()
+													}}
+												>
+													<i className='fa fa-times' />
+												</IconButton>
+											)}
+
+												</InputAdornment>
+											),
+								}}
+								variant='standard'
+								value={this.state.search}
+								onChange={e => this.setState({ search: e.target.value })}
+							/>
+
+								<Button
+									color='success'
+									onClick={() => {
+										this.setState({showUpload:!this.state.showUpload});
+									}}
+								>
+									{this.state.showUpload ? 'Close':'Upload'}
+								</Button>
+
+								
+								
 								<Button
 									onClick={() => {
 										this.onClose();
@@ -156,12 +283,21 @@ class MediaSelect extends React.Component {
 								>
 									<i className='fa fa-times' />
 								</Button>
+
 							</CardHeader>
 							<CardBody>
+
+									{
+									this.state.showUpload && 
+									<DropAreaUpload completedFunction = {this.fetchUrlData(this.props.rcp_url.proxy_domain +this.props.rcp_url.base_wp_url +'media')}/>
+									}	
+										
 								<ImageList gap={8}>
-									{this.props.media &&
-										this.props.media.length !== 0 &&
-										this.props.media.map(
+									{
+									this.state.imageList &&
+									this.state.imageList.length !== 0 &&
+									this.state.imageList
+										.map(
 											({ id, title, source_url }) => (
 												<ImageListItem
 													key={id}

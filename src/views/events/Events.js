@@ -21,7 +21,7 @@ class Events extends React.Component {
 	componentDidMount() {
 		if (this.state.events.length === 0 && this.props.user.token !== null)
 			this.fetchevents(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_wp_url +
 					'event_listing'
 			);
@@ -30,7 +30,7 @@ class Events extends React.Component {
 	componentDidUpdate() {
 		if (this.state.events.length === 0 && this.props.user.token !== null)
 			this.fetchevents(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_wp_url +
 					'event_listing'
 			);

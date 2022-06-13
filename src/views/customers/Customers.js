@@ -49,7 +49,7 @@ class Customers extends React.Component {
 			this.state.customers.length === 0
 		) {
 			this.fetchCustomers(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'customers',
 				this.props.user.token
@@ -64,7 +64,7 @@ class Customers extends React.Component {
 			!this.state.searched
 		) {
 			this.fetchCustomers(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'customers',
 				this.props.user.token
@@ -251,7 +251,7 @@ class Customers extends React.Component {
 								}
 								handleDeleteClick={() => {
 									this.deleteCustomer(
-										this.props.rcp_url.domain +
+										this.props.rcp_url.proxy_domain +
 											this.props.rcp_url.base_url +
 											'customers/delete/',
 										params.row.id

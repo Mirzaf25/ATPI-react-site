@@ -35,115 +35,118 @@ import {
 	Checkbox,
 	ListItemText,
 	OutlinedInput,
+	ListItemAvatar,
 } from '@material-ui/core';
 
 import MatEdit from 'views/MatEdit';
 
-class EditLogo extends React.Component {
+class EditVideo extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			validate: {},
-			pages_show: [],
-			taxonomies: [],
-			logoCreated: false,
-			logo: null,
+			organizers: [],
+			organizers_selected: [],
+			video: null,
 			form: {
 				title: '',
-				page_show: [],
-				imgSrc: '',
+				acf: {
+					organizers: [],
+					webinar_recording_video: '',
+				},
 			},
 		};
 		this.handleChange = this.handleChange.bind(this);
 
-		this.create_logo_url =
+		this.update_video_url =
 			this.props.rcp_url.proxy_domain +
 			this.props.rcp_url.base_wp_url +
-			'sponsored_logos/' +
+			'webinar/' +
 			this.props.match.params.id;
 	}
 
 	async submitForm() {
-		const formData = new FormData(
-			document.getElementById('update-logo-form')
-		);
-		let image_id = false;
-
-		if (
-			formData.has('file') &&
-			document.getElementById('update-logo-form').file.files.length !== 0
-		) {
-			const resImage = await this.addProfileImage(formData);
-			if (resImage.ok) {
-				const data = await resImage.json();
-				const { id: image_id } = data;
-			}
-		}
-		const res = await this.updateLogo(image_id ? false : 0);
+		const res = await this.updateVideo();
 		if (res.ok) return;
 		const data = await res.json();
+		this.setState(prevState => ({
+			video: data,
+			form: {
+				...prevState.form,
+				title: data?.title.rendered,
+				acf: data?.acf,
+			},
+			organizers_selected: data?.acf.organizers,
+		}));
 	}
 
 	handleChange(event) {
 		const {
-			target: { value },
+			target: { value, name = '', dataset = { name: 'organizers' } },
 		} = event;
-		if (event.target.name === 'page_show') {
+
+		if (name === 'acf') {
 			this.setState(prevState => ({
 				...prevState,
 				form: {
 					...prevState.form,
-					// [event.target.name]: [
-					// 	typeof value === 'string' ? value.split(',') : value,
-					// ],
-					[event.target.name]: value,
+					acf: {
+						...prevState.form.acf,
+						[dataset.name]: value,
+					},
 				},
-				taxonomies:
+				organizers_selected:
 					typeof value === 'string' ? value.split(',') : value,
 			}));
+			return;
 		}
 
 		this.setState(prevState => ({
 			...prevState,
 			form: {
 				...prevState.form,
-				[event.target.name]: value,
+				[name]: value,
 			},
 		}));
 	}
 
 	componentDidMount() {
-		const url = new URL(
-			this.props.rcp_url.proxy_domain +
-				this.props.rcp_url.base_wp_url +
-				'page_show'
-		);
-
-		fetch(url)
-			.then(res => res.json())
-			.then(data => this.setState({ pages_show: data }))
-			.catch(e => console.error(e));
-
-		if (this.state.logo === null && this.props.user.token !== null)
-			this.fetchLogo(
-				this.props.rcp_url.proxy_domain +
-					this.props.rcp_url.base_wp_url +
-					'sponsored_logos/' +
-					this.props.match.params.id
-			);
+		this.fetchOrganizers();
+		if (this.state.video === null && this.props.user.token !== null) {
+			this.fetchVideo(this.update_video_url);
+		}
 	}
 
 	componentDidUpdate() {
-		if (this.state.logo === null && this.props.user.token !== null)
-			this.fetchLogo(
-				this.props.rcp_url.proxy_domain +
-					this.props.rcp_url.base_wp_url +
-					'sponsored_logos/' +
-					this.props.match.params.id
-			);
+		if (this.state.video === null && this.props.user.token !== null) {
+			this.fetchVideo(this.update_video_url);
+		}
 	}
 
-	fetchLogo = async url => {
+	fetchOrganizers = async () => {
+		const url = new URL(
+			this.props.rcp_url.proxy_domain +
+				this.props.rcp_url.base_wp_url +
+				'event_organizer/'
+		);
+
+		const params = {
+			_embed: true,
+		};
+
+		for (let key in params) {
+			url.searchParams.set(key, params[key]);
+		}
+		const res = await fetch(url);
+
+		if (!res.ok) return;
+
+		const data = await res.json();
+
+		this.setState({ organizers: data });
+	};
+
+	fetchVideo = async url => {
 		const queryUrl = new URL(url);
 		const params = {
 			_embed: true,
@@ -158,48 +161,19 @@ class EditLogo extends React.Component {
 		});
 		if (!res.ok) return;
 		const data = await res.json();
-		this.setState({
-			logo: data,
+		this.setState(prevState => ({
+			video: data,
 			form: {
+				...prevState.form,
 				title: data?.title.rendered,
-				page_show: data?.page_show,
-				imgSrc: this.props.item?._embedded['wp:featuredmedia'][0]
-					?.source_url,
+				acf: data?.acf,
 			},
-			taxonomies: data?.page_show,
-		});
+			organizers_selected: data?.acf.organizers,
+		}));
 	};
 
-	/**
-	 *
-	 */
-	addProfileImage(formData) {
-		for (let [key, value] of formData) {
-			if (key !== 'file') formData.delete(key);
-		}
-
-		return fetch(
-			this.props.rcp_url.proxy_domain +
-				this.props.rcp_url.base_wp_url +
-				'media',
-			{
-				method: 'POST',
-				headers: {
-					//when using FormData(), the 'Content-Type' will automatically be set to 'form/multipart'
-					//so there's no need to set it here
-					Authorization: 'Bearer ' + this.props.user.token,
-				},
-				body: formData,
-			}
-		);
-	}
-
-	updateLogo(id) {
-		const formData = new FormData(
-			document.getElementById('update-logo-form')
-		); // create again for title
-		formData.delete('file');
-		return fetch(this.create_logo_url, {
+	updateVideo() {
+		return fetch(this.update_video_url, {
 			method: 'PUT',
 			headers: {
 				//when using FormData(), the 'Content-Type' will automatically be set to 'form/multipart'
@@ -207,12 +181,7 @@ class EditLogo extends React.Component {
 				Authorization: 'Bearer ' + this.props.user.token,
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({
-				...Object.fromEntries(formData),
-				featured_media: id
-					? parseInt(id)
-					: this.state.logo.featured_media,
-			}),
+			body: JSON.stringify(this.state.form),
 		});
 	}
 
@@ -225,11 +194,11 @@ class EditLogo extends React.Component {
 						<div className='col'>
 							<Card className='shadow'>
 								<CardHeader className='border-0'>
-									<h3 className='mb-0'>Edit Logo</h3>
+									<h3 className='mb-0'>Edit Video</h3>
 								</CardHeader>
 								<CardBody>
 									<Form
-										id='update-logo-form'
+										id='update-video-form'
 										onSubmit={e => {
 											e.preventDefault();
 											return this.submitForm();
@@ -242,13 +211,14 @@ class EditLogo extends React.Component {
 													label='Title'
 													name='title'
 													variant='outlined'
+													className='w-50'
 													value={
 														this.state.form.title ||
 														''
 													}
 													InputLabelProps={{
 														shrink:
-															this.state.logo
+															this.state.video
 																?.title
 																?.rendered !==
 															'',
@@ -259,99 +229,156 @@ class EditLogo extends React.Component {
 										</FormGroup>
 										<FormGroup row>
 											<Col>
-												<InputLabel id='taxonomy_select_label'>
+												<TextField
+													id='webinar_recording_video'
+													label='Webinar Recording URL'
+													name='acf'
+													variant='outlined'
+													className='w-50'
+													value={
+														this.state.form?.acf
+															?.webinar_recording_video ||
+														''
+													}
+													InputLabelProps={{
+														shrink:
+															this.state.video
+																?.acf
+																?.webinar_recording_video !==
+															'',
+													}}
+													required
+													inputRef={ref => {
+														if (ref !== null) {
+															const { dataset } =
+																ref;
+															dataset.name =
+																'webinar_recording_video';
+														}
+													}}
+													onChange={this.handleChange}
+												/>
+											</Col>
+										</FormGroup>
+										<FormGroup row>
+											<Col>
+												<InputLabel id='organizers_selected_select_label'>
 													Page Show
 												</InputLabel>
 												<Select
 													style={{ width: '225px' }}
-													labelId='taxonomy_select_label'
-													id='taxonomy_select'
+													labelId='organizers_selected_select_label'
+													id='organizers_selected_select'
 													multiple
-													name='page_show'
+													name='acf'
+													className='w-50'
 													value={
-														this.state.taxonomies
+														this.state
+															.organizers_selected
 													}
 													renderValue={selected =>
-														this.state.pages_show
+														this.state.organizers
 															.filter(el =>
 																selected.includes(
 																	el.id
 																)
 															)
-															.map(el => el.name)
+															.map(el =>
+																el.title.rendered
+																	.split(' ')
+																	.splice(
+																		0,
+																		2
+																	)
+																	.join('')
+															)
 															.join(', ')
 													}
 													onChange={this.handleChange}
 													input={<OutlinedInput />}
+													inputRef={ref => {
+														if (ref !== null) {
+															const { node } =
+																ref;
+															node.dataset.name =
+																'organizers';
+														}
+													}}
 													MenuProps={{
 														PaperProps: {
 															style: {
 																maxHeight:
 																	48 * 4.5 +
 																	8,
-																width: 250,
+																width: 500,
 															},
 														},
 													}}
 												>
-													{this.state.pages_show
+													{this.state.organizers
 														.length !== 0 &&
-														this.state.pages_show.map(
-															(page, key) => (
+														this.state.organizers.map(
+															(
+																organizer,
+																key
+															) => (
 																<MenuItem
 																	key={
-																		page.name
+																		organizer.id
 																	}
 																	value={parseInt(
-																		page.id
+																		organizer.id
 																	)}
 																>
 																	<Checkbox
 																		checked={
-																			this.state.taxonomies.indexOf(
+																			this.state.organizers_selected.indexOf(
 																				parseInt(
-																					page.id
+																					organizer.id
 																				)
 																			) >
 																			-1
 																		}
 																	/>
+
+																	<ListItemAvatar>
+																		<Avatar
+																			alt={
+																				organizer
+																					.title
+																					.rendered
+																			}
+																			src={
+																				organizer
+																					.acf
+																					.organizer_profile_image !==
+																				''
+																					? organizer._embedded[
+																							'wp:featuredmedia'
+																					  ].find(
+																							el =>
+																								el.id ===
+																								organizer
+																									.acf
+																									.organizer_profile_image
+																					  )
+																							.source_url
+																					: ''
+																			}
+																		/>
+																	</ListItemAvatar>
+
 																	<ListItemText
 																		primary={
-																			page.name
+																			organizer
+																				.title
+																				.rendered
 																		}
 																	/>
 																</MenuItem>
 															)
 														)}
 												</Select>
-											</Col>
-										</FormGroup>
-										<FormGroup row>
-											<Col>
-												{this.state.logo !== null &&
-													this.state.logo?._embedded[
-														'wp:featuredmedia'
-													] && (
-														<img
-															ref='logo_image'
-															src={`${this.state.logo?._embedded['wp:featuredmedia'][0]?.source_url}`}
-															srcSet={`${this.state.logo?._embedded['wp:featuredmedia'][0]?.source_url}`}
-															alt={
-																this.state.logo
-																	?.title
-																	.rendered
-															}
-															loading='lazy'
-															className='mw-100'
-														/>
-													)}
-												<Input
-													type='file'
-													name='file'
-													id='featured_image'
-													accept='image/png, image/jpeg'
-												/>
 											</Col>
 										</FormGroup>
 										<FormGroup check row>
@@ -384,4 +411,4 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = { setUserLoginDetails };
 
-export default connect(mapStateToProps, mapDispatchToProps)(EditLogo);
+export default connect(mapStateToProps, mapDispatchToProps)(EditVideo);
