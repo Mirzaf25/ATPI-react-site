@@ -295,7 +295,7 @@ class Filr extends React.Component {
 				},
 				body: JSON.stringify(payload),
 			});
-
+			this.setState({ viewFiles: [payload, ...this.state.viewFiles] });
 			await this.props.setFilrLoading(false);
 			onSuccess();
 		} catch (error) {
@@ -439,7 +439,7 @@ class Filr extends React.Component {
 										'assigned-folder': this.state
 											.newFolderId
 											? this.state.newFolderId
-											: 0,
+											: this.state.currentFolder,
 									},
 								},
 								() => {
