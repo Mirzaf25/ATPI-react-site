@@ -94,7 +94,6 @@ class EditCustomer extends React.Component {
 			this.state.customer.memberships_data[0].club &&
 			this.props.user.token !== null
 		) {
-			console.log(this.state.customer.memberships_data[0].club);
 			this.fetchClub(
 				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
@@ -284,7 +283,18 @@ class EditCustomer extends React.Component {
 										}
 									/>
 									{this.state.customer && this.state.club && (
-										<ClubDetails club={this.state.club} />
+										<ClubDetails
+											club={this.state.club}
+											membership={
+												this.state.customer &&
+												this.state.customer
+													.memberships_data.length !==
+													0
+													? this.state.customer
+															?.memberships_data[0]
+													: null
+											}
+										/>
 									)}
 									{this.state.customer &&
 										this.state.customer.payments.length !==
