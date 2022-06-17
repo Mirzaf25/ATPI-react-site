@@ -6,9 +6,6 @@ import { Col, Table } from 'reactstrap';
 
 import { connect } from 'react-redux';
 import { setUserLoginDetails } from 'features/user/userSlice';
-import { Button, Divider, Switch } from '@material-ui/core';
-
-import MatEdit from 'views/MatEdit';
 
 class ClubDetails extends React.Component {
 	constructor(props) {
@@ -44,6 +41,22 @@ class ClubDetails extends React.Component {
 						<td className='font-weight-bold'>Seats</td>
 						<td>{this.props.club?.seats}</td>
 					</tr>
+					{'membership' in this.props && (
+						<>
+							<tr>
+								<td className='font-weight-bold'>
+									Club Membership Status
+								</td>
+								<td>{this.props?.membership?.status}</td>
+							</tr>
+							<tr>
+								<td className='font-weight-bold'>
+									Club Membership Renewal Date
+								</td>
+								<td>{this.props?.membership?.expired_date}</td>
+							</tr>
+						</>
+					)}
 					<tr>
 						<td className='font-weight-bold'>Role</td>
 						<td className='text-capitalize'>
@@ -110,91 +123,6 @@ class ClubDetails extends React.Component {
 					</tr>
 				</tbody>
 			</Table>
-
-			// 	{/* <Form
-			// 	name='update_customer_membership'
-			// 	id='update_customer_membership'
-			// 	onSubmit={this.updateCustomerMembership}
-			// ><FormGroup row>
-			// 		<Col>
-			// 			<TextField
-			// 				id='outlined-basic'
-			// 				label='Membership Type'
-			// 				name='object_type'
-			// 				variant='outlined'
-			// 				required
-			// 				value={this.props.membership?.type || ''}
-			// 				onChange={this.handleChange}
-			// 				InputLabelProps={{
-			// 					shrink:
-			// 						this.props.membership?.type !== undefined,
-			// 				}}
-			// 				disabled
-			// 			/>
-			// 		</Col>
-			// 	</FormGroup>
-			// 	<FormGroup row>
-			// 		<Col>
-			// 			<TextField
-			// 				id='outlined-basic'
-			// 				label='Membership Status'
-			// 				name='status'
-			// 				variant='outlined'
-			// 				required
-			// 				onChange={this.handleChange}
-			// 				value={this.props.membership?.status || ''}
-			// 				InputLabelProps={{
-			// 					shrink: this.props.membership?.status !== '',
-			// 				}}
-			// 				disabled
-			// 			/>
-			// 		</Col>
-			// 	</FormGroup>
-			// 	<FormGroup row>
-			// 		<Col>
-			// 			<TextField
-			// 				id='outlined-basic'
-			// 				label='Expired Date'
-			// 				name='expired_date'
-			// 				variant='outlined'
-			// 				required
-			// 				onChange={this.handleChange}
-			// 				value={this.props.membership?.expired_date || ''}
-			// 				InputLabelProps={{
-			// 					shrink:
-			// 						this.props.membership?.expired_date !==
-			// 						undefined,
-			// 				}}
-			// 				disabled
-			// 			/>
-			// 		</Col>
-			// 	</FormGroup>
-			// 	<FormGroup row>
-			// 		<Col>
-			// 			<FormControlLabel
-			// 				control={
-			// 					<Switch
-			// 						checked={this.props.membership?.auto_renew}
-			// 						name='auto_renew'
-			// 						onChange={this.handleChange}
-			// 						disabled
-			// 					/>
-			// 				}
-			// 				label='Auto Renew'
-			// 			/>
-			// 		</Col>
-			// 	</FormGroup>
-			// 	<FormGroup row>
-			// 		<Col xs={12}></Col>
-			// 	</FormGroup>
-			// 	<FormGroup>
-			// 		<Col>
-			// 			<Button variant='contained' type=''>
-			// 				Edit Membership
-			// 			</Button>
-			// 		</Col>
-			// 	</FormGroup>
-			// </Form> */}
 		);
 	}
 }
