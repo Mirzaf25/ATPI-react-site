@@ -3,6 +3,7 @@ import userReducer from '../features/user/userSlice';
 import rcpUrlReducer from '../features/rcp/rcpSlice';
 import levelReducer from '../features/levels/levelsSlice';
 import mediaReducer from '../features/media/mediaSlice';
+import filrReducer from '../features/filr/filrSlice';
 
 const store = configureStore({
 	reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
 		rcp_url: rcpUrlReducer,
 		levels: levelReducer,
 		media: mediaReducer,
+		filr: filrReducer,
 	},
 	middleware: getDefaultMiddleware({
 		serializableCheck: false,

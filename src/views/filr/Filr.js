@@ -1,5 +1,6 @@
 import OnlyHeader from 'components/Headers/OnlyHeader';
 import React from 'react';
+//import CloseIcon from '@mui/icons-material/Close';
 
 // reactstrap components
 import {
@@ -8,7 +9,6 @@ import {
 	CardHeader,
 	CardBody,
 	CardFooter,
-	Dropdown,
 	DropdownMenu,
 	DropdownItem,
 	UncontrolledDropdown,
@@ -25,10 +25,20 @@ import {
 	UncontrolledTooltip,
 	Navbar,
 	NavLink,
+	Form,
+	FormGroup,
+	Dropdown,
+	Modal,
+	ModalBody,
+	ModalHeader,
+	ModalFooter,
+	ButtonGroup,
+	Spinner,
 } from 'reactstrap';
 
 //MUI
 import { DataGrid } from '@material-ui/data-grid';
+import { setFilrLoading } from '../../features/filr/filrSlice';
 
 import fileIcons from '../../variables/file-icons';
 
@@ -46,6 +56,9 @@ import {
 	LinearProgress,
 	Breadcrumbs,
 	withStyles,
+	Grow,
+	TextField,
+	Snackbar,
 } from '@material-ui/core';
 import ListItemButton from '@material-ui/core/Button';
 
@@ -61,6 +74,16 @@ class Filr extends React.Component {
 			viewFiles: [],
 			viewLoading: false,
 			currentFolder: null,
+			dropdownOpen: false,
+			createFolderModalStatus: false,
+			uploadFileModalStatus: false,
+			uploadType: '',
+			newFolderName: '',
+			newFolderId: '',
+			selectedFile: Object,
+			showFolderNav: true,
+			/*      snackbarStatus : false,
+      snackBarMessage:'Default Text',*/
 		};
 		this.breadcrumbs = [
 			<Link
@@ -84,10 +107,59 @@ class Filr extends React.Component {
 		];
 	}
 
+	/*  handleSnackbarChange = () =>{
+    this.setState({snackbarStatus: !this.state.snackbarStatus});
+  }*/
+
+	fileChangedHandler = event => {
+		this.setState({ selectedFile: event.target.files[0] });
+	};
+
+	uploadHandler = () => {
+		// @todo upload to api
+	};
+
+	createFolder = async e => {
+		e.preventDefault();
+
+		if (this.props.user.token === null) return;
+
+		// @todo create folder
+
+		this.setState({ newFolderName: '' });
+	};
+
+	handleFolderNameChange = e => {
+		this.setState({ newFolderName: e.target.value });
+	};
+
+	handleFolderIdChange = e => {
+		this.setState({ newFolderId: e.target.value });
+	};
+
+	toggleCreateFolderModal = () => {
+		this.setState({
+			createFolderModalStatus: !this.state.createFolderModalStatus,
+		});
+	};
+	clearFields = () => {
+		this.setState({
+			newFolderId: '',
+			newFolderName: '',
+		});
+	};
+	toggleUploadFileModal = () => {
+		this.setState({
+			uploadFileModalStatus: !this.state.uploadFileModalStatus,
+		});
+	};
+	dropdownToggle = () => {
+		this.setState({ dropdownOpen: !this.state.dropdownOpen });
+	};
 	componentDidMount() {
 		if (this.state.files.length === 0)
 			this.fetchFiles(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_wp_url +
 					'filr'
 			);
@@ -95,6 +167,7 @@ class Filr extends React.Component {
 
 	componentDidUpdate(
 		prevProps,
+
 		{ files: prevFiles, viewFiles: prevViewFiles }
 	) {
 		if (this.state.files.length !== 0 && prevFiles !== this.state.files) {
@@ -137,40 +210,55 @@ class Filr extends React.Component {
 					);
 				} else if (folder !== undefined) {
 					this.breadcrumbs = [
-						<Link
-							underline='hover'
-							color='inherit'
-							href='#'
-							onClick={e => {
-								e.preventDefault();
-								if (this.state.files.length !== 0) {
-									this.setState({
-										viewFiles: this.state.files.filter(
-											el =>
-												el.metadata[
-													'assigned-folder'
-												] === undefined
-										),
-									});
-								}
-							}}
-						>
-							..
-						</Link>,
-						<Link
-							underline='hover'
-							key={folder?.id}
-							color='inherit'
-							data-id={folder.id}
-							href='#'
-							onClick={e => {
-								e.preventDefault();
-								this.openFolder(folder);
-							}}
-						>
-							{folder?.title.rendered}
-						</Link>,
+						<Row>
+							<Link
+								underline='hover'
+								key='000'
+								color='inherit'
+								data-id={'root'}
+								href='#'
+								onClick={e => {
+									e.preventDefault();
+									this.setState({ viewFiles: prevViewFiles });
+									this.setState({ viewLoading: false });
+									this.setState({ currentFolder: null });
+
+									document
+										.querySelectorAll('.folder-icon')
+										.forEach(el => {
+											if (
+												el.classList.contains(
+													'fa-folder-open'
+												)
+											) {
+												el.classList.toggle(
+													'fa-folder-open'
+												);
+											}
+										});
+
+									this.setState({ showFolderNav: false });
+								}}
+							>
+								../
+							</Link>
+
+							<Link
+								underline='hover'
+								key={folder?.id}
+								color='inherit'
+								data-id={folder.id}
+								href='#'
+								onClick={e => {
+									e.preventDefault();
+									this.openFolder(folder);
+								}}
+							>
+								{folder?.title.rendered}
+							</Link>
+						</Row>,
 					];
+					this.setState({ showFolderNav: true });
 				}
 			}
 		}
@@ -191,6 +279,99 @@ class Filr extends React.Component {
 
 	openFolder = item => {
 		console.log(item);
+		this.setState({
+			viewLoading: true,
+			currentFolder: item.id,
+			viewFiles: this.state.files.filter(el => {
+				return (
+					el.metadata.hasOwnProperty('assigned-folder') &&
+					el.metadata['assigned-folder'] == item.id
+				);
+			}),
+		});
+		document.querySelectorAll('.folder-icon').forEach(el => {
+			if (
+				el.classList.contains('fa-folder-open') ||
+				el.dataset.id == item.id
+			) {
+				el.classList.toggle('fa-folder-open');
+			}
+		});
+		// @todo fetch from api
+		setTimeout(() => {
+			this.setState({ viewLoading: false });
+		}, 2000);
+	};
+
+	dropdownToggle = () => {
+		this.setState({ dropdownOpen: !this.state.dropdownOpen });
+	};
+
+	fileChangedHandler = event => {
+		this.setState({ selectedFile: event.target.files[0] });
+	};
+
+	uploadHandler = () => {
+		// @todo upload to api
+	};
+
+	handleFolderNameChange = e => {
+		this.setState({ newFolderName: e.target.value });
+	};
+
+	handleFolderIdChange = e => {
+		this.setState({ newFolderId: e.target.value });
+	};
+
+	toggleCreateFolderModal = () => {
+		this.setState({
+			createFolderModalStatus: !this.state.createFolderModalStatus,
+		});
+	};
+	clearFields = () => {
+		this.setState({
+			newFolderId: '',
+			newFolderName: '',
+		});
+	};
+	toggleUploadFileModal = () => {
+		this.setState({
+			uploadFileModalStatus: !this.state.uploadFileModalStatus,
+		});
+	};
+	dropdownToggle = () => {
+		this.setState({ dropdownOpen: !this.state.dropdownOpen });
+	};
+
+	clearFields = () => {
+		this.setState({
+			newFolderId: '',
+			newFolderName: '',
+		});
+	};
+
+	createNewFolder = async (url, payload, onSuccess = () => {}) => {
+		this.props.setFilrLoading(true);
+
+		try {
+			const response = await fetch(url, {
+				method: 'post',
+				mode: 'cors',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${this.props.user.token}`,
+				},
+				body: JSON.stringify(payload),
+			});
+			this.setState({ viewFiles: [payload, ...this.state.viewFiles] });
+			await this.props.setFilrLoading(false);
+			onSuccess();
+		} catch (error) {
+			this.props.setFilrLoading(false);
+		}
+	};
+
+	openFolder = item => {
 		this.setState({
 			viewLoading: true,
 			currentFolder: item.id,
@@ -265,10 +446,158 @@ class Filr extends React.Component {
 			},
 		];
 		const rows = [];
+		/* const action = (
+      <React.Fragment>
+        <Button
+          size="small"
+          aria-label="close"
+          color="inherit"
+          onClick={this.handleSnackbarChange}
+        >
+          Close
+        </Button>
+      </React.Fragment>
+    );
+    */
+		const folder = this.state.files.find(
+			el => el.id == this.state.currentFolder
+		);
+
 		return (
 			<>
+				<Modal
+					isOpen={this.state.uploadFileModalStatus}
+					toggle={this.toggleUploadFileModal}
+				>
+					<ModalHeader>
+						Upload File
+						{folder?.title.rendered == undefined
+							? ' to root'
+							: ' to ' + folder?.title.rendered}
+					</ModalHeader>
+					<ModalBody>
+						<input type='file' onChange={this.fileChangedHandler} />
+						<Button
+							variant='contained'
+							onClick={this.uploadHandler}
+						>
+							Upload
+						</Button>
+					</ModalBody>
+					<ModalFooter></ModalFooter>
+				</Modal>
+
+				<Modal
+					isOpen={this.state.createFolderModalStatus}
+					toggle={() => {
+						this.clearFields();
+						this.toggleCreateFolderModal();
+					}}
+				>
+					<ModalHeader
+						toggle={() => {
+							this.clearFields();
+							this.toggleCreateFolderModal();
+						}}
+					>
+						Create Folder
+						{folder?.title.rendered == undefined
+							? ' in root'
+							: ' in ' + folder?.title.rendered}{' '}
+					</ModalHeader>
+					<Form
+						onSubmit={e => {
+							e.preventDefault();
+							this.createNewFolder(
+								this.props.rcp_url.proxy_domain +
+									this.props.rcp_url.base_wp_url +
+									'filr',
+								{
+									title: this.state.newFolderName,
+									metadata: {
+										'is-folder': true,
+										'assigned-folder': this.state
+											.newFolderId
+											? this.state.newFolderId
+											: this.state.currentFolder,
+									},
+								},
+								() => {
+									alert('Folder added successfully!');
+									this.fetchFiles(
+										this.props.rcp_url.proxy_domain +
+											this.props.rcp_url.base_wp_url +
+											'filr'
+									);
+									this.clearFields();
+									this.toggleCreateFolderModal();
+								}
+							);
+						}}
+					>
+						<ModalBody>
+							<Col>
+								<FormGroup>
+									<TextField
+										onChange={e =>
+											this.handleFolderNameChange(e)
+										}
+										value={this.state.newFolderName}
+										required
+										name='folder_name'
+										id='folder_name'
+										label='Name'
+										variant='outlined'
+										size='small'
+										className='w-100'
+									/>
+								</FormGroup>
+								<FormGroup>
+									<TextField
+										onChange={e =>
+											this.handleFolderIdChange(e)
+										}
+										value={this.state.newFolderId}
+										name='folder_id'
+										id='folder_id'
+										label='Folder Id (Optional)'
+										variant='outlined'
+										className='w-100'
+										size='small'
+									/>
+								</FormGroup>
+							</Col>
+						</ModalBody>
+						<ModalFooter>
+							{' '}
+							<Button
+								type='submit'
+								variant='contained'
+								disabled={this.props.filr.loading}
+							>
+								{this.props.filr.loading ? (
+									<Spinner size='sm' />
+								) : (
+									'Submit'
+								)}
+							</Button>
+						</ModalFooter>
+					</Form>
+				</Modal>
+
+				{/*
+<Snackbar
+        open={this.state.snackbarStatus}
+        autoHideDuration={4000}
+        onClose={this.handleSnackbarChange}
+        message={this.state.snackBarMessage}
+        action={action}
+      />
+*/}
 				<OnlyHeader />
 				<Container className='mt--8' fluid>
+					{/*        <Button onClick={this.handleSnackbarChange}>Snack Bar</Button>
+					 */}
 					<Row>
 						<div className='col'>
 							<Card className='shadow'>
@@ -305,9 +634,12 @@ class Filr extends React.Component {
 										</Dropdown>
 									</Row>
 								</CardHeader>
+
 								<CardBody>
-									<Breadcrumbs maxItems={3}>
-										{this.breadcrumbs}
+									<Breadcrumbs maxItems={6}>
+										{this.state.showFolderNav
+											? this.breadcrumbs
+											: []}
 									</Breadcrumbs>
 									<Grid container spacing={2}>
 										<Grid item xs={12} md={4}>
@@ -393,41 +725,36 @@ class Filr extends React.Component {
 																]
 																	?.split('.')
 																	.pop();
-															const fileUrl =
-																isFolder
-																	? null
-																	: item
-																			.metadata[
-																			'file-download'
-																	  ];
-															const fileIcon =
-																isFolder
-																	? 'fa fa-folder text-orange'
-																	: fileIcons
-																			.filter(
-																				el =>
-																					el.type.includes(
-																						fileType
-																					)
-																			)
-																			?.pop()
-																			?.icon;
+															const fileUrl = isFolder
+																? null
+																: item.metadata[
+																		'file-download'
+																  ];
+															const fileIcon = isFolder
+																? 'fa fa-folder text-orange'
+																: fileIcons
+																		.filter(
+																			el =>
+																				el.type.includes(
+																					fileType
+																				)
+																		)
+																		?.pop()
+																		?.icon;
 															//console.log(fileIcon);  @todo it return undefined after a while.
 															rows.push({
 																id: item.id,
-																fileUrl:
-																	fileUrl,
-																fileType:
-																	fileType,
-																fileIcon:
-																	fileIcon,
-																name: item.title
-																	.rendered,
+																fileUrl: fileUrl,
+																fileType: fileType,
+																fileIcon: fileIcon,
+																name:
+																	item.title
+																		.rendered,
 																modified:
 																	item.modified,
-																status: item.status,
-																isFolder:
-																	isFolder,
+																status:
+																	item.status,
+																isFolder: isFolder,
 															});
 
 															// return (
@@ -463,8 +790,7 @@ class Filr extends React.Component {
 														this.state.viewLoading
 													}
 													components={{
-														LoadingOverlay:
-															LinearProgress,
+														LoadingOverlay: LinearProgress,
 													}}
 													checkboxSelection
 													autoHeight
@@ -587,10 +913,11 @@ const mapStateToProps = state => {
 	return {
 		rcp_url: state.rcp_url,
 		user: state.user,
+		filr: state.filr,
 	};
 };
 
-const mapDispatchToProps = { setUserLoginDetails };
+const mapDispatchToProps = { setUserLoginDetails, setFilrLoading };
 
 const styles = {
 	fileViewer: {
