@@ -159,7 +159,7 @@ class Filr extends React.Component {
 	componentDidMount() {
 		if (this.state.files.length === 0)
 			this.fetchFiles(
-				this.props.rcp_url.proxy_domain +
+				this.props.rcp_url.domain +
 					this.props.rcp_url.base_wp_url +
 					'filr'
 			);
@@ -509,7 +509,7 @@ class Filr extends React.Component {
 						onSubmit={e => {
 							e.preventDefault();
 							this.createNewFolder(
-								this.props.rcp_url.proxy_domain +
+								this.props.rcp_url.domain +
 									this.props.rcp_url.base_wp_url +
 									'filr',
 								{
@@ -525,7 +525,7 @@ class Filr extends React.Component {
 								() => {
 									alert('Folder added successfully!');
 									this.fetchFiles(
-										this.props.rcp_url.proxy_domain +
+										this.props.rcp_url.domain +
 											this.props.rcp_url.base_wp_url +
 											'filr'
 									);
