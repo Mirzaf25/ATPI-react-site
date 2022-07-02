@@ -157,7 +157,6 @@ class Payments extends React.Component {
 				headerName: 'Payment Method',
 				width: 180,
 			},
-			{ field: 'customer_id', headerName: 'Customer ID', width: 180 },
 			{ field: 'status', headerName: 'Status', width: 180 },
 			{ field: 'amount', headerName: 'Amount', width: 180 },
 			{ field: 'subscription', headerName: 'Subscription', width: 180 },

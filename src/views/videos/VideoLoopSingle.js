@@ -17,7 +17,7 @@ import {
 	CircularProgress,
 } from '@material-ui/core';
 
-class LogoLoopSingle extends React.Component {
+class VideoLoopSingle extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -51,20 +51,28 @@ class LogoLoopSingle extends React.Component {
 							/>
 						</ListItem>
 						<Divider component='li' />
-						{this.props.item?._embedded !== undefined &&
-							this.props.item?._embedded['wp:term'] !==
-								undefined && (
+						{this.props.item?.date !== undefined && (
 								<>
 									<ListItem>
 										<ListItemText
-											primary={'Show on Page :'}
+											primary={'Date :'}
 										/>
 										<ListItemText
-											primary={this.props.item?._embedded[
-												'wp:term'
-											][0]
-												.map(el => el.name)
-												.join(', ')}
+											primary={this.props.item?.date}
+										/>
+									</ListItem>
+									<Divider component='li' />
+								</>
+							)}
+						<Divider component='li' />
+						{this.props.item?.acf !== undefined && this.props.item?.acf.webinar_recording_video !== undefined  && (
+								<>
+									<ListItem>
+										<ListItemText
+											primary={'Video URL :'}
+										/>
+										<ListItemText
+											primary={this.props.item?.acf.webinar_recording_video}
 										/>
 									</ListItem>
 									<Divider component='li' />
@@ -87,7 +95,7 @@ class LogoLoopSingle extends React.Component {
 									await this.props.deleteHandle(
 										this.props.rcp_url.domain +
 											this.props.rcp_url.base_wp_url +
-											'sponsored_logos/' +
+											'webinar/' +
 											this.props.item.id,
 										this.props.item.id
 									);
@@ -121,4 +129,4 @@ const mappropsToProps = props => {
 
 const mapDispatchToProps = { setUserLoginDetails };
 
-export default connect(mappropsToProps, mapDispatchToProps)(LogoLoopSingle);
+export default connect(mappropsToProps, mapDispatchToProps)(VideoLoopSingle);

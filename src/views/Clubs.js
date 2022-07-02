@@ -84,7 +84,7 @@ class Clubs extends React.Component {
 
 	render() {
 		const columns = [
-			{ field: 'id', headerName: 'ID', width: 90, hide: true },
+			{ field: 'id', headerName: 'ID', width: 90,hide:true },
 			{ field: 'name', headerName: 'Club Name', width: 180 },
 			{
 				field: 'membership_id',
