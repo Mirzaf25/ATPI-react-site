@@ -62,7 +62,7 @@ class LogoLoopSingle extends React.Component {
 										<ListItemText
 											primary={this.props.item?._embedded[
 												'wp:term'
-											]
+											][0]
 												.map(el => el.name)
 												.join(', ')}
 										/>
