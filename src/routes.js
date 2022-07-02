@@ -156,7 +156,7 @@ var routes = [
 	},
 	{
 		path: '/sponsored-logos',
-		name: 'Sponsored Logos',
+		name: 'Sponsor Logos',
 		icon: 'fa fa-images text-green',
 		component: Logos,
 		layout: '/admin',
