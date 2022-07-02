@@ -17,6 +17,7 @@ import {
 import 'file-viewer';
 import Vimeo from '@u-wave/react-vimeo';
 import YouTube from '@u-wave/react-youtube';
+import VideoLoopSingle from './VideoLoopSingle';
 
 class Videos extends React.Component {
 	constructor(props) {
@@ -51,6 +52,28 @@ class Videos extends React.Component {
 		this.setState({ videos: data });
 	};
 
+	deleteVideo = async (url,id) => {
+		const res = await fetch(url, {
+			method: 'DELETE',
+			headers: {
+				Authorization: 'Bearer ' + this.props.user.token,
+			},
+		});
+
+		if (res.status > 400) {
+			const data = await res.text();
+		}
+
+		this.setState({ videos: this.state.videos.filter(el => el.id !== id) });
+	}
+
+	editVideo = (e,id) => {
+		e.preventDefault();
+		this.props.history.push(
+			this.props.history.location.pathname + '/edit/' + id
+		);
+	}
+
 	render() {
 		return (
 			<>
@@ -81,58 +104,15 @@ class Videos extends React.Component {
 										{this.state.videos.length !== 0 &&
 											this.state.videos.map(
 												(item, key) => (
-													<ImageListItem key={key}>
-														{/*  maybe just use native video  */}
-														{item.acf?.webinar_recording_video.search(
-															/vimeo/
-														) !== -1 ? (
-															<Vimeo
-																className={
-																	this.props
-																		.classes
-																		.vimeo
-																}
-																onError={e =>
-																	console.log(
-																		e
-																	)
-																}
-																controls={true}
-																video={
-																	item.acf
-																		?.webinar_recording_video
-																}
-															/>
-														) : (
-															<div
-																className={
-																	this.props
-																		.classes
-																		.youtube
-																}
-															>
-																<YouTube
-																	onError={e =>
-																		console.log(
-																			e
-																		)
-																	}
-																	controls={
-																		true
-																	}
-																	video={item.acf?.webinar_recording_video.substr(
-																		item.acf
-																			?.webinar_recording_video
-																			.length -
-																			item.acf?.webinar_recording_video.search(
-																				'be/'
-																			) +
-																			3
-																	)}
-																/>
-															</div>
-														)}
-													</ImageListItem>
+													<VideoLoopSingle 
+													key={key}
+													item={item}
+													deleteHandle={
+														this.deleteVideo
+													}
+													editHandle={
+														this.editVideo
+													} />
 												)
 											)}
 									</ImageList>
