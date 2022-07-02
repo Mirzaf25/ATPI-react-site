@@ -11,6 +11,8 @@ import { connect } from 'react-redux';
 import { setUserLoginDetails } from 'features/user/userSlice';
 import { LinearProgress, Avatar, Button } from '@material-ui/core';
 
+import MatEdit from '../MatEdit';
+
 class Speakers extends React.Component {
 	constructor(props) {
 		super(props);
@@ -20,7 +22,7 @@ class Speakers extends React.Component {
 	}
 
 	componentDidMount() {
-		if (this.state.speakers.length === 0)
+		if (this.state.speakers.length === 0 && this.props.user.token !== null)
 			this.fetchSpeakers(
 				this.props.rcp_url.domain +
 					this.props.rcp_url.base_wp_url +
@@ -28,7 +30,14 @@ class Speakers extends React.Component {
 			);
 	}
 
-	componentDidUpdate() {}
+	componentDidUpdate() {
+		if (this.state.speakers.length === 0 && this.props.user.token !== null)
+			this.fetchSpeakers(
+				this.props.rcp_url.domain +
+					this.props.rcp_url.base_wp_url +
+					'speakers'
+			);
+	}
 
 	fetchSpeakers = async url => {
 		const queryUrl = new URL(url);
@@ -39,9 +48,31 @@ class Speakers extends React.Component {
 		for (let key in params) {
 			queryUrl.searchParams.set(key, params[key]);
 		}
-		const res = await fetch(queryUrl);
+		const res = await fetch(queryUrl, {
+			headers: {
+				Authorization: 'Bearer ' + this.props.user.token,
+			},
+		});
 		const data = await res.json();
 		this.setState({ speakers: data });
+	};
+
+	deleteSpeaker = async (url, id) => {
+		const res = await fetch(url + id, {
+			method: 'DELETE',
+			headers: {
+				Authorization: 'Bearer ' + this.props.user.token,
+			},
+		});
+
+		if (res.status < 400) {
+			return;
+		}
+
+		const data = await res.json();
+		this.setState({
+			speakers: this.state.speakers.filter(el => el.id !== data.id),
+		});
 	};
 
 	render() {
@@ -75,7 +106,7 @@ class Speakers extends React.Component {
 			},
 			{
 				field: 'designation',
-				headerName: 'Designation',
+				headerName: 'Company',
 				width: 180,
 			},
 			{
@@ -85,15 +116,48 @@ class Speakers extends React.Component {
 			},
 			{
 				field: 'date',
-				headerName: 'Created Date',
+				headerName: 'Creation Date',
 				width: 180,
+			},
+			{
+				field: 'actions',
+				type: 'actions',
+				headerName: 'Actions',
+				width: 100,
+				cellClassName: 'actions',
+				renderCell: params => {
+					return (
+						<div
+							className='d-flex justify-content-between align-items-center'
+							style={{ cursor: 'pointer' }}
+						>
+							<MatEdit
+								index={params.row.id}
+								handleClick={() =>
+									this.props.history.push(
+										this.props.location.pathname +
+											'/edit/' +
+											params.row.id
+									)
+								}
+								handleDeleteClick={() => {
+									this.deleteSpeaker(
+										this.props.rcp_url.domain +
+											this.props.rcp_url.base_wp_url +
+											'speakers/',
+										params.row.id
+									);
+								}}
+							/>
+						</div>
+					);
+				},
 			},
 		];
 
 		const rows =
 			this.state.speakers.length !== 0
 				? this.state.speakers.map(item => {
-						const date = new Date(item.date);
 						return {
 							id: item.id,
 							name: item?.title.rendered,
@@ -101,12 +165,7 @@ class Speakers extends React.Component {
 							avatar: item?.acf?.profile_picture?.url,
 							designation: item?.acf?.designation,
 							status: item.status,
-							date:
-								date.getDay() +
-								'-' +
-								date.getMonth() +
-								'-' +
-								date.getFullYear(),
+							date: item.date,
 						};
 				  })
 				: [];
