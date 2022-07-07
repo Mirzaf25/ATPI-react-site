@@ -38,7 +38,7 @@ class Admin extends React.Component {
 	async fetchToken(token_url) {
 		const response = await fetch(token_url, {
 			method: 'post',
-			mode: 'cors',
+			mode: 'no-cors',
 			headers: {
 				'Content-Type': 'application/json',
 			},
