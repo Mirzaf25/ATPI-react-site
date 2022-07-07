@@ -69,7 +69,7 @@ class AddIndividualMembership extends React.Component {
 			this.props.levels?.levels?.length === 0
 		) {
 			this.fetchMembershipLevels(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'levels'
 			);
@@ -86,7 +86,7 @@ class AddIndividualMembership extends React.Component {
 			this.props.levels?.levels?.length === 0
 		) {
 			this.fetchMembershipLevels(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'levels'
 			);
@@ -146,7 +146,8 @@ class AddIndividualMembership extends React.Component {
 	};
 
 	validateEmail(e) {
-		const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+		const emailRegex =
+			/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 		const { validate } = this.state;
 
@@ -181,7 +182,7 @@ class AddIndividualMembership extends React.Component {
 		const code = document.getElementById('discount_code').value;
 		//@todo check res.ok on all fetch calls.
 		fetch(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_url +
 				'discounts/validate',
 			{
@@ -248,7 +249,7 @@ class AddIndividualMembership extends React.Component {
 			//@todo remove payment if discount is 100%.
 
 			const res = await fetch(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'payments/payment_intent',
 				{
@@ -264,11 +265,8 @@ class AddIndividualMembership extends React.Component {
 			/* UPDATE PROGRESS */
 			console.log('3');
 			this.updateProgress(1);
-			const {
-				stripe_client_secret,
-				stripe_intent_type,
-				payment_id,
-			} = await res.json();
+			const { stripe_client_secret, stripe_intent_type, payment_id } =
+				await res.json();
 
 			/* UPDATE PROGRESS */
 			console.log('4');
@@ -375,23 +373,17 @@ class AddIndividualMembership extends React.Component {
 				return res.json();
 			})
 			.then(async data_memership => {
-				const {
-					errors,
-					user_id,
-					membership_id,
-					subscription_key,
-				} = data_memership;
+				const { errors, user_id, membership_id, subscription_key } =
+					data_memership;
 				if (errors) return Promise.reject(errors);
 				if (this.state.enable_stripe_payment) {
-					const {
-						transaction,
-						payment_id,
-					} = await this.handlePayment(
-						event,
-						membership_id,
-						user_id,
-						subscription_key
-					);
+					const { transaction, payment_id } =
+						await this.handlePayment(
+							event,
+							membership_id,
+							user_id,
+							subscription_key
+						);
 					console.log(transaction);
 					return this.updatePayment(payment_id, transaction);
 					// return this.addPayment(user_id, membership, transaction);
@@ -417,7 +409,7 @@ class AddIndividualMembership extends React.Component {
 
 	addCustomer(user_args) {
 		return fetch(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_url +
 				'customers/new',
 			{
@@ -438,7 +430,7 @@ class AddIndividualMembership extends React.Component {
 		};
 
 		return fetch(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_url +
 				'payments/update/' +
 				payment_id,
@@ -477,7 +469,7 @@ class AddIndividualMembership extends React.Component {
 			}
 		});
 		return fetch(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_url +
 				'payments/new',
 			{
@@ -493,7 +485,7 @@ class AddIndividualMembership extends React.Component {
 
 	addMembership(event, customer_id, membership) {
 		return fetch(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_url +
 				'memberships/new',
 			{

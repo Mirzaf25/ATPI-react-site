@@ -55,13 +55,13 @@ class Memberships extends React.Component {
 		});
 		if (null === this.props.user.token) {
 			this.fetchToken(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.auth_url +
 					'token'
 			);
 		} else if (this.state.memberships?.length === 0) {
 			this.fetchMemberships(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'memberships',
 				this.props.user.token,
@@ -82,7 +82,7 @@ class Memberships extends React.Component {
 			this.state.search === ''
 		) {
 			this.fetchMemberships(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'memberships',
 				this.props.user.token,
@@ -95,7 +95,7 @@ class Memberships extends React.Component {
 		if (null !== this.props.user.token && prevPage !== this.state.page) {
 			this.setState({ membershipLoading: true });
 			this.fetchMemberships(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'memberships',
 				this.props.user.token,
@@ -111,7 +111,7 @@ class Memberships extends React.Component {
 		) {
 			this.setState({ membershipLoading: true });
 			this.fetchMemberships(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'memberships',
 				this.props.user.token,
@@ -159,7 +159,7 @@ class Memberships extends React.Component {
 										searched: true,
 									});
 									this.fetchMemberships(
-										this.props.rcp_url.domain +
+										this.props.rcp_url.proxy_domain +
 											this.props.rcp_url.base_url +
 											'memberships',
 										this.props.user.token,
@@ -182,7 +182,7 @@ class Memberships extends React.Component {
 										});
 
 										this.fetchMemberships(
-											this.props.rcp_url.domain +
+											this.props.rcp_url.proxy_domain +
 												this.props.rcp_url.base_url +
 												'memberships',
 											this.props.user.token,
@@ -211,7 +211,7 @@ class Memberships extends React.Component {
 
 	getExportCsvFile = async () => {
 		const res = await fetch(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_url +
 				'exports/new',
 			{
@@ -354,7 +354,7 @@ class Memberships extends React.Component {
 				e.preventDefault();
 				if (null !== this.props.user.token) {
 					this.deleteMembership(
-						this.props.rcp_url.domain +
+						this.props.rcp_url.proxy_domain +
 							this.props.rcp_url.base_url +
 							'memberships/delete/',
 						index

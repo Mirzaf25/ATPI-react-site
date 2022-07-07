@@ -76,7 +76,7 @@ class AddClubMembership extends React.Component {
 			this.props.levels?.levels?.length === 0
 		) {
 			this.fetchMembershipLevels(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'levels'
 			);
@@ -93,7 +93,7 @@ class AddClubMembership extends React.Component {
 			this.props.levels?.levels?.length === 0
 		) {
 			this.fetchMembershipLevels(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'levels'
 			);
@@ -188,7 +188,7 @@ class AddClubMembership extends React.Component {
 		const code = document.getElementById('discount_code').value;
 		//@todo check res.ok on all fetch calls.
 		fetch(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_url +
 				'discounts/validate',
 			{
@@ -250,7 +250,7 @@ class AddClubMembership extends React.Component {
 			formData.append('user_id', user_id);
 			formData.append('subscription_key', subscription_key);
 			const res = await fetch(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'payments/payment_intent',
 				{
@@ -265,11 +265,8 @@ class AddClubMembership extends React.Component {
 			/* UPDATE PROGRESS */
 			console.log('3');
 			this.updateProgress(1);
-			const {
-				stripe_client_secret,
-				stripe_intent_type,
-				payment_id,
-			} = await res.json();
+			const { stripe_client_secret, stripe_intent_type, payment_id } =
+				await res.json();
 			const paymentMethodReq = await stripe.createPaymentMethod({
 				type: 'card',
 				card: cardElement,
@@ -374,23 +371,17 @@ class AddClubMembership extends React.Component {
 				return res.json();
 			})
 			.then(async data_memership => {
-				const {
-					errors,
-					user_id,
-					membership_id,
-					subscription_key,
-				} = data_memership;
+				const { errors, user_id, membership_id, subscription_key } =
+					data_memership;
 				if (errors) return Promise.reject(errors);
 				if (this.state.enable_stripe_payment) {
-					const {
-						transaction,
-						payment_id,
-					} = await this.handlePayment(
-						event,
-						membership_id,
-						user_id,
-						subscription_key
-					);
+					const { transaction, payment_id } =
+						await this.handlePayment(
+							event,
+							membership_id,
+							user_id,
+							subscription_key
+						);
 
 					console.log(transaction);
 					return this.updatePayment(payment_id, transaction);
@@ -417,7 +408,7 @@ class AddClubMembership extends React.Component {
 
 	addCustomer(user_args) {
 		return fetch(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_url +
 				'customers/new',
 			{
@@ -438,7 +429,7 @@ class AddClubMembership extends React.Component {
 		};
 
 		return fetch(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_url +
 				'payments/update/' +
 				payment_id,
@@ -477,7 +468,7 @@ class AddClubMembership extends React.Component {
 			}
 		});
 		return fetch(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_url +
 				'payments/new',
 			{
@@ -506,7 +497,7 @@ class AddClubMembership extends React.Component {
 		formData.append('paid_by', event.target.paid_by.value);
 		formData.append('region', event.target.region.value);
 		return fetch(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_url +
 				'memberships/new',
 			{
@@ -755,7 +746,8 @@ class AddClubMembership extends React.Component {
 													name='workplace'
 													type='text'
 													innerRef={el =>
-														(this.state.owner_workplace = el)
+														(this.state.owner_workplace =
+															el)
 													}
 												/>
 											</Col>

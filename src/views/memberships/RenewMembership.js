@@ -74,7 +74,7 @@ class RenewMembership extends React.Component {
 	async componentDidMount() {
 		if (null === this.state.membership && null !== this.props.user.token) {
 			const data = await this.fetchMembership(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'memberships',
 				this.props.match.params.id
@@ -97,7 +97,7 @@ class RenewMembership extends React.Component {
 			null === this.state.membership
 		) {
 			const data = await this.fetchMembership(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'memberships',
 				this.props.match.params.id
@@ -213,7 +213,7 @@ class RenewMembership extends React.Component {
 			const formData = new FormData();
 			formData.append('object_id', membership.id);
 			const res = await fetch(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'payments/payment_intent',
 				{
@@ -369,7 +369,7 @@ class RenewMembership extends React.Component {
 
 	renew_membership(event, membership) {
 		return fetch(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_url +
 				'memberships/' +
 				this.state.membership.id +
@@ -392,7 +392,7 @@ class RenewMembership extends React.Component {
 	updateMembership(event) {
 		const formData = new FormData(event.target);
 		return fetch(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_url +
 				'memberships/update/' +
 				this.props.match.params.id,
@@ -423,7 +423,7 @@ class RenewMembership extends React.Component {
 		};
 
 		return fetch(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_url +
 				'payments/new',
 			{
@@ -461,7 +461,7 @@ class RenewMembership extends React.Component {
 			}
 		});
 		return fetch(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_url +
 				'payments/new',
 			{

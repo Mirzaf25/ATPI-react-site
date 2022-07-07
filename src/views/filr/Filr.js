@@ -159,7 +159,7 @@ class Filr extends React.Component {
 	componentDidMount() {
 		if (this.state.files.length === 0)
 			this.fetchFiles(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_wp_url +
 					'filr'
 			);
@@ -509,7 +509,7 @@ class Filr extends React.Component {
 						onSubmit={e => {
 							e.preventDefault();
 							this.createNewFolder(
-								this.props.rcp_url.domain +
+								this.props.rcp_url.proxy_domain +
 									this.props.rcp_url.base_wp_url +
 									'filr',
 								{
@@ -525,7 +525,7 @@ class Filr extends React.Component {
 								() => {
 									alert('Folder added successfully!');
 									this.fetchFiles(
-										this.props.rcp_url.domain +
+										this.props.rcp_url.proxy_domain +
 											this.props.rcp_url.base_wp_url +
 											'filr'
 									);
@@ -725,36 +725,41 @@ class Filr extends React.Component {
 																]
 																	?.split('.')
 																	.pop();
-															const fileUrl = isFolder
-																? null
-																: item.metadata[
-																		'file-download'
-																  ];
-															const fileIcon = isFolder
-																? 'fa fa-folder text-orange'
-																: fileIcons
-																		.filter(
-																			el =>
-																				el.type.includes(
-																					fileType
-																				)
-																		)
-																		?.pop()
-																		?.icon;
+															const fileUrl =
+																isFolder
+																	? null
+																	: item
+																			.metadata[
+																			'file-download'
+																	  ];
+															const fileIcon =
+																isFolder
+																	? 'fa fa-folder text-orange'
+																	: fileIcons
+																			.filter(
+																				el =>
+																					el.type.includes(
+																						fileType
+																					)
+																			)
+																			?.pop()
+																			?.icon;
 															//console.log(fileIcon);  @todo it return undefined after a while.
 															rows.push({
 																id: item.id,
-																fileUrl: fileUrl,
-																fileType: fileType,
-																fileIcon: fileIcon,
-																name:
-																	item.title
-																		.rendered,
+																fileUrl:
+																	fileUrl,
+																fileType:
+																	fileType,
+																fileIcon:
+																	fileIcon,
+																name: item.title
+																	.rendered,
 																modified:
 																	item.modified,
-																status:
-																	item.status,
-																isFolder: isFolder,
+																status: item.status,
+																isFolder:
+																	isFolder,
 															});
 
 															// return (
@@ -790,7 +795,8 @@ class Filr extends React.Component {
 														this.state.viewLoading
 													}
 													components={{
-														LoadingOverlay: LinearProgress,
+														LoadingOverlay:
+															LinearProgress,
 													}}
 													checkboxSelection
 													autoHeight

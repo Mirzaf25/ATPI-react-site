@@ -18,6 +18,6 @@ const rcpSlice = createSlice({
 });
 export const setRoute = rcpSlice.action;
 export const selectRCPUrl = state =>
-	state.domain + state.base_url + state.route;
+	state.proxy_domain + state.base_url + state.route;
 export const selectAuthUrl = state => state.token_url;
 export default rcpSlice.reducer;

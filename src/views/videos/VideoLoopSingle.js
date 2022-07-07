@@ -52,27 +52,28 @@ class VideoLoopSingle extends React.Component {
 						</ListItem>
 						<Divider component='li' />
 						{this.props.item?.date !== undefined && (
-								<>
-									<ListItem>
-										<ListItemText
-											primary={'Date :'}
-										/>
-										<ListItemText
-											primary={this.props.item?.date}
-										/>
-									</ListItem>
-									<Divider component='li' />
-								</>
-							)}
+							<>
+								<ListItem>
+									<ListItemText primary={'Date :'} />
+									<ListItemText
+										primary={this.props.item?.date}
+									/>
+								</ListItem>
+								<Divider component='li' />
+							</>
+						)}
 						<Divider component='li' />
-						{this.props.item?.acf !== undefined && this.props.item?.acf.webinar_recording_video !== undefined  && (
+						{this.props.item?.acf !== undefined &&
+							this.props.item?.acf.webinar_recording_video !==
+								undefined && (
 								<>
 									<ListItem>
+										<ListItemText primary={'Video URL :'} />
 										<ListItemText
-											primary={'Video URL :'}
-										/>
-										<ListItemText
-											primary={this.props.item?.acf.webinar_recording_video}
+											primary={
+												this.props.item?.acf
+													.webinar_recording_video
+											}
 										/>
 									</ListItem>
 									<Divider component='li' />
@@ -93,7 +94,7 @@ class VideoLoopSingle extends React.Component {
 								onClick={async () => {
 									this.setState({ delLoading: true });
 									await this.props.deleteHandle(
-										this.props.rcp_url.domain +
+										this.props.rcp_url.proxy_domain +
 											this.props.rcp_url.base_wp_url +
 											'webinar/' +
 											this.props.item.id,

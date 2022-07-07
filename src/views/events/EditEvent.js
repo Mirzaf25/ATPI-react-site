@@ -58,7 +58,7 @@ class EditEvent extends React.Component {
 		this.handleChange = this.handleChange.bind(this);
 
 		this.create_event_url =
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 			this.props.rcp_url.base_wp_url +
 			'event_listing/' +
 			this.props.match.params.id;
@@ -131,7 +131,7 @@ class EditEvent extends React.Component {
 
 	componentDidMount() {
 		const url = new URL(
-			this.props.rcp_url.domain +
+			this.props.rcp_url.proxy_domain +
 				this.props.rcp_url.base_wp_url +
 				'event_listing_category'
 		);
@@ -143,7 +143,7 @@ class EditEvent extends React.Component {
 
 		if (this.state.event === null && this.props.user.token !== null)
 			this.fetchEvent(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_wp_url +
 					'event_listing/' +
 					this.props.match.params.id
@@ -153,7 +153,7 @@ class EditEvent extends React.Component {
 	componentDidUpdate() {
 		if (this.state.event === null && this.props.user.token !== null)
 			this.fetchEvent(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_wp_url +
 					'event_listing/' +
 					this.props.match.params.id
@@ -200,7 +200,7 @@ class EditEvent extends React.Component {
 	// 	}
 
 	// 	return fetch(
-	// 		this.props.rcp_url.domain +
+	// 		this.props.rcp_url.proxy_domain +
 	// 			this.props.rcp_url.base_wp_url +
 	// 			'media',
 	// 		{

@@ -31,7 +31,7 @@ class DiscountCodes extends React.Component {
 			this.props.user.token !== null
 		)
 			this.fetchDiscountCodes(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'discounts'
 			);
@@ -40,7 +40,7 @@ class DiscountCodes extends React.Component {
 	componentDidUpdate({ user: prevUser }) {
 		if (prevUser !== this.props.user && this.props.user.token !== null) {
 			this.fetchDiscountCodes(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'discounts'
 			);

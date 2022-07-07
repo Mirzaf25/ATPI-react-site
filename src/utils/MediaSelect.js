@@ -29,7 +29,7 @@ class MediaSelect extends React.Component {
 	componentDidMount() {
 		if (!this.props.media || this.props.media.length === 0) {
 			fetch(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_wp_url +
 					'media'
 			)
@@ -53,7 +53,9 @@ class MediaSelect extends React.Component {
 	fetchMedia() {
 		this.setState({ loading: true });
 		const url = new URL(
-			this.props.rcp_url.domain + this.props.rcp_url.base_wp_url + 'media'
+			this.props.rcp_url.proxy_domain +
+				this.props.rcp_url.base_wp_url +
+				'media'
 		);
 		const params = {
 			page: this.state.page + 1,
@@ -79,7 +81,7 @@ class MediaSelect extends React.Component {
 			this.state[this.props.fieldName]
 		) {
 			const res = await fetch(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_wp_url +
 					'media/' +
 					this.state[this.props.fieldName]
@@ -183,7 +185,8 @@ class MediaSelect extends React.Component {
 															input.checked = true;
 															this.setState({
 																[this.props
-																	.fieldName]: id,
+																	.fieldName]:
+																	id,
 															});
 															[].forEach.call(
 																document.getElementsByClassName(

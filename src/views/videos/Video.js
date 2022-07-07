@@ -30,7 +30,7 @@ class Videos extends React.Component {
 	componentDidMount() {
 		if (this.state.videos.length === 0)
 			this.fetchLogos(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_wp_url +
 					'webinar'
 			);
@@ -52,7 +52,7 @@ class Videos extends React.Component {
 		this.setState({ videos: data });
 	};
 
-	deleteVideo = async (url,id) => {
+	deleteVideo = async (url, id) => {
 		const res = await fetch(url, {
 			method: 'DELETE',
 			headers: {
@@ -65,14 +65,14 @@ class Videos extends React.Component {
 		}
 
 		this.setState({ videos: this.state.videos.filter(el => el.id !== id) });
-	}
+	};
 
-	editVideo = (e,id) => {
+	editVideo = (e, id) => {
 		e.preventDefault();
 		this.props.history.push(
 			this.props.history.location.pathname + '/edit/' + id
 		);
-	}
+	};
 
 	render() {
 		return (
@@ -104,15 +104,16 @@ class Videos extends React.Component {
 										{this.state.videos.length !== 0 &&
 											this.state.videos.map(
 												(item, key) => (
-													<VideoLoopSingle 
-													key={key}
-													item={item}
-													deleteHandle={
-														this.deleteVideo
-													}
-													editHandle={
-														this.editVideo
-													} />
+													<VideoLoopSingle
+														key={key}
+														item={item}
+														deleteHandle={
+															this.deleteVideo
+														}
+														editHandle={
+															this.editVideo
+														}
+													/>
 												)
 											)}
 									</ImageList>

@@ -23,7 +23,7 @@ class Clubs extends React.Component {
 		if (null !== this.props.user.token && this.state.clubs.length === 0) {
 			this.setState({ loading: true });
 			this.fetchClubs(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'groups',
 				this.props.user.token
@@ -39,7 +39,7 @@ class Clubs extends React.Component {
 		) {
 			this.setState({ loading: true });
 			this.fetchClubs(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'groups',
 				this.props.user.token
@@ -49,7 +49,7 @@ class Clubs extends React.Component {
 		if (null !== this.props.user.token && this.state.page !== prevPage) {
 			this.setState({ loading: true });
 			this.fetchClubs(
-				this.props.rcp_url.domain +
+				this.props.rcp_url.proxy_domain +
 					this.props.rcp_url.base_url +
 					'groups',
 				this.props.user.token
@@ -84,7 +84,7 @@ class Clubs extends React.Component {
 
 	render() {
 		const columns = [
-			{ field: 'id', headerName: 'ID', width: 90,hide:true },
+			{ field: 'id', headerName: 'ID', width: 90, hide: true },
 			{ field: 'name', headerName: 'Club Name', width: 180 },
 			{
 				field: 'membership_id',
