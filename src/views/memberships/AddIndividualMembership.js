@@ -134,6 +134,8 @@ class AddIndividualMembership extends React.Component {
 				case 'US':
 					country = 'US';
 					break;
+				default:
+					break;
 			}
 			this.setState({
 				[name]: country,
@@ -262,14 +264,12 @@ class AddIndividualMembership extends React.Component {
 			);
 
 			/* UPDATE PROGRESS */
-			console.log('3');
 			this.updateProgress(1);
 			const {
 				stripe_client_secret,
 				stripe_intent_type,
 				payment_id,
 			} = await res.json();
-
 			/* UPDATE PROGRESS */
 			console.log('4');
 			this.updateProgress(1);
@@ -374,13 +374,13 @@ class AddIndividualMembership extends React.Component {
 				if (res.status !== 200) return Promise.reject(res);
 				return res.json();
 			})
-			.then(async data_memership => {
+			.then(async data_membership => {
 				const {
 					errors,
 					user_id,
 					membership_id,
 					subscription_key,
-				} = data_memership;
+				} = data_membership;
 				if (errors) return Promise.reject(errors);
 				if (this.state.enable_stripe_payment) {
 					const {
@@ -399,7 +399,7 @@ class AddIndividualMembership extends React.Component {
 				if (this.state.enable_manual_payment) {
 					return this.addManualPayment(event, user_id, membership);
 				}
-				return Promise.resolve(data_memership);
+				return Promise.resolve(data_membership);
 			})
 			.then(res => {
 				if (res.status !== 200) return Promise.reject(res);
