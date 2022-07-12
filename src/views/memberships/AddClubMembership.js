@@ -141,6 +141,8 @@ class AddClubMembership extends React.Component {
 				case 'US':
 					country = 'US';
 					break;
+				default:
+					break;
 			}
 			this.setState({
 				[name]: country,
@@ -369,13 +371,13 @@ class AddClubMembership extends React.Component {
 				if (res.status !== 200) return Promise.reject(res);
 				return res.json();
 			})
-			.then(async data_memership => {
+			.then(async data_membership => {
 				const {
 					errors,
 					user_id,
 					membership_id,
 					subscription_key,
-				} = data_memership;
+				} = data_membership;
 				if (errors) return Promise.reject(errors);
 				if (this.state.enable_stripe_payment) {
 					const {
@@ -395,7 +397,7 @@ class AddClubMembership extends React.Component {
 				if (this.state.enable_manual_payment) {
 					return this.addManualPayment(event, user_id, membership);
 				}
-				return Promise.resolve(data_memership);
+				return Promise.resolve(data_membership);
 			})
 			.then(res => {
 				if (res.status !== 200) return Promise.reject(res);
