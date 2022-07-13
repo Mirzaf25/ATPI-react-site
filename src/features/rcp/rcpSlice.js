@@ -5,7 +5,7 @@ const initialState = {
 	base_wp_url: '/wp-json/wp/v2/',
 	route: '',
 	proxy_domain: 'http://localhost:8010/proxy',
-	domain: 'https://atpi-dev14.grafton.digital', // for testing purposes only.
+	domain: 'https://atpi-dev17.graftontech.ie/', // for testing purposes only.
 };
 const rcpSlice = createSlice({
 	name: 'rcp_url',
