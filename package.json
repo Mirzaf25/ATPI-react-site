@@ -9,7 +9,7 @@
 		"start": "react-scripts start",
 		"build": "set \"GENERATE_SOURCEMAP=false\" && react-scripts build",
 		"deploy": "set \"GENERATE_SOURCEMAP=false\" && react-scripts build && firebase deploy",
-		"proxy": "lcp --proxyUrl https://atpi-dev14.grafton.digital",
+		"proxy": "lcp --proxyUrl https://atpi-dev17.graftontech.ie/",
 		"test": "react-scripts test",
 		"eject": "react-scripts eject",
 		"install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm start",
