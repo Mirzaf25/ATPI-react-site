@@ -28,6 +28,7 @@ import EditLogo from 'views/sponsored-logos/EditLogo';
 import Events from 'views/events/Events';
 import EditEvent from 'views/events/EditEvent';
 import Tradeshow from 'views/tradeshow/Tradeshow';
+import Success from 'views/memberships/Success';
 
 var routes = [
 	{
@@ -116,6 +117,14 @@ var routes = [
 				component: Tables,
 				layout: '/admin',
 				showInSidebar: true,
+			},
+			{
+				path: '/membership/success',
+				name: 'Success',
+				icon: 'ni ni-circle-08 text-pink',
+				component: Success,
+				layout: '/admin',
+				showInSidebar: false,
 			},
 		],
 	},

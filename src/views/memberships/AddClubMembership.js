@@ -37,6 +37,8 @@ import { CardElement, ElementsConsumer } from '@stripe/react-stripe-js';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
 import ClubMember from './ClubMember';
 import ManualPaymentDropdown from './ManualPaymentDropdown';
+import { Redirect } from 'react-router-dom';
+import Success from './Success';
 
 class AddClubMembership extends React.Component {
 	constructor(props) {
@@ -313,8 +315,8 @@ class AddClubMembership extends React.Component {
 	 */
 	async submitForm(event) {
 		event.persist();
-		this.setState({ formLoading: true });
 		event.preventDefault();
+		this.setState({ formLoading: true });
 		const formData = new FormData(event.target);
 		const user_additional_fields = [
 			'workplace',
@@ -348,8 +350,8 @@ class AddClubMembership extends React.Component {
 		);
 	}
 
-	onSuccessfullCheckout(event, user_args, membership, club_name) {
-		this.addCustomer(user_args)
+	async onSuccessfullCheckout(event, user_args, membership, club_name) {
+		await this.addCustomer(user_args)
 			.then(res => {
 				if (res.status !== 200) return Promise.reject(res);
 				return res.json();
@@ -410,6 +412,14 @@ class AddClubMembership extends React.Component {
 				this.setState({ formLoading: false });
 				console.error(err);
 			});
+		this.setState({ formLoading: false });
+		this.props.history.replace({
+			pathname: '/admin/membership/success',
+			state: {
+				name: user_args.first_name + ' ' + user_args.last_name,
+				membership_details: this.state.selectedMembership,
+			},
+		});
 	}
 
 	addCustomer(user_args) {

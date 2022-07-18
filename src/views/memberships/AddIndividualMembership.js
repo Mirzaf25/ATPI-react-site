@@ -5,6 +5,8 @@ import { Switch, withStyles, CircularProgress } from '@material-ui/core';
 
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
+import { Redirect } from 'react-router-dom';
+import Success from './Success';
 
 // reactstrap components
 import {
@@ -316,8 +318,8 @@ class AddIndividualMembership extends React.Component {
 	 */
 	async submitForm(event) {
 		event.persist();
-		this.setState({ formLoading: true });
 		event.preventDefault();
+		this.setState({ formLoading: true });
 		const formData = new FormData(event.target);
 		const user_additional_fields = [
 			'workplace',
@@ -351,8 +353,8 @@ class AddIndividualMembership extends React.Component {
 		);
 	}
 
-	onSuccessfullCheckout(event, user_args, membership) {
-		this.addCustomer(user_args)
+	async onSuccessfullCheckout(event, user_args, membership) {
+		await this.addCustomer(user_args)
 			.then(res => {
 				if (res.status !== 200) return Promise.reject(res);
 				return res.json();
@@ -409,6 +411,15 @@ class AddIndividualMembership extends React.Component {
 				console.error(err);
 				this.setState({ formLoading: false });
 			});
+
+		this.setState({ formLoading: false });
+		this.props.history.replace({
+			pathname: '/admin/membership/success',
+			state: {
+				name: user_args.first_name + ' ' + user_args.last_name,
+				membership_details: this.state.selectedMembership,
+			},
+		});
 	}
 
 	addCustomer(user_args) {
@@ -1071,10 +1082,10 @@ class AddIndividualMembership extends React.Component {
 												}}
 											>
 												<Button>
-													{this.state.loading && (
+													{this.state.formLoading && (
 														<CircularProgress size='1.3rem' />
 													)}
-													{!this.state.loading &&
+													{!this.state.formLoading &&
 														'Submit'}
 												</Button>
 											</Col>
