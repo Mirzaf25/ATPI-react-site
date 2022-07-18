@@ -2,7 +2,7 @@ import OnlyHeader from 'components/Headers/OnlyHeader';
 import React from 'react';
 
 //@mui
-import { Switch, withStyles } from '@material-ui/core';
+import { Switch, withStyles, CircularProgress } from '@material-ui/core';
 
 // reactstrap components
 import {
@@ -19,7 +19,6 @@ import {
 	Form,
 	FormFeedback,
 	FormGroup,
-	Table,
 	Progress,
 } from 'reactstrap';
 
@@ -32,18 +31,10 @@ import { connect } from 'react-redux';
 import { setUserLoginDetails } from 'features/user/userSlice';
 import { setMembershipLevels } from 'features/levels/levelsSlice';
 //Stripe
-import {
-	CardElement,
-	ElementsConsumer,
-	PaymentElement,
-} from '@stripe/react-stripe-js';
+import { CardElement, ElementsConsumer } from '@stripe/react-stripe-js';
 
 //Country Selector
-import {
-	CountryDropdown,
-	RegionDropdown,
-	CountryRegionData,
-} from 'react-country-region-selector';
+import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
 import ClubMember from './ClubMember';
 import ManualPaymentDropdown from './ManualPaymentDropdown';
 
@@ -65,6 +56,7 @@ class AddClubMembership extends React.Component {
 			numberOfMembers: 0,
 			membersArray: [],
 			owner_workplace: {},
+			formLoading: false,
 		};
 		this.memberIndex = 1;
 		this.handleChange = this.handleChange.bind(this);
@@ -321,6 +313,7 @@ class AddClubMembership extends React.Component {
 	 */
 	async submitForm(event) {
 		event.persist();
+		this.setState({ formLoading: true });
 		event.preventDefault();
 		const formData = new FormData(event.target);
 		const user_additional_fields = [
@@ -405,6 +398,7 @@ class AddClubMembership extends React.Component {
 			})
 			.then(res => {
 				if (res.status !== 200) return Promise.reject(res);
+				this.setState({ formLoading: false });
 				return res.json();
 			})
 			.then(data_payment => {
@@ -413,6 +407,7 @@ class AddClubMembership extends React.Component {
 				return data_payment;
 			})
 			.catch(err => {
+				this.setState({ formLoading: false });
 				console.error(err);
 			});
 	}

@@ -1,7 +1,7 @@
 import OnlyHeader from 'components/Headers/OnlyHeader';
 import React from 'react';
 
-import { Switch, withStyles } from '@material-ui/core';
+import { Switch, withStyles, CircularProgress } from '@material-ui/core';
 
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
@@ -21,7 +21,6 @@ import {
 	Form,
 	FormFeedback,
 	FormGroup,
-	Table,
 	Progress,
 } from 'reactstrap';
 
@@ -29,18 +28,10 @@ import { connect } from 'react-redux';
 import { setUserLoginDetails } from 'features/user/userSlice';
 import { setMembershipLevels } from 'features/levels/levelsSlice';
 //Stripe
-import {
-	CardElement,
-	ElementsConsumer,
-	PaymentElement,
-} from '@stripe/react-stripe-js';
+import { CardElement, ElementsConsumer } from '@stripe/react-stripe-js';
 
 //Country Selector
-import {
-	CountryDropdown,
-	RegionDropdown,
-	CountryRegionData,
-} from 'react-country-region-selector';
+import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
 
 import Cart from './Cart';
 import ManualPaymentDropdown from './ManualPaymentDropdown';
@@ -59,6 +50,7 @@ class AddIndividualMembership extends React.Component {
 			progress: 0,
 			totalProgress: 5,
 			discountDetails: {},
+			formLoading: false,
 		};
 		this.handleChange = this.handleChange.bind(this);
 	}
@@ -324,6 +316,7 @@ class AddIndividualMembership extends React.Component {
 	 */
 	async submitForm(event) {
 		event.persist();
+		this.setState({ formLoading: true });
 		event.preventDefault();
 		const formData = new FormData(event.target);
 		const user_additional_fields = [
@@ -399,10 +392,12 @@ class AddIndividualMembership extends React.Component {
 				if (this.state.enable_manual_payment) {
 					return this.addManualPayment(event, user_id, membership);
 				}
+				this.setState({ formLoading: false });
 				return Promise.resolve(data_membership);
 			})
 			.then(res => {
 				if (res.status !== 200) return Promise.reject(res);
+				this.setState({ formLoading: false });
 				return res.json();
 			})
 			.then(data_payment => {
@@ -412,6 +407,7 @@ class AddIndividualMembership extends React.Component {
 			})
 			.catch(err => {
 				console.error(err);
+				this.setState({ formLoading: false });
 			});
 	}
 
@@ -1074,7 +1070,13 @@ class AddIndividualMembership extends React.Component {
 													size: 10,
 												}}
 											>
-												<Button>Submit</Button>
+												<Button>
+													{this.state.loading && (
+														<CircularProgress size='1.3rem' />
+													)}
+													{!this.state.loading &&
+														'Submit'}
+												</Button>
 											</Col>
 										</FormGroup>
 									</Form>
