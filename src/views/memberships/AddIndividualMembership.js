@@ -797,7 +797,9 @@ class AddIndividualMembership extends React.Component {
 											</Label>
 											<Col md={6}>
 												<PhoneInput
-													name='phone'
+													inputProps={{
+														name: 'phone',
+													}}
 													country='ie'
 													enableAreaCodes={['ie']}
 													enableSearch
