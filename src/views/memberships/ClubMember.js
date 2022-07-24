@@ -193,7 +193,7 @@ class ClubMember extends React.Component {
 								'][workplace]'
 							}
 							type='text'
-							disabled
+							readonly
 							placeholder='Workplace'
 							value={this.props.workplace}
 						/>
