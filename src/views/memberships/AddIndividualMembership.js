@@ -582,7 +582,10 @@ class AddIndividualMembership extends React.Component {
 														.length > 0 &&
 														this.props.levels.levels
 															.filter(
-																el => el.level
+																el =>
+																	el.id !==
+																		3 &&
+																	el.id !== 4
 															)
 															.map(
 																(item, key) => (

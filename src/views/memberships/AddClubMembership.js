@@ -45,6 +45,7 @@ class AddClubMembership extends React.Component {
 		super(props);
 		this.state = {
 			email: '',
+			membership_level: 3,
 			password: '', // @todo add password validation.
 			validate: {
 				emailState: '',
@@ -74,6 +75,13 @@ class AddClubMembership extends React.Component {
 					this.props.rcp_url.base_url +
 					'levels'
 			);
+		}
+
+		if (undefined !== this.state.membership_level) {
+			const membership = this.props.levels.levels.find(
+				el => el.id === parseInt(this.state.membership_level)
+			);
+			this.setState({ selectedMembership: membership });
 		}
 	}
 
@@ -389,7 +397,6 @@ class AddClubMembership extends React.Component {
 						subscription_key
 					);
 
-					console.log(transaction);
 					return this.updatePayment(payment_id, transaction);
 					// return this.addPayment(user_id, membership, transaction);
 				}
@@ -605,43 +612,13 @@ class AddClubMembership extends React.Component {
 											</Label>
 											<Col md={6}>
 												<Input
-													name='membership_level'
-													defaultValue='select'
-													type='select'
-													onChange={e => {
-														this.handleChange(e);
-													}}
-													required
-												>
-													<option value='select'>
-														Select club membership
-														level.
-													</option>
-													{this.props.levels.levels
-														.length > 0 &&
-														this.props.levels.levels
-															.filter(
-																el =>
-																	el.level ===
-																	3
-															)
-															.map(
-																(item, key) => (
-																	<option
-																		key={
-																			key
-																		}
-																		value={
-																			item.id
-																		}
-																	>
-																		{
-																			item.name
-																		}
-																	</option>
-																)
-															)}
-												</Input>
+													value={
+														this.props.levels.levels.find(
+															el => el.level === 3
+														).name
+													}
+													readonly
+												/>
 											</Col>
 										</FormGroup>
 										<FormGroup row>
