@@ -512,7 +512,6 @@ class AddIndividualMembership extends React.Component {
 				body: JSON.stringify({
 					customer_id: customer_id,
 					object_id: membership.id,
-					status: 'active',
 					auto_renew: event.target.auto_renew.checked,
 					paid_by: event.target.paid_by.value,
 					region: event.target.region.value,

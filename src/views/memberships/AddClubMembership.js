@@ -516,7 +516,6 @@ class AddClubMembership extends React.Component {
 		formData.append('object_id', membership.id);
 		formData.append('club_name', club_name);
 		formData.append('autorenew', event.target.auto_renew.checked);
-		formData.append('status', 'active');
 		formData.append('paid_by', event.target.paid_by.value);
 		formData.append('region', event.target.region.value);
 		return fetch(
