@@ -489,7 +489,10 @@ class AddIndividualMembership extends React.Component {
 				payment_args[key] = val;
 			}
 		});
-		if (new Date(payment_args['date']) > new Date())
+		if (
+			new Date(payment_args['date']).setHours(0, 0, 0, 0) >
+			new Date().setHours(0, 0, 0, 0)
+		)
 			payment_args['status'] = 'pending';
 		return fetch(
 			this.props.rcp_url.domain +
