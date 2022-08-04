@@ -401,7 +401,12 @@ class AddClubMembership extends React.Component {
 					// return this.addPayment(user_id, membership, transaction);
 				}
 				if (this.state.enable_manual_payment) {
-					return this.addManualPayment(event, user_id, membership);
+					return this.addManualPayment(
+						event,
+						user_id,
+						membership,
+						membership_id
+					);
 				}
 				return Promise.resolve(data_membership);
 			})
@@ -467,7 +472,7 @@ class AddClubMembership extends React.Component {
 		);
 	}
 
-	addManualPayment(event, user_id, membership) {
+	addManualPayment(event, user_id, membership, membership_id) {
 		const formData = new FormData(event.target);
 		const fields = [
 			'transaction_id',
@@ -483,6 +488,7 @@ class AddClubMembership extends React.Component {
 			amount: this.state.discountDetails?.total
 				? this.state.discountDetails?.total
 				: membership.price,
+			membership_id: membership_id,
 			status: 'complete',
 		};
 		formData.forEach((val, key) => {
@@ -490,6 +496,9 @@ class AddClubMembership extends React.Component {
 				payment_args[key] = val;
 			}
 		});
+
+		if (new Date(payment_args['date']) > new Date())
+			payment_args['status'] = 'pending';
 		return fetch(
 			this.props.rcp_url.domain +
 				this.props.rcp_url.base_url +
