@@ -121,7 +121,10 @@ class AddClubMembership extends React.Component {
 		) {
 			this.setState({ showError: true });
 			this.errorRef.current.scrollIntoView({ behavior: 'smooth' });
-			setTimeout(() => this.setState({ showError: false }), 5000);
+			setTimeout(
+				() => this.setState({ showError: false, errors: [] }),
+				5000
+			);
 		}
 	}
 
@@ -434,7 +437,7 @@ class AddClubMembership extends React.Component {
 				return Promise.resolve(data_membership);
 			})
 			.then(res => {
-				if (res.status !== 200) return Promise.reject(res);
+				if (res.status >= 400) return Promise.reject(res);
 				this.setState({ formLoading: false });
 				return res.json();
 			})

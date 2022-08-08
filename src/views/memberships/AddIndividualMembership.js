@@ -107,7 +107,10 @@ class AddIndividualMembership extends React.Component {
 		) {
 			this.setState({ showError: true });
 			this.errorRef.current.scrollIntoView({ behavior: 'smooth' });
-			setTimeout(() => this.setState({ showError: false }), 5000);
+			setTimeout(
+				() => this.setState({ showError: false, errors: [] }),
+				5000
+			);
 		}
 	}
 
@@ -156,7 +159,8 @@ class AddIndividualMembership extends React.Component {
 	};
 
 	validateEmail(e) {
-		const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+		const emailRegex =
+			/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 		const { validate } = this.state;
 
@@ -284,11 +288,8 @@ class AddIndividualMembership extends React.Component {
 
 			/* UPDATE PROGRESS */
 			this.updateProgress(1);
-			const {
-				stripe_client_secret,
-				stripe_intent_type,
-				payment_id,
-			} = await res.json();
+			const { stripe_client_secret, stripe_intent_type, payment_id } =
+				await res.json();
 			/* UPDATE PROGRESS */
 			console.log('4');
 			this.updateProgress(1);
@@ -340,7 +341,6 @@ class AddIndividualMembership extends React.Component {
 
 			return Promise.resolve(ret);
 		} catch (err) {
-
 			this.resetProgress();
 			return Promise.reject(err);
 		}
@@ -404,23 +404,17 @@ class AddIndividualMembership extends React.Component {
 				return res.json();
 			})
 			.then(async data_membership => {
-				const {
-					errors,
-					user_id,
-					membership_id,
-					subscription_key,
-				} = data_membership;
+				const { errors, user_id, membership_id, subscription_key } =
+					data_membership;
 				if (errors) return Promise.reject(errors);
 				if (this.state.enable_stripe_payment) {
-					const {
-						transaction,
-						payment_id,
-					} = await this.handlePayment(
-						event,
-						membership_id,
-						user_id,
-						subscription_key
-					);
+					const { transaction, payment_id } =
+						await this.handlePayment(
+							event,
+							membership_id,
+							user_id,
+							subscription_key
+						);
 					console.log(transaction);
 					return this.updatePayment(payment_id, transaction);
 					// return this.addPayment(user_id, membership, transaction);
@@ -437,7 +431,7 @@ class AddIndividualMembership extends React.Component {
 				return Promise.resolve(data_membership);
 			})
 			.then(res => {
-				if (res.status !== 200) return Promise.reject(res);
+				if (res.status >= 400) return Promise.reject(res);
 				this.setState({ formLoading: false });
 				return res.json();
 			})
@@ -640,9 +634,7 @@ class AddIndividualMembership extends React.Component {
 															.filter(
 																el =>
 																	![
-																		2,
-																		3,
-																		4,
+																		2, 3, 4,
 																		12,
 																	].includes(
 																		el.id
