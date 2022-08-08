@@ -2,7 +2,7 @@ import OnlyHeader from 'components/Headers/OnlyHeader';
 import React from 'react';
 
 //@mui
-import { Switch, withStyles } from '@material-ui/core';
+import { Switch, withStyles, CircularProgress } from '@material-ui/core';
 
 // reactstrap components
 import {
@@ -19,7 +19,6 @@ import {
 	Form,
 	FormFeedback,
 	FormGroup,
-	Table,
 	Progress,
 } from 'reactstrap';
 
@@ -32,26 +31,21 @@ import { connect } from 'react-redux';
 import { setUserLoginDetails } from 'features/user/userSlice';
 import { setMembershipLevels } from 'features/levels/levelsSlice';
 //Stripe
-import {
-	CardElement,
-	ElementsConsumer,
-	PaymentElement,
-} from '@stripe/react-stripe-js';
+import { CardElement, ElementsConsumer } from '@stripe/react-stripe-js';
 
 //Country Selector
-import {
-	CountryDropdown,
-	RegionDropdown,
-	CountryRegionData,
-} from 'react-country-region-selector';
+import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
 import ClubMember from './ClubMember';
 import ManualPaymentDropdown from './ManualPaymentDropdown';
+import { Redirect } from 'react-router-dom';
+import Success from './Success';
 
 class AddClubMembership extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			email: '',
+			membership_level: 3,
 			password: '', // @todo add password validation.
 			validate: {
 				emailState: '',
@@ -65,6 +59,7 @@ class AddClubMembership extends React.Component {
 			numberOfMembers: 0,
 			membersArray: [],
 			owner_workplace: {},
+			formLoading: false,
 		};
 		this.memberIndex = 1;
 		this.handleChange = this.handleChange.bind(this);
@@ -76,10 +71,17 @@ class AddClubMembership extends React.Component {
 			this.props.levels?.levels?.length === 0
 		) {
 			this.fetchMembershipLevels(
-				this.props.rcp_url.proxy_domain +
+				this.props.rcp_url.domain +
 					this.props.rcp_url.base_url +
 					'levels'
 			);
+		}
+
+		if (undefined !== this.state.membership_level) {
+			const membership = this.props.levels.levels.find(
+				el => el.id === parseInt(this.state.membership_level)
+			);
+			this.setState({ selectedMembership: membership });
 		}
 	}
 
@@ -93,7 +95,7 @@ class AddClubMembership extends React.Component {
 			this.props.levels?.levels?.length === 0
 		) {
 			this.fetchMembershipLevels(
-				this.props.rcp_url.proxy_domain +
+				this.props.rcp_url.domain +
 					this.props.rcp_url.base_url +
 					'levels'
 			);
@@ -190,7 +192,7 @@ class AddClubMembership extends React.Component {
 		const code = document.getElementById('discount_code').value;
 		//@todo check res.ok on all fetch calls.
 		fetch(
-			this.props.rcp_url.proxy_domain +
+			this.props.rcp_url.domain +
 				this.props.rcp_url.base_url +
 				'discounts/validate',
 			{
@@ -252,7 +254,7 @@ class AddClubMembership extends React.Component {
 			formData.append('user_id', user_id);
 			formData.append('subscription_key', subscription_key);
 			const res = await fetch(
-				this.props.rcp_url.proxy_domain +
+				this.props.rcp_url.domain +
 					this.props.rcp_url.base_url +
 					'payments/payment_intent',
 				{
@@ -322,6 +324,7 @@ class AddClubMembership extends React.Component {
 	async submitForm(event) {
 		event.persist();
 		event.preventDefault();
+		this.setState({ formLoading: true });
 		const formData = new FormData(event.target);
 		const user_additional_fields = [
 			'workplace',
@@ -343,6 +346,10 @@ class AddClubMembership extends React.Component {
 		formData.forEach((val, key) => {
 			if (user_additional_fields.includes(key)) user_args[key] = val;
 		});
+
+		if (user_args['country']) {
+			user_args['country'] = this.state.country;
+		}
 		this.onSuccessfullCheckout(
 			event,
 			user_args,
@@ -351,8 +358,8 @@ class AddClubMembership extends React.Component {
 		);
 	}
 
-	onSuccessfullCheckout(event, user_args, membership, club_name) {
-		this.addCustomer(user_args)
+	async onSuccessfullCheckout(event, user_args, membership, club_name) {
+		await this.addCustomer(user_args)
 			.then(res => {
 				if (res.status !== 200) return Promise.reject(res);
 				return res.json();
@@ -390,17 +397,22 @@ class AddClubMembership extends React.Component {
 						subscription_key
 					);
 
-					console.log(transaction);
 					return this.updatePayment(payment_id, transaction);
 					// return this.addPayment(user_id, membership, transaction);
 				}
 				if (this.state.enable_manual_payment) {
-					return this.addManualPayment(event, user_id, membership);
+					return this.addManualPayment(
+						event,
+						user_id,
+						membership,
+						membership_id
+					);
 				}
 				return Promise.resolve(data_membership);
 			})
 			.then(res => {
 				if (res.status !== 200) return Promise.reject(res);
+				this.setState({ formLoading: false });
 				return res.json();
 			})
 			.then(data_payment => {
@@ -409,13 +421,22 @@ class AddClubMembership extends React.Component {
 				return data_payment;
 			})
 			.catch(err => {
+				this.setState({ formLoading: false });
 				console.error(err);
 			});
+		this.setState({ formLoading: false });
+		this.props.history.replace({
+			pathname: '/admin/membership/success',
+			state: {
+				name: user_args.first_name + ' ' + user_args.last_name,
+				membership_details: this.state.selectedMembership,
+			},
+		});
 	}
 
 	addCustomer(user_args) {
 		return fetch(
-			this.props.rcp_url.proxy_domain +
+			this.props.rcp_url.domain +
 				this.props.rcp_url.base_url +
 				'customers/new',
 			{
@@ -436,7 +457,7 @@ class AddClubMembership extends React.Component {
 		};
 
 		return fetch(
-			this.props.rcp_url.proxy_domain +
+			this.props.rcp_url.domain +
 				this.props.rcp_url.base_url +
 				'payments/update/' +
 				payment_id,
@@ -451,7 +472,7 @@ class AddClubMembership extends React.Component {
 		);
 	}
 
-	addManualPayment(event, user_id, membership) {
+	addManualPayment(event, user_id, membership, membership_id) {
 		const formData = new FormData(event.target);
 		const fields = [
 			'transaction_id',
@@ -467,6 +488,7 @@ class AddClubMembership extends React.Component {
 			amount: this.state.discountDetails?.total
 				? this.state.discountDetails?.total
 				: membership.price,
+			membership_id: membership_id,
 			status: 'complete',
 		};
 		formData.forEach((val, key) => {
@@ -474,8 +496,14 @@ class AddClubMembership extends React.Component {
 				payment_args[key] = val;
 			}
 		});
+
+		if (
+			new Date(payment_args['date']).setHours(0, 0, 0, 0) >
+			new Date().setHours(0, 0, 0, 0)
+		)
+			payment_args['status'] = 'pending';
 		return fetch(
-			this.props.rcp_url.proxy_domain +
+			this.props.rcp_url.domain +
 				this.props.rcp_url.base_url +
 				'payments/new',
 			{
@@ -500,11 +528,10 @@ class AddClubMembership extends React.Component {
 		formData.append('object_id', membership.id);
 		formData.append('club_name', club_name);
 		formData.append('autorenew', event.target.auto_renew.checked);
-		formData.append('status', 'active');
 		formData.append('paid_by', event.target.paid_by.value);
 		formData.append('region', event.target.region.value);
 		return fetch(
-			this.props.rcp_url.proxy_domain +
+			this.props.rcp_url.domain +
 				this.props.rcp_url.base_url +
 				'memberships/new',
 			{
@@ -554,7 +581,7 @@ class AddClubMembership extends React.Component {
 
 		// const numOfMembers = [];
 
-		// for (var i = 0; i <= this.state.numberOfMembers && i <= 5; i += 1) {
+		// for (var i = 0; i <= this.state.numberOfMembers; i += 1) {
 		// 	numOfMembers.push(
 		// 		<ClubMember
 		// 			memberIndex={i}
@@ -596,43 +623,13 @@ class AddClubMembership extends React.Component {
 											</Label>
 											<Col md={6}>
 												<Input
-													name='membership_level'
-													defaultValue='select'
-													type='select'
-													onChange={e => {
-														this.handleChange(e);
-													}}
-													required
-												>
-													<option value='select'>
-														Select club membership
-														level.
-													</option>
-													{this.props.levels.levels
-														.length > 0 &&
-														this.props.levels.levels
-															.filter(
-																el =>
-																	el.level ===
-																	3
-															)
-															.map(
-																(item, key) => (
-																	<option
-																		key={
-																			key
-																		}
-																		value={
-																			item.id
-																		}
-																	>
-																		{
-																			item.name
-																		}
-																	</option>
-																)
-															)}
-												</Input>
+													value={
+														this.props.levels.levels.find(
+															el => el.level === 3
+														).name
+													}
+													readonly
+												/>
 											</Col>
 										</FormGroup>
 										<FormGroup row>
@@ -861,7 +858,9 @@ class AddClubMembership extends React.Component {
 											</Label>
 											<Col md={6}>
 												<PhoneInput
-													name='phone'
+													inputProps={{
+														name: 'phone',
+													}}
 													country='ie'
 													enableAreaCodes={['ie']}
 													enableSearch
