@@ -1,5 +1,5 @@
 import OnlyHeader from 'components/Headers/OnlyHeader';
-import React from 'react';
+import React, { createRef } from 'react';
 
 import { Switch, withStyles, CircularProgress } from '@material-ui/core';
 
@@ -37,6 +37,8 @@ import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
 
 import Cart from './Cart';
 import ManualPaymentDropdown from './ManualPaymentDropdown';
+import { Alert } from '@material-ui/lab';
+
 class AddIndividualMembership extends React.Component {
 	constructor(props) {
 		super(props);
@@ -53,7 +55,10 @@ class AddIndividualMembership extends React.Component {
 			totalProgress: 5,
 			discountDetails: {},
 			formLoading: false,
+			errors: [],
+			showError: false,
 		};
+		this.errorRef = createRef();
 		this.handleChange = this.handleChange.bind(this);
 	}
 
@@ -72,7 +77,7 @@ class AddIndividualMembership extends React.Component {
 
 	componentDidUpdate(
 		{ user: prevUser },
-		{ membership_level: prevMembershipLevel }
+		{ membership_level: prevMembershipLevel, errors: prevErrors }
 	) {
 		if (
 			null !== this.props.user.token &&
@@ -94,6 +99,15 @@ class AddIndividualMembership extends React.Component {
 				el => el.id === parseInt(this.state.membership_level)
 			);
 			this.setState({ selectedMembership: membership });
+		}
+
+		if (
+			this.state.errors.length !== 0 &&
+			prevErrors !== this.state.errors
+		) {
+			this.setState({ showError: true });
+			this.errorRef.current.scrollIntoView({ behavior: 'smooth' });
+			setTimeout(() => this.setState({ showError: false }), 5000);
 		}
 	}
 
@@ -354,6 +368,7 @@ class AddIndividualMembership extends React.Component {
 	}
 
 	async onSuccessfullCheckout(event, user_args, membership) {
+		let error = false;
 		await this.addCustomer(user_args)
 			.then(res => {
 				if (res.status !== 200) return Promise.reject(res);
@@ -413,18 +428,27 @@ class AddIndividualMembership extends React.Component {
 				return data_payment;
 			})
 			.catch(err => {
+				this.setState(prevState => ({
+					formLoading: false,
+					errors: [
+						...prevState.errors,
+						<Alert severity='error'>Something went wrong!</Alert>,
+					],
+				}));
+				error = true;
 				console.error(err);
-				this.setState({ formLoading: false });
 			});
 
 		this.setState({ formLoading: false });
-		this.props.history.replace({
-			pathname: '/admin/membership/success',
-			state: {
-				name: user_args.first_name + ' ' + user_args.last_name,
-				membership_details: this.state.selectedMembership,
-			},
-		});
+		if (!error) {
+			this.props.history.replace({
+				pathname: '/admin/membership/success',
+				state: {
+					name: user_args.first_name + ' ' + user_args.last_name,
+					membership_details: this.state.selectedMembership,
+				},
+			});
+		}
 	}
 
 	addCustomer(user_args) {
@@ -545,6 +569,9 @@ class AddIndividualMembership extends React.Component {
 				<Container className='mt--8' fluid>
 					<Row>
 						<div className='col'>
+							<div ref={this.errorRef}>
+								{this.state.showError && this.state.errors}
+							</div>
 							<Card className='shadow'>
 								<CardHeader className='border-0'>
 									<h3 className='mb-0'>

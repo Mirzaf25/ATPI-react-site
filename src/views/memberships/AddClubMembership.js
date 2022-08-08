@@ -1,5 +1,5 @@
 import OnlyHeader from 'components/Headers/OnlyHeader';
-import React from 'react';
+import React, { createRef } from 'react';
 
 //@mui
 import { Switch, withStyles, CircularProgress } from '@material-ui/core';
@@ -39,6 +39,7 @@ import ClubMember from './ClubMember';
 import ManualPaymentDropdown from './ManualPaymentDropdown';
 import { Redirect } from 'react-router-dom';
 import Success from './Success';
+import { Alert } from '@material-ui/lab';
 
 class AddClubMembership extends React.Component {
 	constructor(props) {
@@ -60,8 +61,11 @@ class AddClubMembership extends React.Component {
 			membersArray: [],
 			owner_workplace: {},
 			formLoading: false,
+			errors: [],
+			showError: false,
 		};
 		this.memberIndex = 1;
+		this.errorRef = createRef();
 		this.handleChange = this.handleChange.bind(this);
 	}
 
@@ -87,7 +91,7 @@ class AddClubMembership extends React.Component {
 
 	componentDidUpdate(
 		{ user: prevUser },
-		{ membership_level: prevMembershipLevel }
+		{ membership_level: prevMembershipLevel, errors: prevErrors }
 	) {
 		if (
 			null !== this.props.user.token &&
@@ -109,6 +113,15 @@ class AddClubMembership extends React.Component {
 				el => el.id === parseInt(this.state.membership_level)
 			);
 			this.setState({ selectedMembership: membership });
+		}
+
+		if (
+			this.state.errors.length !== 0 &&
+			prevErrors !== this.state.errors
+		) {
+			this.setState({ showError: true });
+			this.errorRef.current.scrollIntoView({ behavior: 'smooth' });
+			setTimeout(() => this.setState({ showError: false }), 5000);
 		}
 	}
 
@@ -269,11 +282,8 @@ class AddClubMembership extends React.Component {
 			/* UPDATE PROGRESS */
 			console.log('3');
 			this.updateProgress(1);
-			const {
-				stripe_client_secret,
-				stripe_intent_type,
-				payment_id,
-			} = await res.json();
+			const { stripe_client_secret, stripe_intent_type, payment_id } =
+				await res.json();
 			const paymentMethodReq = await stripe.createPaymentMethod({
 				type: 'card',
 				card: cardElement,
@@ -359,6 +369,7 @@ class AddClubMembership extends React.Component {
 	}
 
 	async onSuccessfullCheckout(event, user_args, membership, club_name) {
+		let error = false;
 		await this.addCustomer(user_args)
 			.then(res => {
 				if (res.status !== 200) return Promise.reject(res);
@@ -379,23 +390,17 @@ class AddClubMembership extends React.Component {
 				return res.json();
 			})
 			.then(async data_membership => {
-				const {
-					errors,
-					user_id,
-					membership_id,
-					subscription_key,
-				} = data_membership;
+				const { errors, user_id, membership_id, subscription_key } =
+					data_membership;
 				if (errors) return Promise.reject(errors);
 				if (this.state.enable_stripe_payment) {
-					const {
-						transaction,
-						payment_id,
-					} = await this.handlePayment(
-						event,
-						membership_id,
-						user_id,
-						subscription_key
-					);
+					const { transaction, payment_id } =
+						await this.handlePayment(
+							event,
+							membership_id,
+							user_id,
+							subscription_key
+						);
 
 					return this.updatePayment(payment_id, transaction);
 					// return this.addPayment(user_id, membership, transaction);
@@ -421,17 +426,26 @@ class AddClubMembership extends React.Component {
 				return data_payment;
 			})
 			.catch(err => {
-				this.setState({ formLoading: false });
+				this.setState(prevState => ({
+					formLoading: false,
+					errors: [
+						...prevState.errors,
+						<Alert severity='error'>Something went wrong!</Alert>,
+					],
+				}));
+				error = true;
 				console.error(err);
 			});
 		this.setState({ formLoading: false });
-		this.props.history.replace({
-			pathname: '/admin/membership/success',
-			state: {
-				name: user_args.first_name + ' ' + user_args.last_name,
-				membership_details: this.state.selectedMembership,
-			},
-		});
+		if (!error) {
+			this.props.history.replace({
+				pathname: '/admin/membership/success',
+				state: {
+					name: user_args.first_name + ' ' + user_args.last_name,
+					membership_details: this.state.selectedMembership,
+				},
+			});
+		}
 	}
 
 	addCustomer(user_args) {
@@ -599,6 +613,9 @@ class AddClubMembership extends React.Component {
 				<Container className='mt--8' fluid>
 					<Row>
 						<div className='col'>
+							<div ref={this.errorRef}>
+								{this.state.showError && this.state.errors}
+							</div>
 							<Card className='shadow'>
 								<CardHeader className='border-0'>
 									<h3 className='mb-0'>
@@ -628,7 +645,7 @@ class AddClubMembership extends React.Component {
 															el => el.level === 3
 														).name
 													}
-													readonly
+													readOnly
 												/>
 											</Col>
 										</FormGroup>
@@ -750,7 +767,8 @@ class AddClubMembership extends React.Component {
 													name='workplace'
 													type='text'
 													innerRef={el =>
-														(this.state.owner_workplace = el)
+														(this.state.owner_workplace =
+															el)
 													}
 												/>
 											</Col>
@@ -1162,7 +1180,13 @@ class AddClubMembership extends React.Component {
 													size: 10,
 												}}
 											>
-												<Button>Submit</Button>
+												<Button>
+													{this.state.formLoading && (
+														<CircularProgress size='1.3rem' />
+													)}
+													{!this.state.formLoading &&
+														'Submit'}
+												</Button>
 											</Col>
 										</FormGroup>
 									</Form>
