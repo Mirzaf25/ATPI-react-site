@@ -223,10 +223,21 @@ class AddClubMembership extends React.Component {
 		)
 			.then(res => res.json())
 			.then(data => {
-				console.log(data);
+				const { errors } = data;
+				if (errors) throw new Error(errors);
 				this.setState({ discountDetails: data });
 			})
-			.catch(e => console.error(e));
+			.catch(e => {
+				this.setState(prevState => ({
+					errors: [
+						...prevState.errors,
+						<Alert severity='error'>
+							Discount Code could not be added.
+						</Alert>,
+					],
+				}));
+				console.error(e);
+			});
 	}
 
 	/**
@@ -312,7 +323,14 @@ class AddClubMembership extends React.Component {
 			);
 
 			if (error) {
-				alert(error);
+				this.setState(prevState => ({
+					errors: [
+						...prevState.errors,
+						<Alert severity='error'>
+							Stripe payment could not be processed.
+						</Alert>,
+					],
+				}));
 				this.resetProgress();
 				return;
 			}
