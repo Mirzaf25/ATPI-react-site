@@ -66,6 +66,7 @@ class AddClubMembership extends React.Component {
 		};
 		this.memberIndex = 1;
 		this.errorRef = createRef();
+		this.discountCodeRef = createRef();
 		this.handleChange = this.handleChange.bind(this);
 	}
 
@@ -228,6 +229,14 @@ class AddClubMembership extends React.Component {
 			.then(data => {
 				const { errors } = data;
 				if (errors) throw new Error(errors);
+				this.discountCodeRef.current.style.display = 'flex';
+				this.discountCodeRef.current.scrollIntoView({
+					behavior: 'smooth',
+				});
+				setTimeout(
+					() => (this.discountCodeRef.current.style.display = 'none'),
+					5000
+				);
 				this.setState({ discountDetails: data });
 			})
 			.catch(e => {
@@ -990,6 +999,13 @@ class AddClubMembership extends React.Component {
 														Apply
 													</Button>
 												</InputGroup>
+												<Alert
+													style={{ display: 'none' }}
+													ref={this.discountCodeRef}
+													severity='success'
+												>
+													Discount Code added
+												</Alert>
 											</Col>
 										</FormGroup>
 										<FormGroup

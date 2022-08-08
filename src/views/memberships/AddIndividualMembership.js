@@ -59,6 +59,7 @@ class AddIndividualMembership extends React.Component {
 			showError: false,
 		};
 		this.errorRef = createRef();
+		this.discountCodeRef = createRef();
 		this.handleChange = this.handleChange.bind(this);
 	}
 
@@ -215,6 +216,14 @@ class AddIndividualMembership extends React.Component {
 			.then(data => {
 				const { errors } = data;
 				if (errors) throw new Error(errors);
+				this.discountCodeRef.current.style.display = 'flex';
+				this.discountCodeRef.current.scrollIntoView({
+					behavior: 'smooth',
+				});
+				setTimeout(
+					() => (this.discountCodeRef.current.style.display = 'none'),
+					5000
+				);
 				this.setState({ discountDetails: data });
 			})
 			.catch(e => {
@@ -928,6 +937,13 @@ class AddIndividualMembership extends React.Component {
 														Apply
 													</Button>
 												</InputGroup>
+												<Alert
+													style={{ display: 'none' }}
+													ref={this.discountCodeRef}
+													severity='success'
+												>
+													Discount Code added
+												</Alert>
 											</Col>
 										</FormGroup>
 										<FormGroup
