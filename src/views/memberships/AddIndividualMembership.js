@@ -530,6 +530,11 @@ class AddIndividualMembership extends React.Component {
 			membership_id: membership_id,
 			status: 'complete',
 		};
+		if (this.state.discountDetails.code) {
+			payment_args['discount_code'] = this.state.discountDetails.code
+				? this.state.discountDetails.code
+				: event.target.discount_code.value;
+		}
 		formData.forEach((val, key) => {
 			if (fields.includes(key)) {
 				payment_args[key] = val;
