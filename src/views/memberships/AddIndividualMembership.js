@@ -449,16 +449,19 @@ class AddIndividualMembership extends React.Component {
 				if (errors) return Promise.reject(errors);
 				return data_payment;
 			})
-			.catch(err => {
+			.catch(async err => {
+				if(err instanceof Response){
+					var {errors , error_data} = await err.json();
+				}
+				console.log(errors,error_data,err instanceof Response);
 				this.setState(prevState => ({
 					formLoading: false,
 					errors: [
 						...prevState.errors,
-						<Alert severity='error'>Something went wrong!</Alert>,
+						(errors && error_data) ? <Alert severity='error'>{"Something went wrong! " + errors[Object.keys(error_data)[0]].join(" ")}</Alert> :<Alert severity='error'>Something went wrong!</Alert>,
 					],
 				}));
 				error = true;
-				console.error(err);
 			});
 
 		this.setState({ formLoading: false });
