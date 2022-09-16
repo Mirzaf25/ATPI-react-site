@@ -46,6 +46,20 @@ class Success extends React.Component {
 												.membership_details.name}</span></li>
 										<li>Renewal Date: <span className='text-capitalize font-weight-bold'>{this.props.location.state
 												.membership_details.renewal_date}</span></li>
+										{this.props.location.state.data.hasOwnProperty('discount') ? (<>
+											<li>Coupon Used: <span className='text-capitalize font-weight-bold'>{this.props.location.state
+												.data.discount.code}</span></li>
+											<li>Discount: <span className='text-capitalize font-weight-bold'>{this.props.location.state
+													.data.discount.total_discount+ " " + this.props.location.state
+													.membership_details.currency_symbol}</span></li>
+											<li>Paid: <span className='text-capitalize font-weight-bold'>{this.props.location.state
+														.data.discount.total+ " " + this.props.location.state
+														.membership_details.currency_symbol}</span></li>
+											</>) : 
+											(<li>Paid: <span className='text-capitalize font-weight-bold'>{this.props.location.state
+															.membership_details.price + " " + this.props.location.state
+															.membership_details.currency_symbol }</span></li>
+											)}
 										<li>Cost: <span className='text-capitalize font-weight-bold'>{this.props.location.state
 												.membership_details.price + " " + this.props.location.state
 												.membership_details.currency_symbol }</span></li>

@@ -226,6 +226,7 @@ class AddIndividualMembership extends React.Component {
 					5000
 				);
 				this.setState({ discountDetails: data });
+				this.dataForSuccessPage.discount = data;
 			})
 			.catch(e => {
 				this.setState(prevState => ({
