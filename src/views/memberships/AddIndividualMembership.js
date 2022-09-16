@@ -60,6 +60,7 @@ class AddIndividualMembership extends React.Component {
 		};
 		this.errorRef = createRef();
 		this.discountCodeRef = createRef();
+		this.dataForSuccessPage = {};
 		this.handleChange = this.handleChange.bind(this);
 	}
 
@@ -405,6 +406,7 @@ class AddIndividualMembership extends React.Component {
 			.then(data => {
 				const { errors } = data;
 				if (errors) return Promise.reject(errors);
+				this.dataForSuccessPage.customer = {...data,email: user_args.user_email};
 				return this.addMembership(event, data.customer_id, membership);
 				// return this.addPaymentAndMembership(data, membership, transaction);
 			})
@@ -416,6 +418,7 @@ class AddIndividualMembership extends React.Component {
 				const { errors, user_id, membership_id, subscription_key } =
 					data_membership;
 				if (errors) return Promise.reject(errors);
+				this.dataForSuccessPage.membership = data_membership;
 				if (this.state.enable_stripe_payment) {
 					const { transaction, payment_id } =
 						await this.handlePayment(
@@ -447,6 +450,7 @@ class AddIndividualMembership extends React.Component {
 			.then(data_payment => {
 				const { errors } = data_payment;
 				if (errors) return Promise.reject(errors);
+				this.dataForSuccessPage.payment = data_payment;
 				return data_payment;
 			})
 			.catch(async err => {
@@ -471,6 +475,7 @@ class AddIndividualMembership extends React.Component {
 				state: {
 					name: user_args.first_name + ' ' + user_args.last_name,
 					membership_details: this.state.selectedMembership,
+					data: this.dataForSuccessPage
 				},
 			});
 		}

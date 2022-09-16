@@ -25,36 +25,32 @@ class Success extends React.Component {
 								<CardHeader className='border-0'>
 									<Row className='justify-content-between'>
 										<h3 className='mb-0 ml-3'>
-											Successful!
+											Success!
 										</h3>
 									</Row>
 								</CardHeader>
 								<CardBody>
 									<p>
-										Registration successful for
-										<span>
-											{this.props.location.state?.name}
+										<span className='font-weight-bold'>
+											{this.props.location.state?.name + " "}
 										</span>
+										is now registered as an ATPI Member.
 										.
 									</p>
 									<h3>Membership Details:</h3>
 									<ul>
-										{Object.keys(
-											this.props.location.state
-												.membership_details
-										).map((el, i) => (
-											<li key={i}>
-												{el
-													.split('_')
-													.map(el => el.toUpperCase())
-													.join(' ')}
-												:
-												{
-													this.props.location.state
-														.membership_details[el]
-												}
-											</li>
-										))}
+										<li>Member's Name: <span className='text-capitalize font-weight-bold'>{this.props.location.state?.name}</span></li>
+										<li>Email: <span className='text-capitalize font-weight-bold'>{this.props.location.state
+												.data.customer.email}</span></li>
+										<li>Membership: <span className='text-capitalize font-weight-bold'>{this.props.location.state
+												.membership_details.name}</span></li>
+										<li>Renewal Date: <span className='text-capitalize font-weight-bold'>{this.props.location.state
+												.membership_details.renewal_date}</span></li>
+										<li>Cost: <span className='text-capitalize font-weight-bold'>{this.props.location.state
+												.membership_details.price + " " + this.props.location.state
+												.membership_details.currency_symbol }</span></li>
+										<li>Role: <span className='text-capitalize font-weight-bold'>{this.props.location.state
+												.membership_details.role.split("_").join(" ")}</span></li>
 									</ul>
 								</CardBody>
 							</Card>

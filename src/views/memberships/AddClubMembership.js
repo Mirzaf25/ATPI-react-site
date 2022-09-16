@@ -67,6 +67,7 @@ class AddClubMembership extends React.Component {
 		this.memberIndex = 1;
 		this.errorRef = createRef();
 		this.discountCodeRef = createRef();
+		this.dataForSuccessPage = {};
 		this.handleChange = this.handleChange.bind(this);
 	}
 
@@ -408,6 +409,7 @@ class AddClubMembership extends React.Component {
 			.then(data => {
 				const { errors } = data;
 				if (errors) return Promise.reject(errors);
+				this.dataForSuccessPage.customer = {...data,email: user_args.user_email};
 				return this.addMembership(
 					event,
 					data.customer_id,
@@ -475,6 +477,7 @@ class AddClubMembership extends React.Component {
 				state: {
 					name: user_args.first_name + ' ' + user_args.last_name,
 					membership_details: this.state.selectedMembership,
+					data: this.dataForSuccessPage
 				},
 			});
 		}
