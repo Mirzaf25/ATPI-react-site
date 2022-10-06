@@ -399,6 +399,7 @@ class AddIndividualMembership extends React.Component {
 
 	async onSuccessfullCheckout(event, user_args, membership) {
 		let error = false;
+		let customerId;
 		await this.addCustomer(user_args)
 			.then(res => {
 				if (res.status !== 200) return Promise.reject(res);
@@ -408,6 +409,7 @@ class AddIndividualMembership extends React.Component {
 				const { errors } = data;
 				if (errors) return Promise.reject(errors);
 				this.dataForSuccessPage.customer = {...data,email: user_args.user_email};
+				customerId = data.customer_id;
 				return this.addMembership(event, data.customer_id, membership);
 				// return this.addPaymentAndMembership(data, membership, transaction);
 			})
@@ -458,7 +460,6 @@ class AddIndividualMembership extends React.Component {
 				if(err instanceof Response){
 					var {errors , error_data} = await err.json();
 				}
-				console.log(errors,error_data,err instanceof Response);
 				this.setState(prevState => ({
 					formLoading: false,
 					errors: [
@@ -467,6 +468,18 @@ class AddIndividualMembership extends React.Component {
 					],
 				}));
 				error = true;
+				if(customerId !== undefined && typeof customerId === 'number') {
+					await fetch(
+					this.props.rcp_url.domain +
+						this.props.rcp_url.base_url +
+						'customers/delete/' + customerId,
+					{
+						method: 'DELETE',
+						headers: {
+							Authorization: 'Bearer ' + this.props.user.token,
+						},
+					});
+				}
 			});
 
 		this.setState({ formLoading: false });
